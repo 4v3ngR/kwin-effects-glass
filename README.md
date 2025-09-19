@@ -1,7 +1,10 @@
 # Better Blur
 Better Blur is a fork of the Plasma 6 blur effect with additional features and bug fixes.
 
-![image](https://github.com/user-attachments/assets/f8a7c618-89b4-485a-b0f8-29dd5f77e3ca)
+![Screenshot](/docs/glass.png)
+
+### 4v3ngR's changes
+- Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
 
 ### Features
 - X11 and Wayland support
