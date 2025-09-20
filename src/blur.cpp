@@ -804,7 +804,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
             }
             bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
         }
-        edgeSizePixels = m_settings.refraction.edgeSizePixels / 20 * topCornerRadius;
+        edgeSizePixels = (float)std::max((float)1.0, m_settings.refraction.edgeSizePixels / 20 * topCornerRadius);
         topCornerRadius = topCornerRadius * viewport.scale();
         bottomCornerRadius = bottomCornerRadius * viewport.scale();
     }
