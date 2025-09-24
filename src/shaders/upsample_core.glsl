@@ -10,6 +10,7 @@ uniform bool noise;
 uniform sampler2D noiseTexture;
 uniform vec2 noiseTextureSize;
 
+uniform float cornerRadius;
 uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
@@ -70,22 +71,17 @@ void main(void)
     vec4 sum = vec4(0, 0, 0, 0);
 
     if (refractionStrength > 0) {
-        float cornerRadius = edgeSizePixels;
-        float bevelSize = edgeSizePixels;
-
-        if (edgeSizePixels < 24) bevelSize *= (16 - edgeSizePixels);
-
         vec2 halfBlurSize = 0.5 * blurSize;
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
 
-        float concaveFactor = pow(clamp(1.0 + dist / bevelSize, 0.0, 1.0), refractionNormalPow);
+        float concaveFactor = pow(clamp(1.0 + dist / edgeSizePixels, 0.0, 1.0), refractionNormalPow);
 
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
-            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, bevelSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, bevelSize),
-            roundedRectangleDist(position + vec2(0, h), halfBlurSize, bevelSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, bevelSize)
+            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, edgeSizePixels) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, edgeSizePixels),
+            roundedRectangleDist(position + vec2(0, h), halfBlurSize, edgeSizePixels) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, edgeSizePixels)
         );
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);

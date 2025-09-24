@@ -97,6 +97,7 @@ BlurEffect::BlurEffect()
         m_upsamplePass.blurSizeLocation = m_upsamplePass.shader->uniformLocation("blurSize");
         m_upsamplePass.opacityLocation = m_upsamplePass.shader->uniformLocation("opacity");
         m_upsamplePass.edgeSizePixelsLocation = m_upsamplePass.shader->uniformLocation("edgeSizePixels");
+        m_upsamplePass.cornerRadiusLocation = m_upsamplePass.shader->uniformLocation("cornerRadius");
         m_upsamplePass.refractionStrengthLocation = m_upsamplePass.shader->uniformLocation("refractionStrength");
         m_upsamplePass.refractionNormalPowLocation = m_upsamplePass.shader->uniformLocation("refractionNormalPow");
         m_upsamplePass.refractionRGBFringingLocation = m_upsamplePass.shader->uniformLocation("refractionRGBFringing");
@@ -789,7 +790,6 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         return;
     }
 
-    float edgeSizePixels = 0;
     float topCornerRadius = 0;
     float bottomCornerRadius = 0;
     if (w && !(w->isDock() && !isDockFloating(w, blurShape))) {
@@ -804,7 +804,6 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
             }
             bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
         }
-        edgeSizePixels = (float)std::max((float)1.0, m_settings.refraction.edgeSizePixels / 20 * topCornerRadius);
         topCornerRadius = topCornerRadius * viewport.scale();
         bottomCornerRadius = bottomCornerRadius * viewport.scale();
     }
@@ -1108,8 +1107,9 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
 
         if (w && m_settings.refraction.refractionStrength > 0) {
+            m_upsamplePass.shader->setUniform(m_upsamplePass.cornerRadiusLocation, topCornerRadius);
             m_upsamplePass.shader->setUniform(m_upsamplePass.edgeSizePixelsLocation,
-                std::min(edgeSizePixels, (float)std::min(deviceBackgroundRect.width() / 2, deviceBackgroundRect.height() / 2)));
+                std::min(m_settings.refraction.edgeSizePixels, (float)std::min(deviceBackgroundRect.width() / 2, deviceBackgroundRect.height() / 2)));
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionStrengthLocation, m_settings.refraction.refractionStrength);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionNormalPowLocation, m_settings.refraction.refractionNormalPow);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionRGBFringingLocation, m_settings.refraction.refractionRGBFringing);
