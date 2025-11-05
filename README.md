@@ -6,6 +6,8 @@ Better Blur is a fork of the Plasma 6 blur effect with additional features and b
 ### 4v3ngR's changes
 - Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
 
+### 4v3ngR's theme patches
+- Updated firefox, thunderbird, plasma, color schemes, and helper scripts can be found at my [glassOS repo](https://github.com/4v3ngR/glassOS)
 ### Features
 - X11 and Wayland support
 - Force blur
