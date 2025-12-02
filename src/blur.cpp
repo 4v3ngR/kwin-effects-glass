@@ -623,12 +623,12 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
 bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data)
 {
-    const bool hasForceBlurRole = w->data(WindowForceBlurRole).toBool();
-    if ((effects->activeFullScreenEffect() && !hasForceBlurRole) || w->isDesktop()) {
+    if (w->isDesktop()) {
         return false;
     }
 
-    if (w->isDesktop()) {
+    const bool hasForceBlurRole = w->data(WindowForceBlurRole).toBool();
+    if ((effects->activeFullScreenEffect() && !hasForceBlurRole) || w->isDesktop()) {
         return false;
     }
 
@@ -749,7 +749,7 @@ GLTexture *BlurEffect::ensureNoiseTexture()
 
 void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
 {
-    if (w->internalWindow()) {
+    if (w->internalWindow() && !isMenu(w)) {
         return;
     }
 
