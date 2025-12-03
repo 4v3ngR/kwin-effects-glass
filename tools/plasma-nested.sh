@@ -6,7 +6,7 @@
 width=1920
 height=1080
 
-dir=/tmp/kwin-better-blur
+dir=/tmp/kwin-glass
 if [ ! -d $dir ]; then
     mkdir -p $dir/.local/share
     cp -r ~/.config $dir

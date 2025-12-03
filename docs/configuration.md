@@ -3,10 +3,10 @@
 Since Plasma 6, window opacity now affects blur opacity with no option to disable it in the stock blur effect.
 
 Enabled (default):
-![image](https://github.com/taj-ny/kwin-effects-forceblur/assets/79316397/525a3611-62f0-4c7e-b01c-253a05cbd3ca)
+![image](https://github.com/taj-ny/kwin-effects-glass/assets/79316397/525a3611-62f0-4c7e-b01c-253a05cbd3ca)
 
 Disabled:
-![image](https://github.com/taj-ny/kwin-effects-forceblur/assets/79316397/b4f35a24-e288-4c51-9707-494942abdaa0)
+![image](https://github.com/taj-ny/kwin-effects-glass/assets/79316397/b4f35a24-e288-4c51-9707-494942abdaa0)
 
 # Force blur
 ### Blur window decorations
@@ -22,11 +22,11 @@ Static blur is mainly intended for laptop users who want longer battery life whi
 
 ### Use real blur for windows that are in front of other windows
 By default, when two windows overlap, you won't be able to see the window behind.
-![image](https://github.com/taj-ny/kwin-effects-forceblur/assets/79316397/e581b5c1-7b2c-41c4-b180-4da5306747e1)
+![image](https://github.com/taj-ny/kwin-effects-glass/assets/79316397/e581b5c1-7b2c-41c4-b180-4da5306747e1)
 
 If this option is enabled, the effect will automatically switch to real blur when necessary. At very high blur strengths, there may be a slight difference in the texture.
 
-https://github.com/taj-ny/kwin-effects-forceblur/assets/79316397/7bae6a16-6c78-4889-8df1-feb24005dabc
+https://github.com/taj-ny/kwin-effects-glass/assets/79316397/7bae6a16-6c78-4889-8df1-feb24005dabc
 
 ### Image source
 The image to use for static blur.

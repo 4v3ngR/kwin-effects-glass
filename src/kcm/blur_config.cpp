@@ -30,11 +30,11 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
 
     connect(ui.staticBlurImagePicker, &QPushButton::clicked, this, &BlurEffectConfig::slotStaticBlurImagePickerClicked);
 
-    QFile about(":/effects/forceblur/kcm/about.html");
+    QFile about(":/effects/glass/kcm/about.html");
     if (about.open(QIODevice::ReadOnly)) {
         const auto html = about.readAll()
             .replace("${version}", ABOUT_VERSION_STRING)
-            .replace("${repo}", "https://github.com/taj-ny/kwin-effects-forceblur");
+            .replace("${repo}", "https://github.com/4v3ngR/kwin-effects-glass");
         ui.aboutText->setHtml(html);
     }
 
@@ -91,9 +91,9 @@ void BlurEffectConfig::save()
                                          QDBusConnection::sessionBus());
 
     if (QGuiApplication::platformName() == QStringLiteral("xcb")) {
-        interface.reconfigureEffect(QStringLiteral("forceblur_x11"));
+        interface.reconfigureEffect(QStringLiteral("glass_x11"));
     } else {
-        interface.reconfigureEffect(QStringLiteral("forceblur"));
+        interface.reconfigureEffect(QStringLiteral("glass"));
     }
 }
 

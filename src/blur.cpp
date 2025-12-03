@@ -42,7 +42,7 @@
 
 #include <utility>
 
-Q_LOGGING_CATEGORY(KWIN_BLUR, "kwin_better_blur", QtWarningMsg)
+Q_LOGGING_CATEGORY(KWIN_BLUR, "kwin_glass", QtWarningMsg)
 
 static void ensureResources()
 {
@@ -64,8 +64,8 @@ BlurEffect::BlurEffect()
     ensureResources();
 
     m_downsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                                QStringLiteral(":/effects/forceblur/shaders/vertex.vert"),
-                                                                                QStringLiteral(":/effects/forceblur/shaders/downsample.frag"));
+                                                                                QStringLiteral(":/effects/glass/shaders/vertex.vert"),
+                                                                                QStringLiteral(":/effects/glass/shaders/downsample.frag"));
     if (!m_downsamplePass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load downsampling pass shader";
         return;
@@ -78,8 +78,8 @@ BlurEffect::BlurEffect()
     }
 
     m_upsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                              QStringLiteral(":/effects/forceblur/shaders/vertex.vert"),
-                                                                              QStringLiteral(":/effects/forceblur/shaders/upsample.frag"));
+                                                                              QStringLiteral(":/effects/glass/shaders/vertex.vert"),
+                                                                              QStringLiteral(":/effects/glass/shaders/upsample.frag"));
     if (!m_upsamplePass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load upsampling pass shader";
         return;
@@ -105,8 +105,8 @@ BlurEffect::BlurEffect()
     }
 
     m_texture.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                         QStringLiteral(":/effects/forceblur/shaders/vertex.vert"),
-                                                                         QStringLiteral(":/effects/forceblur/shaders/texture.frag"));
+                                                                         QStringLiteral(":/effects/glass/shaders/vertex.vert"),
+                                                                         QStringLiteral(":/effects/glass/shaders/texture.frag"));
     if (!m_texture.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load texture pass shader";
         return;
@@ -845,7 +845,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         for (size_t i = 0; i <= m_iterationCount; ++i) {
             // For very small windows, the width and/or height of the last blur texture may be 0. Creation of
             // and/or usage of invalid textures to create framebuffers appears to cause performance issues.
-            // https://github.com/taj-ny/kwin-effects-forceblur/issues/160
+            // https://github.com/taj-ny/kwin-effects-glass/issues/160
             const QSize textureSize(std::max(1, deviceBackgroundRect.width() / (1 << i)), std::max(1, deviceBackgroundRect.height() / (1 << i)));
             auto texture = GLTexture::allocate(textureFormat, textureSize);
             if (!texture) {
@@ -861,7 +861,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
                 return;
             }
             auto *context =
-#ifdef BETTERBLUR_X11
+#ifdef GLASS_X11
                 OpenGlContext
 #else
                 EglContext

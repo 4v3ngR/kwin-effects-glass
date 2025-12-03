@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
-  <qresource prefix="/effects/forceblur/kcm/">
+  <qresource prefix="/effects/glass/kcm/">
     <file>about.html</file>
   </qresource>
 </RCC>

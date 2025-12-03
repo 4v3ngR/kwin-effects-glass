@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/effects/forceblur/">
+<qresource prefix="/effects/glass/">
   <file>shaders/downsample.frag</file>
   <file>shaders/downsample_core.frag</file>
   <file>shaders/texture.frag</file>

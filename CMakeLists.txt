@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16.0)
 
-project(kwin_better_blur)
+project(kwin_glass)
 set(PROJECT_VERSION "1.5.0")
 set(PROJECT_VERSION_MAJOR 0)
 
@@ -12,9 +12,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CPACK_PACKAGE_NAME "kwin-better-blur")
+set(CPACK_PACKAGE_NAME "kwin-glass")
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
-set(CPACK_PACKAGE_FILE_NAME "kwin-better-blur")
+set(CPACK_PACKAGE_FILE_NAME "kwin-glass")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fork of the KWin Blur effect for KDE Plasma 6 with additional features (including force blur) and bug fixes")
 include(CPack)
@@ -27,8 +27,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT")
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
-option(BETTERBLUR_WAYLAND "Whether to build Better Blur for Wayland if present." ON)
-option(BETTERBLUR_X11 "Whether to build Better Blur for X11 if present." ON)
+option(GLASS_WAYLAND "Whether to build Glass for Wayland if present." ON)
+option(GLASS_X11 "Whether to build Glass for X11 if present." ON)
 
 include(FeatureSummary)
 include(KDEInstallDirs)
@@ -72,17 +72,17 @@ find_package(epoxy REQUIRED)
 find_package(X11 REQUIRED)
 find_package(XCB REQUIRED COMPONENTS XCB)
 
-if(BETTERBLUR_WAYLAND)
+if(GLASS_WAYLAND)
     find_package(KWin COMPONENTS
         kwineffects
     )
     if (${KWin_FOUND})
         find_package(KWinDBusInterface CONFIG REQUIRED)
     else()
-        set(BETTERBLUR_WAYLAND OFF)
+        set(GLASS_WAYLAND OFF)
     endif()
 endif()
-if(BETTERBLUR_X11)
+if(GLASS_X11)
     find_package(KWinX11 COMPONENTS
         kwineffects
     )
@@ -90,12 +90,12 @@ if(BETTERBLUR_X11)
         find_package(KWinX11DBusInterface CONFIG REQUIRED)
         set(KWin_VERSION ${KWinX11_VERSION})
     else()
-        set(BETTERBLUR_X11 OFF)
+        set(GLASS_X11 OFF)
     endif()
 endif()
 
 if(${KWin_VERSION} VERSION_LESS 6.4)
-    message(FATAL_ERROR "Better Blur does not support your Plasma version (${KWin_VERSION}). See the README for more information.")
+    message(FATAL_ERROR "Glass does not support your Plasma version (${KWin_VERSION}). See the README for more information.")
 endif()
 
 find_package(KDecoration3 REQUIRED)
