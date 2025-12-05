@@ -68,7 +68,6 @@ void BlurSettings::read()
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;
     refraction.refractionNormalPow = BlurConfig::refractionNormalPow() / 2.0;
     refraction.refractionRGBFringing = BlurConfig::refractionRGBFringing() / 20.0;  // Scale to 0-1 range
-    refraction.refractionTextureRepeatMode = BlurConfig::refractionTextureRepeatMode();
 }
 
 }

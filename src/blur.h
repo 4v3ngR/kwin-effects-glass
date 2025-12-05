@@ -162,7 +162,6 @@ private:
         int refractionStrengthLocation;
         int refractionNormalPowLocation;
         int refractionRGBFringingLocation;
-        int refractionTextureRepeatModeLocation;
 
         int cornerRadiusLocation;
     } m_upsamplePass;

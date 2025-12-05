@@ -15,36 +15,9 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
-uniform int refractionTextureRepeatMode;
 
 in vec2 uv;
 out vec4 fragColor;
-
-vec2 applyTextureRepeatMode(vec2 coord)
-{
-    if (refractionTextureRepeatMode == 0) {
-        return clamp(coord, 0.0, 1.0);
-    } else if (refractionTextureRepeatMode == 1) {
-        // flip on both axes
-        vec2 flip = mod(coord, 2.0);
-
-        vec2 result = coord;
-        if (flip.x > 1.0) {
-            result.x = 1.0 - mod(coord.x, 1.0);
-        } else {
-            result.x = mod(coord.x, 1.0);
-        }
-
-        if (flip.y > 1.0) {
-            result.y = 1.0 - mod(coord.y, 1.0);
-        } else {
-            result.y = mod(coord.y, 1.0);
-        }
-
-        return result;
-    }
-    return coord;
-}
 
 // source: https://iquilezles.org/articles/distfunctions2d/
 // https://www.shadertoy.com/view/4llXD7
@@ -94,9 +67,9 @@ void main(void)
         vec2 refractOffsetG = normal.xy * finalStrength;
         vec2 refractOffsetB = normal.xy * (finalStrength * (0.8 - fringingFactor)); // Blue bends least
 
-        vec2 coordR = applyTextureRepeatMode(uv - refractOffsetR);
-        vec2 coordG = applyTextureRepeatMode(uv - refractOffsetG);
-        vec2 coordB = applyTextureRepeatMode(uv - refractOffsetB);
+        vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
+        vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
+        vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
 
         for (int i = 0; i < 8; ++i) {
             vec2 off = offsets[i] * offset;

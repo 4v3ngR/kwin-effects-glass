@@ -91,8 +91,5 @@ class3</default>
         <entry name="RefractionRGBFringing" type="Double">
             <default>1.0</default>
         </entry>
-        <entry name="RefractionTextureRepeatMode" type="Int">
-            <default>0</default>
-        </entry>
     </group>
 </kcfg>
