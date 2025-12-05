@@ -8,7 +8,6 @@ uniform bool noise;
 uniform sampler2D noiseTexture;
 uniform vec2 noiseTextureSize;
 
-uniform float cornerRadius;
 uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
@@ -18,8 +17,9 @@ varying vec2 uv;
 
 // source: https://iquilezles.org/articles/distfunctions2d/
 // https://www.shadertoy.com/view/4llXD7
-float roundedRectangleDist(vec2 p, vec2 b, float r)
+float roundedRectangleDist(vec2 p, vec2 b, float topRadius, float bottomRadius)
 {
+    float r = (p.y > 0.0) ? topRadius : bottomRadius;
     vec2 q = abs(p) - b + r;
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
@@ -43,15 +43,15 @@ void main(void)
     if (refractionStrength > 0) {
         vec2 halfBlurSize = 0.5 * blurSize;
         vec2 position = uv * blurSize - halfBlurSize.xy;
-        float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+        float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, topCornerRadius);
 
         float concaveFactor = pow(clamp(1.0 - abs(dist) / edgeSizePixels, 0.0, 1.0), refractionNormalPow);
 
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
-            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, edgeSizePixels) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, edgeSizePixels),
-            roundedRectangleDist(position + vec2(0, h), halfBlurSize, edgeSizePixels) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, edgeSizePixels)
+            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, edgeSizePixels, edgeSizePixels) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, edgeSizePixels, edgeSizePixels),
+            roundedRectangleDist(position + vec2(0, h), halfBlurSize, edgeSizePixels, edgeSizePixels) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, edgeSizePixels, edgeSizePixels)
         );
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);

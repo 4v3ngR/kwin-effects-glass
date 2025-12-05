@@ -162,8 +162,6 @@ private:
         int refractionStrengthLocation;
         int refractionNormalPowLocation;
         int refractionRGBFringingLocation;
-
-        int cornerRadiusLocation;
     } m_upsamplePass;
 
     struct
