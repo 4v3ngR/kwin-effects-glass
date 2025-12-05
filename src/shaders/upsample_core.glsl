@@ -86,13 +86,13 @@ void main(void)
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
 
-        float finalStrength = -0.2 * concaveFactor * refractionStrength;
+        float finalStrength = -0.4 * concaveFactor * refractionStrength;
 
         // Different refraction offsets for each color channel
         float fringingFactor = refractionRGBFringing * 0.3;
-        vec2 refractOffsetR = normal.xy * (finalStrength * (1.0 + fringingFactor)); // Red bends most
+        vec2 refractOffsetR = normal.xy * (finalStrength * (0.8 + fringingFactor)); // Red bends most
         vec2 refractOffsetG = normal.xy * finalStrength;
-        vec2 refractOffsetB = normal.xy * (finalStrength * (1.0 - fringingFactor)); // Blue bends least
+        vec2 refractOffsetB = normal.xy * (finalStrength * (0.8 - fringingFactor)); // Blue bends least
 
         vec2 coordR = applyTextureRepeatMode(uv - refractOffsetR);
         vec2 coordG = applyTextureRepeatMode(uv - refractOffsetG);
