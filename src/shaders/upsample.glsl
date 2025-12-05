@@ -74,7 +74,6 @@ void main(void)
 
         float concaveFactor = pow(clamp(1.0 - abs(dist) / edgeSizePixels, 0.0, 1.0), refractionNormalPow);
 
-
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
@@ -84,7 +83,7 @@ void main(void)
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
 
-        float finalStrength = 0.2 * concaveFactor * refractionStrength;
+        float finalStrength = -0.2 * concaveFactor * refractionStrength;
 
         // Different refraction offsets for each color channel
         float fringingFactor = refractionRGBFringing * 0.3;
