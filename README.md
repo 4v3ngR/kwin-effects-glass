@@ -26,71 +26,11 @@ Fixes for blur-related Plasma bugs that haven't been patched yet.
 Glass will usually support at least one previous Plasma release (second number in version - 6.x). Exceptions may be made if there is a large amount of breaking 
 changes.
 
-Currently supported versions: **6.4**
-
-Latest Glass versions for previous Plasma releases:
-- **6.0.0 - 6.3.5**: [v1.3.6](https://github.com/taj-ny/kwin-effects-glass/releases/tag/v1.3.6),
-[fea9f80f27389aa8a62befb5babf40b28fed328d](https://github.com/taj-ny/kwin-effects-glass/tree/fea9f80f27389aa8a62befb5babf40b28fed328d)
+Currently supported versions: **6.5**
 
 # Installation
 > [!IMPORTANT]
 > If the effect stops working after a system upgrade, you will need to rebuild it or reinstall the package.
-
-## Packages
-<details>
-  <summary>Arch Linux (AUR)*</summary>
-  <br>
-
-  **Choose *cleanBuild* when reinstalling the package.**
-
-  https://aur.archlinux.org/packages/kwin-effects-glass
-  ```
-  yay -S kwin-effects-glass
-  ```
-</details>
-<details>
-  <summary>NixOS (flakes)</summary>
-  <br>
-
-  ``flake.nix``:
-  ```nix
-  {
-    inputs = {
-      nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-      kwin-effects-glass = {
-        url = "github:taj-ny/kwin-effects-glass";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-    };
-  }
-  ```
-
-  ```nix
-  { inputs, pkgs, ... }:
-
-  {
-    environment.systemPackages = [
-      inputs.kwin-effects-glass.packages.${pkgs.system}.default # Wayland
-      inputs.kwin-effects-glass.packages.${pkgs.system}.x11 # X11
-    ];
-  }
-  ```
-</details>
-<details>
-  <summary>Fedora (COPR)*</summary>
-  <br>
-
-  **This package is usually built against the latest version of KWin available in Fedora's official repositories, with a delay of up to 24 hours due to Fedora's update mechanism using bodhi. If you use a beta/testing/copr/advisory version of KWin, the effect may not work. In that case, you need to either recompile the effect using the instructions below, or rebuild the SRPM using `rpmbuild --rebuild /path/to/srpm.src.rpm`. Uninstall the rpm of the effect before attempting your build.**
-
-  [Repository](https://copr.fedorainfracloud.org/coprs/hazel-bunny/ricing/package/kwin-effects-glass/)
-  ```
-  sudo dnf copr enable hazel-bunny/ricing
-  sudo dnf install --refresh kwin-effects-glass
-  ```
-</details>
-
-**\* Unofficial package, use at your own risk.**
 
 ## Manual
 > [!NOTE]
