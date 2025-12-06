@@ -524,10 +524,14 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
         int topCornerRadius;
         int bottomCornerRadius;
-        if (isMenu(w)) {
+        if (w->isOnScreenDisplay()) {
+            topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.menuRadius);
+        } else if (isMenu(w)) {
             topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.menuRadius);
         } else if (w->isDock()) {
             topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.dockRadius);
+        } else if (w->isTooltip()) {
+            topCornerRadius = bottomCornerRadius = 4;
         } else {
             topCornerRadius = std::ceil(m_settings.roundedCorners.windowTopRadius);
             bottomCornerRadius = std::ceil(m_settings.roundedCorners.windowBottomRadius);
@@ -802,6 +806,10 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         const bool isMaximized = effects->clientArea(MaximizeArea, effects->activeScreen(), effects->currentDesktop()) == w->frameGeometry();
         if (isMenu(w)) {
             topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.menuRadius;
+        } else if (w->isOnScreenDisplay()) {
+            topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.windowTopRadius;
+        } else if (w->isTooltip()) {
+            topCornerRadius = bottomCornerRadius = 4;
         } else if (w->isDock()) {
             topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.dockRadius;
         } else if ((!w->isFullScreen() && !isMaximized) || m_settings.roundedCorners.roundMaximized) {
