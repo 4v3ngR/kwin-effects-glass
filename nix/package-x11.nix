@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Fork of the KWin Blur effect for KDE Plasma 6 with additional features (including force blur) and bug fixes";
     license = licenses.gpl3;
-    homepage = "https://github.com/taj-ny/kwin-effects-glass";
+    homepage = "https://github.com/4v3ngR/kwin-effects-glass";
   };
 }
