@@ -5,9 +5,21 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 
 ### 4v3ngR's changes
 - Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
+- modified refraction shader to produce a better convex effect
+- refraction now follows top and bottom corner radius settings
+- on screen display windows (eg volume control) have top and bottom corners matching top corner radius setting
+- remove edge texture option (flip/clamp) for the setting didn't appear to do anything with the new shader
+- better support for plasma 6.5
+- all console windows (settings etc) are blurred
+- context menus are blurred
+
 
 ### 4v3ngR's theme patches
 - Updated firefox, thunderbird, plasma, color schemes, and helper scripts can be found at my [glassOS repo](https://github.com/4v3ngR/glassOS)
+
+### 4v3ngR's application and WM theme
+- [Glass](https://github.com/4v3ngR/Glass) is a fork of Darkly to complement the improved refraction shader for that liquid refraction goodness.
+  
 ### Features
 - X11 and Wayland support
 - Force blur
@@ -15,17 +27,8 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - Static blur for much lower GPU usage
 - Adjust blur brightness, contrast and saturation
 - Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
-
-### Bug fixes
-Fixes for blur-related Plasma bugs that haven't been patched yet.
-
-- Blur may sometimes disappear during animations
-- [Transparent color schemes don't work properly with the Breeze application style](https://github.com/taj-ny/kwin-effects-glass/pull/38)
-
+  
 ### Support for previous Plasma releases
-Glass will usually support at least one previous Plasma release (second number in version - 6.x). Exceptions may be made if there is a large amount of breaking 
-changes.
-
 Currently supported versions: **6.5**
 
 # Installation
@@ -80,12 +83,12 @@ Currently supported versions: **6.5**
 
   Wayland:
   ```
-  sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake kwin-devel extra-cmake-modules kwin-devel kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel
+  sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake kwin-devel extra-cmake-modules kwin-devel kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel rpm-build
   ```
   
   X11:
   ```
-  sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake extra-cmake-modules kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel kwin-x11-devel
+  sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake extra-cmake-modules kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel kwin-x11-devel rpm-build
   ```
 </details>
 
