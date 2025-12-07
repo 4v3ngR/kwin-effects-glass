@@ -531,7 +531,7 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
         } else if (w->isDock()) {
             topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.dockRadius);
         } else if (w->isTooltip()) {
-            topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.windowTopRadius);
+            topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.dockRadius);
         } else {
             topCornerRadius = std::ceil(m_settings.roundedCorners.windowTopRadius);
             bottomCornerRadius = std::ceil(m_settings.roundedCorners.windowBottomRadius);
