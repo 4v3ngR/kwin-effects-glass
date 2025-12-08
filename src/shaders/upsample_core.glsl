@@ -45,27 +45,32 @@ void main(void)
 
     if (refractionStrength > 0) {
         vec2 halfBlurSize = 0.5 * blurSize;
+        float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
+        float normDist = dist / minHalfSize;
+        float normEdgeSize = edgeSizePixels / minHalfSize;
+        float edgeFactor = clamp(1.0 - abs(normDist) / normEdgeSize, 0.0, 1.0);
+        float concaveFactor = pow(edgeFactor, refractionNormalPow);
 
-        float concaveFactor = pow(clamp(1.0 - abs(dist) / edgeSizePixels, 0.0, 1.0), refractionNormalPow);
+        if (minHalfSize > edgeSizePixels)
+            minHalfSize = edgeSizePixels;
 
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
-            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, edgeSizePixels, edgeSizePixels) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, edgeSizePixels, edgeSizePixels),
-            roundedRectangleDist(position + vec2(0, h), halfBlurSize, edgeSizePixels, edgeSizePixels) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, edgeSizePixels, edgeSizePixels)
+            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, minHalfSize, minHalfSize),
+            roundedRectangleDist(position + vec2(0, h), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, minHalfSize, minHalfSize)
         );
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
 
         float finalStrength = -0.4 * concaveFactor * refractionStrength;
 
-        // Different refraction offsets for each color channel
-        float fringingFactor = refractionRGBFringing * 0.3;
-        vec2 refractOffsetR = normal.xy * (finalStrength * (0.8 + fringingFactor)); // Red bends most
+        vec2 refractOffsetR = normal.xy * finalStrength;
         vec2 refractOffsetG = normal.xy * finalStrength;
-        vec2 refractOffsetB = normal.xy * (finalStrength * (0.8 - fringingFactor)); // Blue bends least
+        vec2 refractOffsetB = normal.xy * finalStrength;
 
         vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
         vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);

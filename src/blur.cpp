@@ -1121,8 +1121,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
 
         if (w && m_settings.refraction.refractionStrength > 0) {
-            m_upsamplePass.shader->setUniform(m_upsamplePass.edgeSizePixelsLocation,
-                std::min(m_settings.refraction.edgeSizePixels, (float)std::min(deviceBackgroundRect.width() / 2, deviceBackgroundRect.height() / 2)));
+            m_upsamplePass.shader->setUniform(m_upsamplePass.edgeSizePixelsLocation, m_settings.refraction.edgeSizePixels);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionStrengthLocation, m_settings.refraction.refractionStrength);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionNormalPowLocation, m_settings.refraction.refractionNormalPow);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionRGBFringingLocation, m_settings.refraction.refractionRGBFringing);
