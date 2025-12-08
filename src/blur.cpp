@@ -531,7 +531,7 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
         } else if (w->isDock()) {
             topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.dockRadius);
         } else if (w->isTooltip()) {
-            topCornerRadius = bottomCornerRadius = 4;
+            topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.dockRadius);
         } else {
             topCornerRadius = std::ceil(m_settings.roundedCorners.windowTopRadius);
             bottomCornerRadius = std::ceil(m_settings.roundedCorners.windowBottomRadius);
@@ -809,7 +809,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         } else if (w->isOnScreenDisplay()) {
             topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.windowTopRadius;
         } else if (w->isTooltip()) {
-            topCornerRadius = bottomCornerRadius = 4;
+            topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.windowTopRadius;
         } else if (w->isDock()) {
             topCornerRadius = bottomCornerRadius = m_settings.roundedCorners.dockRadius;
         } else if ((!w->isFullScreen() && !isMaximized) || m_settings.roundedCorners.roundMaximized) {
@@ -1121,8 +1121,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
 
         if (w && m_settings.refraction.refractionStrength > 0) {
-            m_upsamplePass.shader->setUniform(m_upsamplePass.edgeSizePixelsLocation,
-                std::min(m_settings.refraction.edgeSizePixels, (float)std::min(deviceBackgroundRect.width() / 2, deviceBackgroundRect.height() / 2)));
+            m_upsamplePass.shader->setUniform(m_upsamplePass.edgeSizePixelsLocation, m_settings.refraction.edgeSizePixels);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionStrengthLocation, m_settings.refraction.refractionStrength);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionNormalPowLocation, m_settings.refraction.refractionNormalPow);
             m_upsamplePass.shader->setUniform(m_upsamplePass.refractionRGBFringingLocation, m_settings.refraction.refractionRGBFringing);
