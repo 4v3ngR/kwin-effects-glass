@@ -54,9 +54,6 @@ void main(void)
         float edgeFactor = clamp(1.0 - abs(normDist) / normEdgeSize, 0.0, 1.0);
         float concaveFactor = pow(edgeFactor, refractionNormalPow);
 
-        if (minHalfSize > edgeSizePixels)
-            minHalfSize = edgeSizePixels;
-
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
