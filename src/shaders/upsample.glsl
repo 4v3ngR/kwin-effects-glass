@@ -65,9 +65,18 @@ void main(void)
 
         float finalStrength = -0.4 * concaveFactor * refractionStrength;
 
-        vec2 refractOffsetR = normal.xy * finalStrength;
         vec2 refractOffsetG = normal.xy * finalStrength;
+        vec2 refractOffsetR = normal.xy * finalStrength;
         vec2 refractOffsetB = normal.xy * finalStrength;
+
+        // Different refraction offsets for each color channel
+        float fringingFactor = refractionRGBFringing * 0.3;
+        if (fringingFactor > 0.0) {
+            // Red bends most
+            refractOffsetR = normal.xy * (finalStrength * (0.8 + fringingFactor));
+            // Blue bends least
+            refractOffsetB = normal.xy * (finalStrength * (0.8 - fringingFactor));
+        }
 
         vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
         vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
