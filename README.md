@@ -35,6 +35,42 @@ Currently supported versions: **6.5**
 > [!IMPORTANT]
 > If the effect stops working after a system upgrade, you will need to rebuild it or reinstall the package.
 
+## Packages
+<details>
+  <summary>NixOS (flakes)</summary>
+  <br>
+
+  ``flake.nix``:
+  ```nix
+    {
+      inputs = {
+        # nixpkgs repository
+        nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable"
+
+        # kwin-effects-glass flake module
+        kwin-effects-glass = {
+          url = "github:4v3ngR/kwin-effects-glass";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
+      };
+    }
+  ```
+
+  ```nix
+    { inputs, pkgs, ... }:
+    
+    {
+      # alternatively, put the attributes in the list into
+      # 'users.users.<name>.packages' or 'home.packages' if
+      # using home-manager
+      environment.systemPackages = [
+        inputs.kwin-effects-glass.packages.${pkgs.system}.default # for KDE Wayland
+        inputs.kwin-effects-glass.packages.${pkgs.system}.x11 # for KDE X11
+      ];
+    }
+  ```
+</details>
+
 ## Manual
 > [!NOTE]
 > On Fedora Kinoite and other distributions based on it, the effect must be built in a container.
