@@ -2,6 +2,7 @@
 Glass is a fork of the Plasma 6 blur effect with additional features and bug fixes.
 
 ![Screenshot](/docs/glass.png)
+![Did someone say liquid?](/docs/liquid_enough.png)
 
 ### 4v3ngR's changes
 - Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
