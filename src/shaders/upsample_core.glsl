@@ -49,9 +49,7 @@ void main(void)
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
-        float normDist = dist / minHalfSize;
-        float normEdgeSize = edgeSizePixels / minHalfSize;
-        float edgeFactor = clamp(1.0 - abs(normDist) / normEdgeSize, 0.0, 1.0);
+        float edgeFactor = clamp(1.0 - abs(dist) / edgeSizePixels, 0.0, 1.0);
         float concaveFactor = pow(edgeFactor, refractionNormalPow);
 
         // Initial 2D normal
