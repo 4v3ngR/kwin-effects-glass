@@ -26,6 +26,19 @@ float roundedRectangleDist(vec2 p, vec2 b, float topRadius, float bottomRadius)
 
 void main(void)
 {
+    vec2 offsets[8] = vec2[](
+        vec2(-halfpixel.x * 2.0, 0.0),
+        vec2(-halfpixel.x, halfpixel.y),
+        vec2(0.0, halfpixel.y * 2.0),
+        vec2(halfpixel.x, halfpixel.y),
+        vec2(halfpixel.x * 2.0, 0.0),
+        vec2(halfpixel.x, -halfpixel.y),
+        vec2(0.0, -halfpixel.y * 2.0),
+        vec2(-halfpixel.x, -halfpixel.y)
+    );
+    float weights[8] = float[](1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0);
+    float weightSum = 12.0;
+
     vec4 sum = vec4(0, 0, 0, 0);
 
     if (refractionStrength > 0) {
@@ -66,12 +79,23 @@ void main(void)
         vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
         vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
 
-        sum.r += texture2D(texUnit, coordR).r;
-        sum.g += texture2D(texUnit, coordG).g;
-        sum.b += texture2D(texUnit, coordB).b;
-        sum.a += texture2D(texUnit, coordG).a;
+        float blurRadius = 1.2 * (1.0 - edgeFactor * 0.5);
+        for (int i = 0; i < 8; i++) {
+            vec2 off = offsets[i] * blurRadius;
+            float weight = weights[i];
+            sum.r += texture(texUnit, coordR + off).r * weight;
+            sum.g += texture(texUnit, coordG + off).g * weight;
+            sum.b += texture(texUnit, coordB + off).b * weight;
+            sum.a += texture(texUnit, coordG + off).a * weight;
+        }
+        sum /= weightSum;
     } else {
-        sum += texture2D(texUnit, uv);
+        for (int i = 0; i < 8; ++i) {
+            vec2 off = offsets[i] * offset;
+            sum += texture2D(texUnit, uv + off) * weights[i];
+        }
+
+        sum /= weightSum;
     }
 
     if (noise) {
