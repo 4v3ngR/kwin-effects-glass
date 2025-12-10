@@ -43,8 +43,8 @@ void main(void)
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
-            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize),
-            roundedRectangleDist(position + vec2(0, h), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize)
+            roundedRectangleDist(position + vec2(h, 0), halfBlurSize,  minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, minHalfSize, minHalfSize),
+            roundedRectangleDist(position + vec2(0, h), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, minHalfSize, minHalfSize)
         );
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
