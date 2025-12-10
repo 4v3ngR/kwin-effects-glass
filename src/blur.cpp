@@ -751,7 +751,7 @@ GLTexture *BlurEffect::ensureNoiseTexture()
 
 void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
 {
-    if (w->internalWindow() && !isMenu(w)) {
+    if (w && w->internalWindow() && !isMenu(w)) {
         return;
     }
 
