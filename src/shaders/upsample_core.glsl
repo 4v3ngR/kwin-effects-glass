@@ -29,18 +29,6 @@ float roundedRectangleDist(vec2 p, vec2 b, float topRadius, float bottomRadius)
 
 void main(void)
 {
-    vec2 offsets[8] = vec2[](
-        vec2(-halfpixel.x * 2.0, 0.0),
-        vec2(-halfpixel.x, halfpixel.y),
-        vec2(0.0, halfpixel.y * 2.0),
-        vec2(halfpixel.x, halfpixel.y),
-        vec2(halfpixel.x * 2.0, 0.0),
-        vec2(halfpixel.x, -halfpixel.y),
-        vec2(0.0, -halfpixel.y * 2.0),
-        vec2(-halfpixel.x, -halfpixel.y)
-    );
-    float weights[8] = float[](1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0);
-    float weightSum = 12.0;
     vec4 sum = vec4(0, 0, 0, 0);
 
     if (refractionStrength > 0) {
@@ -49,14 +37,14 @@ void main(void)
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
-        float edgeFactor = clamp(1.0 - abs(dist) / edgeSizePixels, 0.0, 1.0);
-        float concaveFactor = pow(edgeFactor, refractionNormalPow);
+        float edgeFactor = 1.0 - clamp(abs(dist) / edgeSizePixels, 0.0, 1.0);
+        float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
 
         // Initial 2D normal
         const float h = 1.0;
         vec2 gradient = vec2(
-            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, minHalfSize, minHalfSize),
-            roundedRectangleDist(position + vec2(0, h), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, minHalfSize, minHalfSize)
+            roundedRectangleDist(position + vec2(h, 0), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize),
+            roundedRectangleDist(position + vec2(0, h), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, 1.5 * minHalfSize, 1.5 * minHalfSize)
         );
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
@@ -80,22 +68,12 @@ void main(void)
         vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
         vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
 
-        for (int i = 0; i < 8; ++i) {
-            vec2 off = offsets[i] * offset;
-            sum.r += texture(texUnit, coordR + off).r * weights[i];
-            sum.g += texture(texUnit, coordG + off).g * weights[i];
-            sum.b += texture(texUnit, coordB + off).b * weights[i];
-            sum.a += texture(texUnit, coordG + off).a * weights[i];
-        }
-
-        sum /= weightSum;
+        sum.r += texture(texUnit, coordR).r;
+        sum.g += texture(texUnit, coordG).g;
+        sum.b += texture(texUnit, coordB).b;
+        sum.a += texture(texUnit, coordG).a;
     } else {
-        for (int i = 0; i < 8; ++i) {
-            vec2 off = offsets[i] * offset;
-            sum += texture(texUnit, uv + off)  * weights[i];
-        }
-
-        sum /= weightSum;
+        sum += texture(texUnit, uv);
     }
 
     if (noise) {
