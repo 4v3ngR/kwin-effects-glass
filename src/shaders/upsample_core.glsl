@@ -49,7 +49,7 @@ void main(void)
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
-        float edgeFactor = 1.0 - clamp(abs(dist) / edgeSizePixels, 0.0, 1.0);
+        float edgeFactor = 1.0 - clamp(abs(dist * 1.4) / edgeSizePixels, 0.0, 1.0);
         float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
 
         // Initial 2D normal
@@ -61,11 +61,11 @@ void main(void)
 
         vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
 
-        float finalStrength = -0.4 * concaveFactor * refractionStrength;
+        float finalStrength = min(0.2 * concaveFactor * refractionStrength, 0.4);
 
-        vec2 refractOffsetG = normal.xy * finalStrength;
-        vec2 refractOffsetR = normal.xy * finalStrength;
-        vec2 refractOffsetB = normal.xy * finalStrength;
+        vec2 refractOffsetG = -normal.xy * finalStrength;
+        vec2 refractOffsetR = -normal.xy * finalStrength;
+        vec2 refractOffsetB = -normal.xy * finalStrength;
 
         // Different refraction offsets for each color channel
         float fringingFactor = refractionRGBFringing * 0.3;
