@@ -146,7 +146,7 @@ Currently supported versions: **6.5**
 
 ### Building
 ```sh
-git clone https://github.com/taj-ny/kwin-effects-glass
+git clone https://github.com/4v3ngR/kwin-effects-glass
 cd kwin-effects-glass
 mkdir build
 cd build
@@ -161,7 +161,7 @@ sudo make install
 
   ```sh
   # enter container
-  git clone https://github.com/taj-ny/kwin-effects-glass
+  git clone https://github.com/4v3ngR/kwin-effects-glass
   cd kwin-effects-glass
   mkdir build
   cd build
@@ -182,8 +182,6 @@ This effect will conflict with the stock blur effect and any other forks of it.
 2. Open the *Desktop Effects* page in *System Settings*.
 3. Disable any blur effects.
 4. Enable the *Glass* effect.
-
-For more detailed descriptions of some options, check out [this wiki page](https://github.com/taj-ny/kwin-effects-glass/wiki/Configuration).
 
 ### Window transparency
 The window needs to be translucent in order for the blur to be visible. This can be done in multiple ways:
