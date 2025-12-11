@@ -47,6 +47,11 @@ void main(void)
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
         float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
+        if (dist > 0.0) {
+            fragColor = roundedRectangle(uv * blurSize, texture(texUnit, uv).rgb);
+            return;
+        }
+
 
         float edgeFactor = 1.0 - clamp(abs(dist * 1.4) / edgeSizePixels, 0.0, 1.0);
         float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
@@ -58,7 +63,7 @@ void main(void)
             roundedRectangleDist(position + vec2(0, h), halfBlurSize, minHalfSize, minHalfSize) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, minHalfSize, minHalfSize)
         );
 
-        vec2 normal = length(gradient) > 1e-6 ? -normalize(gradient) : vec2(0.0, 1.0);
+        vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
 
         float finalStrength = min(0.2 * concaveFactor * refractionStrength, 0.4);
 
