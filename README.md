@@ -72,6 +72,17 @@ Currently supported versions: **6.5**
   ```
 </details>
 
+<details>
+  <summary>Arch (AUR)</summary>
+  <br>
+  
+  ```sh
+  yay -S kwin-effects-glass-git
+  ```
+  
+  Thanks to [Avi Tretiak](https://github.com/avitretiak)
+</details>
+
 ## Manual
 > [!NOTE]
 > On Fedora Kinoite and other distributions based on it, the effect must be built in a container.
