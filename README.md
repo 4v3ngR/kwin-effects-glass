@@ -80,7 +80,7 @@ Currently supported versions: **6.5**
   yay -S kwin-effects-glass-git
   ```
   
-  Thanks to [Avi Tretiak](https://github.com/avitretiak)
+  Thanks to [Avi Tretiak](https://github.com/avitretiak) [package details](https://aur.archlinux.org/packages/kwin-effects-glass-git)
 </details>
 
 ## Manual
