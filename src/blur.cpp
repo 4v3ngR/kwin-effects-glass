@@ -613,6 +613,10 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
             }
         }
 
+        if (w && hasWindowOverlap(w)) {
+            data.paint += w->rect().toRect();
+        }
+
         m_currentBlur += blurArea;
         if (!blurArea.isEmpty()) {
             data.mask |= Effect::PAINT_WINDOW_TRANSLUCENT;
@@ -621,6 +625,24 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
     m_paintedArea -= data.opaque;
     m_paintedArea += data.paint;
+}
+
+bool BlurEffect::hasWindowOverlap(EffectWindow *w)
+{
+    for (EffectWindow *other : m_allWindows) {
+        if (other->isDesktop() ||
+                !other->isOnCurrentDesktop() ||
+                !other->isOnCurrentActivity() ||
+                other->window()->resourceClass() == "xwaylandvideobridge" ||
+                other->isMinimized()) {
+            continue;
+        }
+
+        if (w->frameGeometry().intersects(other->frameGeometry())) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data)
