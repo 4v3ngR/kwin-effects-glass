@@ -78,9 +78,9 @@ void main(void)
         float fringingFactor = refractionRGBFringing * 0.3;
         if (fringingFactor > 0.0) {
             // Red bends most
-            refractOffsetR = normal.xy * (finalStrength * (0.8 + fringingFactor));
+            refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
             // Blue bends least
-            refractOffsetB = normal.xy * (finalStrength * (0.8 - fringingFactor));
+            refractOffsetB = -normal.xy * (finalStrength * (1.0 - fringingFactor));
         }
 
         vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
