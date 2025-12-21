@@ -72,7 +72,7 @@ void main(void)
         vec2 refractOffsetB = -normal.xy * finalStrength;
 
         // Different refraction offsets for each color channel
-        float fringingFactor = refractionRGBFringing * 0.1;
+        float fringingFactor = refractionRGBFringing * 0.3;
         if (fringingFactor > 0.0) {
             // Red bends most
             refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
