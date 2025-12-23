@@ -629,19 +629,21 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
 bool BlurEffect::hasWindowOverlap(EffectWindow *w)
 {
-    if (!w || w->isDesktop()) {
+    if (!w) {
         return false;
     }
 
     for (EffectWindow *other : m_allWindows) {
-        if (other == w ||
-                w->window()->stackingOrder() > other->window()->stackingOrder() ||
-                other->isDesktop() ||
-                !other->isOnCurrentDesktop() ||
-                !other->isOnCurrentActivity() ||
-                other->window()->resourceClass() == "xwaylandvideobridge" ||
-                other->isMinimized()) {
-            continue;
+        if (other && !other->isDock()) {
+            if (other == w ||
+                    w->window()->stackingOrder() > other->window()->stackingOrder() ||
+                    other->isDesktop() ||
+                    !other->isOnCurrentDesktop() ||
+                    !other->isOnCurrentActivity() ||
+                    other->window()->resourceClass() == "xwaylandvideobridge" ||
+                    other->isMinimized()) {
+                continue;
+            }
         }
 
         if (w->frameGeometry().intersects(other->frameGeometry())) {
