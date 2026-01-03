@@ -12,14 +12,11 @@
   </property>
   <layout class="QVBoxLayout">
    <item>
-    <widget class="QTabWidget">
+    <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <property name="minimumHeight">
-      <number>25</number>
-     </property>
-     <widget class="QWidget">
+     <widget class="QWidget" name="widget">
       <attribute name="title">
        <string>General</string>
       </attribute>
@@ -32,14 +29,14 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -74,10 +71,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
           </widget>
          </item>
@@ -102,10 +99,10 @@
          <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -134,10 +131,10 @@
             <number>5</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
            <property name="tickInterval">
             <number>1</number>
@@ -156,7 +153,7 @@
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -182,7 +179,7 @@
        <item>
         <spacer>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -195,7 +192,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Brightness</string>
            </property>
@@ -204,10 +201,10 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_Brightness">
            <property name="minimum">
-            <double>0.0</double>
+            <double>0.000000000000000</double>
            </property>
            <property name="singleStep">
-            <double>0.1</double>
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -216,7 +213,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Saturation</string>
            </property>
@@ -225,10 +222,10 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_Saturation">
            <property name="minimum">
-            <double>0.0</double>
+            <double>0.000000000000000</double>
            </property>
            <property name="singleStep">
-            <double>0.1</double>
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -237,7 +234,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Contrast</string>
            </property>
@@ -246,17 +243,41 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_Contrast">
            <property name="minimum">
-            <double>0.0</double>
+            <double>0.000000000000000</double>
            </property>
            <property name="singleStep">
-            <double>0.1</double>
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QWidget">
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="labelTintColor">
+           <property name="text">
+            <string>Tint color</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="kcfg_TintColor">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets tint strength.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -267,7 +288,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget">
+     <widget class="QWidget" name="widget">
       <attribute name="title">
        <string>Force blur</string>
       </attribute>
@@ -278,31 +299,29 @@
           <layout class="QHBoxLayout">
            <item>
             <widget class="QLabel" name="windowClassesBriefDescription">
-             <property name="text">
-              <string>Classes of windows to force blur:</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="text">
+              <string>Classes of windows to force blur:</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
-            <widget class="KContextualHelpButton" name="windowClassesContextualHelp">
-            </widget>
+            <widget class="KContextualHelpButton" name="windowClassesContextualHelp"/>
            </item>
           </layout>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QPlainTextEdit" name="kcfg_WindowClasses">
-        </widget>
+        <widget class="QPlainTextEdit" name="kcfg_WindowClasses"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="layoutMatchingMode">
@@ -351,11 +370,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-          <widget class="QLabel" name="labelRefractionNote">
-           <property name="text">
-            <string>Refraction does not work when using static blur.</string>
-           </property>
-          </widget>
+        <widget class="QLabel" name="labelRefractionNote">
+         <property name="text">
+          <string>Refraction does not work when using static blur.</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="labelRefractionStrength">
@@ -369,10 +388,10 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -407,10 +426,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
           </widget>
          </item>
@@ -435,10 +454,10 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -473,10 +492,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
           </widget>
          </item>
@@ -501,10 +520,10 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -539,10 +558,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
           </widget>
          </item>
@@ -567,10 +586,10 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -605,10 +624,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBelow</enum>
+            <enum>QSlider::TickPosition::TicksBelow</enum>
            </property>
           </widget>
          </item>
@@ -623,26 +642,26 @@
        </item>
        <item>
         <spacer name="verticalSpacer">
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-            <size>
-            <width>0</width>
-            <height>0</height>
-            </size>
-          </property>
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
         </spacer>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget">
+     <widget class="QWidget" name="widget">
       <attribute name="title">
        <string>Rounded corners</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel">
+        <widget class="QLabel" name="label">
          <property name="text">
           <string>The corner radius only applies to the blur region.</string>
          </property>
@@ -654,7 +673,7 @@
        <item>
         <spacer>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -667,7 +686,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Window top corner radius</string>
            </property>
@@ -676,7 +695,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_TopCornerRadius">
            <property name="minimum">
-            <number>0</number>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -685,7 +704,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Window bottom corner radius</string>
            </property>
@@ -694,7 +713,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_BottomCornerRadius">
            <property name="minimum">
-            <number>0</number>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -703,7 +722,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Menu corner radius</string>
            </property>
@@ -712,7 +731,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_MenuCornerRadius">
            <property name="minimum">
-            <number>0</number>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -721,7 +740,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Dock corner radius</string>
            </property>
@@ -730,7 +749,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius">
            <property name="minimum">
-            <number>0</number>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -739,7 +758,7 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Anti-aliasing</string>
            </property>
@@ -748,7 +767,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="kcfg_RoundedCornersAntialiasing">
            <property name="minimum">
-            <number>0</number>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -762,7 +781,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget">
+        <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -773,13 +792,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget">
+     <widget class="QWidget" name="widget">
       <attribute name="title">
        <string>Static blur</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel">
+        <widget class="QLabel" name="label">
          <property name="text">
           <string>When enabled, a cached texture will be painted behind windows instead of actually blurring the background, resulting in much lower GPU usage.</string>
          </property>
@@ -791,7 +810,7 @@
        <item>
         <spacer>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -818,7 +837,7 @@
        <item>
         <spacer>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -844,7 +863,7 @@
        <item>
         <layout class="QVBoxLayout">
          <item>
-          <widget class="QLabel">
+          <widget class="QLabel" name="label">
            <property name="text">
             <string>Image source:</string>
            </property>
@@ -871,10 +890,10 @@
              <item>
               <spacer name="horizontalSpacer_3">
                <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
                <property name="sizeType">
-                <enum>QSizePolicy::Fixed</enum>
+                <enum>QSizePolicy::Policy::Fixed</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -889,21 +908,17 @@
                <item>
                 <layout class="QHBoxLayout">
                  <item>
-                  <widget class="QLabel">
+                  <widget class="QLabel" name="label">
                    <property name="text">
                     <string>Path to image</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="kcfg_FakeBlurImage">
-                  </widget>
+                  <widget class="QLineEdit" name="kcfg_FakeBlurImage"/>
                  </item>
                  <item>
                   <widget class="QPushButton" name="staticBlurImagePicker">
-                   <property name="icon">
-                    <iconset theme="document-open-symbolic"/>
-                   </property>
                    <property name="toolTip">
                     <string>Choose File...</string>
                    </property>
@@ -912,6 +927,9 @@
                    </property>
                    <property name="accessibleDescription">
                     <string>Choose an image file as static blur's source.</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="document-open-symbolic"/>
                    </property>
                   </widget>
                  </item>
@@ -925,11 +943,10 @@
          </item>
         </layout>
        </item>
-
        <item>
         <spacer>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -939,20 +956,18 @@
          </property>
         </spacer>
        </item>
-
        <item>
-        <widget class="QWidget">
+        <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-
         </widget>
        </item>
        <item>
-        <widget class="QWidget">
+        <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -963,7 +978,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget">
+     <widget class="QWidget" name="widget">
       <attribute name="title">
        <string>About</string>
       </attribute>
@@ -976,7 +991,7 @@
          <property name="openExternalLinks">
           <bool>true</bool>
          </property>
-         <property name="text">
+         <property name="text" stdset="0">
           <string>Failed to load about.html</string>
          </property>
         </widget>
@@ -987,6 +1002,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KContextualHelpButton</class>
+   <extends>QToolButton</extends>
+   <header>kcontextualhelpbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -13,6 +13,9 @@ uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
 
+uniform vec3 tintColor;
+uniform float tintStrength;
+
 varying vec2 uv;
 
 // source: https://iquilezles.org/articles/distfunctions2d/
@@ -107,5 +110,6 @@ void main(void)
         sum += vec4(texture(noiseTexture, vec2(uv.x, 1.0 - uv.y) * blurSize / noiseTextureSize).rrr, 0.0);
     }
 
-    gl_FragColor = roundedRectangle(uv * blurSize, sum.rgb);
+    vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength / 255.0, 0.0, 1.0));
+    gl_FragColor = roundedRectangle(uv * blurSize, tinted);
 }

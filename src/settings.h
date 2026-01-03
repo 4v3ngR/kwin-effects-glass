@@ -27,6 +27,7 @@ struct GeneralSettings
     float brightness;
     float saturation;
     float contrast;
+    QString tintColor;
 };
 
 struct ForceBlurSettings

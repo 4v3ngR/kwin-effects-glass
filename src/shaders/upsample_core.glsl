@@ -10,6 +10,9 @@ uniform bool noise;
 uniform sampler2D noiseTexture;
 uniform vec2 noiseTextureSize;
 
+uniform vec3 tintColor;
+uniform float tintStrength;
+
 uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
@@ -111,5 +114,6 @@ void main(void)
         // sum += vec4(texture(noiseTexture, gl_FragCoord.xy / noiseTextureSize).rrr, 0.0);
     }
 
-    fragColor = roundedRectangle(uv * blurSize, sum.rgb);
+    vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
+    fragColor = roundedRectangle(uv * blurSize, tinted);
 }
