@@ -100,6 +100,13 @@ void main(void)
             sum.a += texture(texUnit, coordG + off).a * weight;
         }
         sum /= weightSum;
+
+        if (concaveFactor < 1.0) {
+            vec3 glow = mix(sum.rgb, tintColor, clamp(0.5 * concaveFactor, 0.0, 1.0));
+            sum.r = glow.r;
+            sum.g = glow.g;
+            sum.b = glow.b;
+        }
     } else {
         for (int i = 0; i < 8; ++i) {
             vec2 off = offsets[i] * offset;
