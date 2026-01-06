@@ -102,6 +102,8 @@ BlurEffect::BlurEffect()
         m_upsamplePass.refractionRGBFringingLocation = m_upsamplePass.shader->uniformLocation("refractionRGBFringing");
         m_upsamplePass.tintColorLocation = m_upsamplePass.shader->uniformLocation("tintColor");
         m_upsamplePass.tintStrengthLocation = m_upsamplePass.shader->uniformLocation("tintStrength");
+        m_upsamplePass.glowColorLocation = m_upsamplePass.shader->uniformLocation("glowColor");
+        m_upsamplePass.glowStrengthLocation = m_upsamplePass.shader->uniformLocation("glowStrength");
     }
 
     m_texture.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -1145,14 +1147,17 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.opacityLocation, static_cast<float>(opacity));
         // Set tint uniforms
         QColor tint(m_settings.general.tintColor);
-        QVector3D tintVec(
-            tint.redF(),
-            tint.greenF(),
-            tint.blueF()
-        );
+        QVector3D tintVec(tint.redF(),tint.greenF(),tint.blueF());
         float tintStrength = tint.alphaF();
         m_upsamplePass.shader->setUniform(m_upsamplePass.tintColorLocation, tintVec);
         m_upsamplePass.shader->setUniform(m_upsamplePass.tintStrengthLocation, tintStrength);
+
+        // Set glow uniforms
+        QColor glow(m_settings.general.glowColor);
+        QVector3D glowVec(glow.redF(),glow.greenF(),glow.blueF());
+        float glowStrength = glow.alphaF();
+        m_upsamplePass.shader->setUniform(m_upsamplePass.glowColorLocation, glowVec);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.glowStrengthLocation, glowStrength);
 
         projectionMatrix = viewport.projectionMatrix();
         projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());

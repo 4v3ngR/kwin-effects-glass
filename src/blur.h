@@ -166,6 +166,9 @@ private:
 
         int tintColorLocation;
         int tintStrengthLocation;
+
+        int glowColorLocation;
+        int glowStrengthLocation;
     } m_upsamplePass;
 
     struct

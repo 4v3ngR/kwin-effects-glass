@@ -16,6 +16,9 @@ uniform float refractionRGBFringing;
 uniform vec3 tintColor;
 uniform float tintStrength;
 
+uniform vec3 glowColor;
+uniform float glowStrength;
+
 varying vec2 uv;
 
 // source: https://iquilezles.org/articles/distfunctions2d/
@@ -98,8 +101,8 @@ void main(void)
         }
         sum /= weightSum;
 
-        if (concaveFactor < 1.0 && tintStrength > 0.0) {
-            vec3 glow = mix(sum.rgb, tintColor, clamp(0.5 * concaveFactor, 0.0, 1.0));
+        if (concaveFactor < 1.0 && glowStrength > 0.0) {
+            vec3 glow = mix(sum.rgb, glowColor, clamp(0.5 * concaveFactor, 0.0, glowStrength));
             sum.r = glow.r;
             sum.g = glow.g;
             sum.b = glow.b;

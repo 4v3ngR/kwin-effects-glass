@@ -277,6 +277,30 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="labelGlowColor">
+           <property name="text">
+            <string>Glow color</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="kcfg_GlowColor">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets glow strength.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">

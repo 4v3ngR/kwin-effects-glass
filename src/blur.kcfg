@@ -8,6 +8,9 @@
         <entry name="TintColor" type="String">
             <default>#00000000</default>
         </entry>
+        <entry name="GlowColor" type="String">
+            <default>#00000000</default>
+        </entry>
         <entry name="BlurStrength" type="Int">
             <default>15</default>
         </entry>
