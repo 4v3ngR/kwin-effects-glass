@@ -102,7 +102,7 @@ void main(void)
         sum /= weightSum;
 
         if (concaveFactor < 1.0) {
-            vec3 glow = mix(sum.rgb, glowColor, clamp(0.5 * concaveFactor, 0.0, glowStrength)) + (sum.rgb * concaveFactor);
+            vec3 glow = mix(sum.rgb, glowColor, clamp(0.5 * concaveFactor, 0.0, glowStrength)) + (sum.rgb * concaveFactor * 0.5);
             sum.r = glow.r;
             sum.g = glow.g;
             sum.b = glow.b;
