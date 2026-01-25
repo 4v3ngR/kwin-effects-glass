@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 
 project(kwin_glass)
-set(PROJECT_VERSION "1.6.2")
+set(PROJECT_VERSION "1.6.3")
 set(PROJECT_VERSION_MAJOR 0)
 
 set(KF_MIN_VERSION "5.240.0")
