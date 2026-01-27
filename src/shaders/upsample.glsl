@@ -18,6 +18,7 @@ uniform float tintStrength;
 
 uniform vec3 glowColor;
 uniform float glowStrength;
+uniform int edgeLighting;
 
 varying vec2 uv;
 
@@ -102,7 +103,11 @@ void main(void)
         sum /= weightSum;
 
         if (concaveFactor < 1.0) {
-            vec3 glow = mix(sum.rgb, glowColor, clamp(0.25 * concaveFactor, 0.0, glowStrength)) + (sum.rgb * concaveFactor * 0.5);
+            vec3 glow = mix(sum.rgb, glowColor, clamp(0.25 * concaveFactor, 0.0, glowStrength));
+            if (edgeLighting == 1) {
+                glow += (sum.rgb * concaveFactor * 0.5);
+            }
+
             sum.r = glow.r;
             sum.g = glow.g;
             sum.b = glow.b;

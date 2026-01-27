@@ -16,6 +16,7 @@ void BlurSettings::read()
     general.contrast = BlurConfig::contrast();
     general.tintColor = BlurConfig::tintColor();
     general.glowColor = BlurConfig::glowColor();
+    general.edgeLighting = BlurConfig::edgeLighting();
 
     forceBlur.windowClasses.clear();
     const auto blank = QStringLiteral("blank");

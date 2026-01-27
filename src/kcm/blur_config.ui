@@ -301,6 +301,13 @@
         </layout>
        </item>
        <item>
+        <widget class="QCheckBox" name="kcfg_EdgeLighting">
+         <property name="text">
+          <string>Make the window edges brighter</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">

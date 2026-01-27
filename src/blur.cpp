@@ -104,6 +104,7 @@ BlurEffect::BlurEffect()
         m_upsamplePass.tintStrengthLocation = m_upsamplePass.shader->uniformLocation("tintStrength");
         m_upsamplePass.glowColorLocation = m_upsamplePass.shader->uniformLocation("glowColor");
         m_upsamplePass.glowStrengthLocation = m_upsamplePass.shader->uniformLocation("glowStrength");
+        m_upsamplePass.edgeLightingLocation = m_upsamplePass.shader->uniformLocation("edgeLighting");
     }
 
     m_texture.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -526,8 +527,8 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
             data.opaque += blurArea;
         }
 
-        int topCornerRadius;
-        int bottomCornerRadius;
+        float topCornerRadius;
+        float bottomCornerRadius;
         if (w->isOnScreenDisplay()) {
             topCornerRadius = bottomCornerRadius = std::ceil(m_settings.roundedCorners.menuRadius);
         } else if (isMenu(w)) {
@@ -1158,6 +1159,10 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         float glowStrength = glow.alphaF();
         m_upsamplePass.shader->setUniform(m_upsamplePass.glowColorLocation, glowVec);
         m_upsamplePass.shader->setUniform(m_upsamplePass.glowStrengthLocation, glowStrength);
+
+        // Set edge lighting (brightness)
+        const bool edgeLighting(m_settings.general.edgeLighting);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.edgeLightingLocation, static_cast<int>(edgeLighting));
 
         projectionMatrix = viewport.projectionMatrix();
         projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());

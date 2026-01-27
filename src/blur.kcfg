@@ -5,6 +5,9 @@
     http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile arg="true"/>
     <group name="Effect-blurplus">
+        <entry name="EdgeLighting" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="TintColor" type="String">
             <default>#00000000</default>
         </entry>

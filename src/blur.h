@@ -153,8 +153,8 @@ private:
         int noiseTextureLocation;
         int noiseTextureSizeLocation;
 
-        int topCornerRadiusLocation;
-        int bottomCornerRadiusLocation;
+        float topCornerRadiusLocation;
+        float bottomCornerRadiusLocation;
         int antialiasingLocation;
         int blurSizeLocation;
         int opacityLocation;
@@ -169,6 +169,7 @@ private:
 
         int glowColorLocation;
         int glowStrengthLocation;
+        int edgeLightingLocation;
     } m_upsamplePass;
 
     struct
@@ -178,8 +179,8 @@ private:
         int textureSizeLocation;
         int texStartPosLocation;
 
-        int topCornerRadiusLocation;
-        int bottomCornerRadiusLocation;
+        float topCornerRadiusLocation;
+        float bottomCornerRadiusLocation;
         int antialiasingLocation;
         int blurSizeLocation;
         int opacityLocation;
