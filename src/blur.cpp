@@ -256,20 +256,22 @@ void BlurEffect::updateBlurRegion(EffectWindow *w, bool geometryChanged)
     std::optional<QRegion> content;
     std::optional<QRegion> frame;
 
-    const QByteArray value = w->readProperty(net_wm_blur_region, XCB_ATOM_CARDINAL, 32);
-    QRegion region;
-    if (value.size() > 0 && !(value.size() % (4 * sizeof(uint32_t)))) {
-        const uint32_t *cardinals = reinterpret_cast<const uint32_t *>(value.constData());
-        for (unsigned int i = 0; i < value.size() / sizeof(uint32_t);) {
-            int x = cardinals[i++];
-            int y = cardinals[i++];
-            int w = cardinals[i++];
-            int h = cardinals[i++];
-            region += Xcb::fromXNative(QRect(x, y, w, h)).toRect();
+    if (net_wm_blur_region != XCB_ATOM_NONE) {
+        const QByteArray value = w->readProperty(net_wm_blur_region, XCB_ATOM_CARDINAL, 32);
+        QRegion region;
+        if (value.size() > 0 && !(value.size() % (4 * sizeof(uint32_t)))) {
+            const uint32_t *cardinals = reinterpret_cast<const uint32_t *>(value.constData());
+            for (unsigned int i = 0; i < value.size() / sizeof(uint32_t);) {
+                int x = cardinals[i++];
+                int y = cardinals[i++];
+                int w = cardinals[i++];
+                int h = cardinals[i++];
+                region += Xcb::fromXNative(QRect(x, y, w, h)).toRect();
+            }
         }
-    }
-    if (!value.isNull()) {
-        content = region;
+        if (!value.isNull()) {
+            content = region;
+        }
     }
 
     SurfaceInterface *surf = w->surface();
@@ -420,7 +422,7 @@ void BlurEffect::slotScreenRemoved(KWin::Output *screen)
 
 void BlurEffect::slotPropertyNotify(EffectWindow *w, long atom)
 {
-    if (w) {
+    if (w && atom == net_wm_blur_region && net_wm_blur_region != XCB_ATOM_NONE) {
         updateBlurRegion(w);
     }
 }
@@ -784,9 +786,11 @@ GLTexture *BlurEffect::ensureNoiseTexture()
 
 void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
 {
+	/*
     if (w && w->internalWindow() && !isMenu(w)) {
         return;
     }
+		*/
 
     // Compute the effective blur shape. Note that if the window is transformed, so will be the blur shape.
     QRegion blurShape = w ? blurRegion(w).translated(w->pos().toPoint()) : region;
