@@ -379,6 +379,7 @@
          </property>
         </widget>
        </item>
+			 <!--
        <item>
         <widget class="QCheckBox" name="kcfg_BlurMenus">
          <property name="text">
@@ -393,6 +394,7 @@
          </property>
         </widget>
        </item>
+			 -->
       </layout>
      </widget>
      <widget class="QWidget" name="widget">
