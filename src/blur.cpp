@@ -542,6 +542,9 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
             bottomCornerRadius = std::ceil(m_settings.roundedCorners.windowBottomRadius);
         }
 
+        const auto mRad = qMin(w->frameGeometry().width()/2, w->frameGeometry().height()/2);
+        topCornerRadius = qMin(topCornerRadius, mRad);
+        bottomCornerRadius = qMin(bottomCornerRadius, mRad);
         if (!w->isDock() || (w->isDock() && isDockFloating(w, blurArea))) {
             const QRect blurRect = blurArea.boundingRect();
             data.opaque -= QRect(blurRect.x(), blurRect.y(), topCornerRadius, topCornerRadius);
@@ -786,12 +789,6 @@ GLTexture *BlurEffect::ensureNoiseTexture()
 
 void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
 {
-	/*
-    if (w && w->internalWindow() && !isMenu(w)) {
-        return;
-    }
-		*/
-
     // Compute the effective blur shape. Note that if the window is transformed, so will be the blur shape.
     QRegion blurShape = w ? blurRegion(w).translated(w->pos().toPoint()) : region;
     if (data.xScale() != 1 || data.yScale() != 1) {
@@ -857,6 +854,10 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         }
         topCornerRadius = topCornerRadius * viewport.scale();
         bottomCornerRadius = bottomCornerRadius * viewport.scale();
+
+        const auto mRad = qMin(w->frameGeometry().width()/2, w->frameGeometry().height()/2);
+        topCornerRadius = qMin(topCornerRadius, mRad);
+        bottomCornerRadius = qMin(bottomCornerRadius, mRad);
     }
 
     // Maybe reallocate offscreen render targets. Keep in mind that the first one contains
