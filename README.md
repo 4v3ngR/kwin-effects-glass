@@ -92,7 +92,7 @@ Currently supported versions: **6.5**
   sudo dnf install kwin-effects-glass
   ```
   
-  > [!WARNING]
+  > WARNING
   > This copr repo is maintained by [AMA147000](https://github.com/AMA147000) rather than the upstream developer and may break on changes. For packaging/updating error please open tickets on the [packaging repo](https://github.com/AMA147000/kwin-effects-glass-packaging) instead of this one.
 </details>
 
