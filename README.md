@@ -83,6 +83,19 @@ Currently supported versions: **6.5**
   Thanks to [Avi Tretiak](https://github.com/avitretiak) [package details](https://aur.archlinux.org/packages/kwin-effects-glass-git)
 </details>
 
+<details>
+  <summary>Fedora 43, 42 (copr)</summary>
+  <br>
+  
+  ```sh
+  sudo dnf copr enable ama1470/kwin-effects-glass
+  sudo dnf install kwin-effects-glass
+  ```
+  
+  > [!WARNING]
+  > This copr repo is maintained by [AMA147000](https://github.com/AMA147000) rather than the upstream developer and may break on changes. For packaging/updating error please open tickets on the [packaging repo](https://github.com/AMA147000/kwin-effects-glass-packaging) instead of this one.
+</details>
+
 ## Manual
 > [!NOTE]
 > On Fedora Kinoite and other distributions based on it, the effect must be built in a container.
