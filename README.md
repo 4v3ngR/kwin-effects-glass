@@ -22,7 +22,7 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - [Glass](https://github.com/4v3ngR/Glass) is a fork of Darkly to complement the improved refraction shader for that liquid refraction goodness.
   
 ### Features
-- Wayland support
+- X11 and Wayland support
 - Force blur
 - Rounded corners with anti-aliasing
 - Static blur for much lower GPU usage
@@ -30,8 +30,7 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
   
 ### Support for previous Plasma releases
-- Currently supported versions: **6.6**
-- **6.5.5** and below is supported with tag 6.5.5 (854c7313f48d956acbebc4e80ca72616bc7328cb)
+Currently supported versions: **6.5**
 
 # Installation
 > [!IMPORTANT]
@@ -67,6 +66,7 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
       # using home-manager
       environment.systemPackages = [
         inputs.kwin-effects-glass.packages.${pkgs.system}.default # for KDE Wayland
+        inputs.kwin-effects-glass.packages.${pkgs.system}.x11 # for KDE X11
       ];
     }
   ```
@@ -116,6 +116,11 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
   ```
   sudo pacman -S base-devel git extra-cmake-modules qt6-tools kwin
   ```
+  
+  X11:
+  ```
+  sudo pacman -S base-devel git extra-cmake-modules qt6-tools kwin-x11
+  ```
 </details>
 
 <details>
@@ -125,6 +130,11 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
   Wayland:
   ```
   sudo apt install -y git cmake g++ extra-cmake-modules qt6-tools-dev kwin-dev libkf6configwidgets-dev gettext libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev libkf6kcmutils-dev libkdecorations3-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-shm0-dev
+  ```
+  
+  X11:
+  ```
+  sudo apt install -y git cmake g++ extra-cmake-modules qt6-tools-dev kwin-x11-dev libkf6configwidgets-dev gettext libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev libkf6kcmutils-dev libkdecorations3-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-shm0-dev
   ```
 </details>
 
@@ -136,6 +146,11 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
   ```
   sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake kwin-devel extra-cmake-modules kwin-devel kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel rpm-build
   ```
+  
+  X11:
+  ```
+  sudo dnf -y install git cmake extra-cmake-modules gcc-g++ kf6-kwindowsystem-devel plasma-workspace-devel libplasma-devel qt6-qtbase-private-devel qt6-qtbase-devel cmake extra-cmake-modules kf6-knotifications-devel kf6-kio-devel kf6-kcrash-devel kf6-ki18n-devel kf6-kguiaddons-devel libepoxy-devel kf6-kglobalaccel-devel kf6-kcmutils-devel kf6-kconfigwidgets-devel kf6-kdeclarative-devel kdecoration-devel kf6-kglobalaccel kf6-kdeclarative libplasma kf6-kio qt6-qtbase kf6-kguiaddons kf6-ki18n wayland-devel libdrm-devel kwin-x11-devel rpm-build
+  ```
 </details>
 
 <details>
@@ -145,6 +160,11 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
   Wayland:
   ```
   sudo zypper in -y git cmake-full gcc-c++ kf6-extra-cmake-modules kcoreaddons-devel kguiaddons-devel kconfigwidgets-devel kwindowsystem-devel ki18n-devel kiconthemes-devel kpackage-devel frameworkintegration-devel kcmutils-devel kirigami2-devel "cmake(KF6Config)" "cmake(KF6CoreAddons)" "cmake(KF6FrameworkIntegration)" "cmake(KF6GuiAddons)" "cmake(KF6I18n)" "cmake(KF6KCMUtils)" "cmake(KF6KirigamiPlatform)" "cmake(KF6WindowSystem)" "cmake(Qt6Core)" "cmake(Qt6DBus)" "cmake(Qt6Quick)" "cmake(Qt6Svg)" "cmake(Qt6Widgets)" "cmake(Qt6Xml)" "cmake(Qt6UiTools)" "cmake(KF6Crash)" "cmake(KF6GlobalAccel)" "cmake(KF6KIO)" "cmake(KF6Service)" "cmake(KF6Notifications)" libepoxy-devel kwin6-devel
+  ```
+  
+  X11:
+  ```
+  sudo zypper in -y git cmake-full gcc-c++ kf6-extra-cmake-modules kcoreaddons-devel kguiaddons-devel kconfigwidgets-devel kwindowsystem-devel ki18n-devel kiconthemes-devel kpackage-devel frameworkintegration-devel kcmutils-devel kirigami2-devel "cmake(KF6Config)" "cmake(KF6CoreAddons)" "cmake(KF6FrameworkIntegration)" "cmake(KF6GuiAddons)" "cmake(KF6I18n)" "cmake(KF6KCMUtils)" "cmake(KF6KirigamiPlatform)" "cmake(KF6WindowSystem)" "cmake(Qt6Core)" "cmake(Qt6DBus)" "cmake(Qt6Quick)" "cmake(Qt6Svg)" "cmake(Qt6Widgets)" "cmake(Qt6Xml)" "cmake(Qt6UiTools)" "cmake(KF6Crash)" "cmake(KF6GlobalAccel)" "cmake(KF6KIO)" "cmake(KF6Service)" "cmake(KF6Notifications)" libepoxy-devel kwin6-x11-devel
   ```
 </details>
 

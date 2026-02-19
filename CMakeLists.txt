@@ -28,7 +28,7 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 option(GLASS_WAYLAND "Whether to build Glass for Wayland if present." ON)
-option(GLASS_X11 "Whether to build Glass for X11 if present." OFF)
+option(GLASS_X11 "Whether to build Glass for X11 if present." ON)
 
 include(FeatureSummary)
 include(KDEInstallDirs)

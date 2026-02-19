@@ -41,7 +41,7 @@ struct BlurEffectData
     std::optional<QRegion> frame;
 
     /// The render data per screen. Screens can have different color spaces.
-    std::unordered_map<LogicalOutput *, BlurRenderData> render;
+    std::unordered_map<Output *, BlurRenderData> render;
 
     ItemEffect windowEffect;
 
@@ -61,8 +61,8 @@ public:
 
     void reconfigure(ReconfigureFlags flags) override;
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
-    void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
-    void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const Region &region, WindowPaintData &data) override;
+    void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
+    void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data) override;
 
     bool provides(Feature feature) override;
     bool isActive() const override;
@@ -79,8 +79,8 @@ public:
 public Q_SLOTS:
     void slotWindowAdded(KWin::EffectWindow *w);
     void slotWindowDeleted(KWin::EffectWindow *w);
-    void slotScreenAdded(KWin::LogicalOutput *screen);
-    void slotScreenRemoved(KWin::LogicalOutput *screen);
+    void slotScreenAdded(KWin::Output *screen);
+    void slotScreenRemoved(KWin::Output *screen);
     void slotPropertyNotify(KWin::EffectWindow *w, long atom);
     void setupDecorationConnections(EffectWindow *w);
 
@@ -107,7 +107,7 @@ private:
      * @remark This method shall not be called outside of BlurEffect::blur.
      * @return The cached static blur texture. The texture will be created if it doesn't exist.
      */
-    GLTexture *ensureStaticBlurTexture(const LogicalOutput *output, const RenderTarget &renderTarget);
+    GLTexture *ensureStaticBlurTexture(const Output *output, const RenderTarget &renderTarget);
     GLTexture *ensureNoiseTexture();
 
     /**
@@ -122,7 +122,7 @@ private:
      * @remark This method shall not be called outside of BlurEffect::blur.
      * @return A pointer to the texture, or nullptr if an error occurred.
      */
-    GLTexture *createStaticBlurTextureWayland(const LogicalOutput *output, const RenderTarget &renderTarget, const GLenum &textureFormat);
+    GLTexture *createStaticBlurTextureWayland(const Output *output, const RenderTarget &renderTarget, const GLenum &textureFormat);
 
     /**
      * Creates a composite static blur texture containing images for all screens.
@@ -190,7 +190,7 @@ private:
     long net_wm_blur_region = 0;
     QRegion m_paintedArea; // keeps track of all painted areas (from bottom to top)
     QRegion m_currentBlur; // keeps track of the currently blured area of the windows(from bottom to top)
-    LogicalOutput *m_currentScreen = nullptr;
+    Output *m_currentScreen = nullptr;
 
     size_t m_iterationCount; // number of times the texture will be downsized to half size
     int m_offset;
@@ -219,7 +219,7 @@ private:
 
     QList<BlurValuesStruct> blurStrengthValues;
 
-    std::unordered_map<const LogicalOutput*, std::unique_ptr<GLTexture>> m_staticBlurTextures;
+    std::unordered_map<const Output*, std::unique_ptr<GLTexture>> m_staticBlurTextures;
 
     // Windows to blur even when transformed.
     QList<const EffectWindow*> m_blurWhenTransformed;
@@ -228,7 +228,7 @@ private:
 
     QMap<EffectWindow *, QMetaObject::Connection> windowBlurChangedConnections;
     QMap<EffectWindow *, QMetaObject::Connection> windowFrameGeometryChangedConnections;
-    QMap<LogicalOutput *, QMetaObject::Connection> screenChangedConnections;
+    QMap<Output *, QMetaObject::Connection> screenChangedConnections;
     std::unordered_map<EffectWindow *, BlurEffectData> m_windows;
 
     /**
