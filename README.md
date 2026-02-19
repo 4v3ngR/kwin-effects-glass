@@ -30,7 +30,8 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
   
 ### Support for previous Plasma releases
-Currently supported versions: **6.5**
+Currently supported versions: **6.6**, **6.5**
+- big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch for 6.6.0
 
 # Installation
 > [!IMPORTANT]
