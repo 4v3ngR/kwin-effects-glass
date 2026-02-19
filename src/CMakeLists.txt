@@ -38,6 +38,7 @@ if(GLASS_X11)
         KDecoration3::KDecoration
         KF6::ConfigGui
         KWinX11::kwin
+        XCB::XCB
     )
     target_compile_definitions(glass_x11 PRIVATE GLASS_X11)
     install(TARGETS glass_x11 DESTINATION ${KDE_INSTALL_PLUGINDIR}/kwin-x11/effects/plugins)

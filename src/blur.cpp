@@ -17,13 +17,17 @@
 #include "opengl/glutils.h"
 #include "opengl/glplatform.h"
 #include "scene/decorationitem.h"
+#include "scene/scene.h"
 #include "scene/surfaceitem.h"
 #include "scene/windowitem.h"
 #include "utils.h"
-#include "utils/xcbutils.h"
 #include "wayland/blur.h"
 #include "wayland/display.h"
 #include "wayland/surface.h"
+
+#ifdef GLASS_X11
+#include "kwin-x11/utils/xcbutils.h"
+#endif
 
 #include <QGuiApplication>
 #include <QImage>
@@ -266,7 +270,11 @@ void BlurEffect::updateBlurRegion(EffectWindow *w, bool geometryChanged)
                 int y = cardinals[i++];
                 int w = cardinals[i++];
                 int h = cardinals[i++];
+#ifdef GLASS_X11
                 region += Xcb::fromXNative(QRect(x, y, w, h)).toRect();
+#else
+                region += QRect(x, y, w, h);
+#endif
             }
         }
         if (!value.isNull()) {
@@ -277,7 +285,7 @@ void BlurEffect::updateBlurRegion(EffectWindow *w, bool geometryChanged)
     SurfaceInterface *surf = w->surface();
 
     if (surf && surf->blur()) {
-        content = surf->blur()->region();
+        content = static_cast<QRegion>(surf->blur()->region());
     }
 
     if (auto internal = w->internalWindow()) {
@@ -393,9 +401,14 @@ void BlurEffect::slotWindowDeleted(EffectWindow *w)
     }
 }
 
-void BlurEffect::slotScreenAdded(KWin::Output *screen)
+void BlurEffect::slotScreenAdded(KWin::BlurOutput *screen)
 {
-    screenChangedConnections[screen] = connect(screen, &Output::changed, this, [this, screen]() {
+    screenChangedConnections[screen] =
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+        connect(screen, &LogicalOutput::geometryChanged, this, [this, screen]() {
+#else
+        connect(screen, &Output::changed, this, [this, screen]() {
+#endif
         if (!m_settings.staticBlur.enable) {
             return;
         }
@@ -405,7 +418,7 @@ void BlurEffect::slotScreenAdded(KWin::Output *screen)
     });
 }
 
-void BlurEffect::slotScreenRemoved(KWin::Output *screen)
+void BlurEffect::slotScreenRemoved(KWin::BlurOutput *screen)
 {
     for (auto &[window, data] : m_windows) {
         if (auto it = data.render.find(screen); it != data.render.end()) {
@@ -514,17 +527,30 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseco
     effects->prePaintScreen(data, presentTime);
 }
 
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
+#else
 void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
+#endif
 {
     // this effect relies on prePaintWindow being called in the bottom to top order
 
     // in case this window has regions to be blurred
     const QRegion blurArea = blurRegion(w).translated(w->pos().toPoint());
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    const QRegion blurAreaInPaintSpace = static_cast<QRegion>(view->mapToDeviceCoordinatesAligned(Region(blurArea)));
+    QRegion opaque = static_cast<QRegion>(data.deviceOpaque);
+    QRegion paint = static_cast<QRegion>(data.devicePaint);
+#else
+    const QRegion &blurAreaInPaintSpace = blurArea;
+    QRegion opaque = data.opaque;
+    QRegion paint = data.paint;
+#endif
 
-    bool staticBlur = hasStaticBlur(w) && m_staticBlurTextures.contains(m_currentScreen) && !blurArea.isEmpty();
+    bool staticBlur = hasStaticBlur(w) && m_staticBlurTextures.contains(m_currentScreen) && !blurAreaInPaintSpace.isEmpty();
     if (staticBlur) {
         if (!m_settings.general.windowOpacityAffectsBlur) {
-            data.opaque += blurArea;
+            opaque += blurAreaInPaintSpace;
         }
 
         float topCornerRadius;
@@ -546,11 +572,11 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
         topCornerRadius = qMin(topCornerRadius, mRad);
         bottomCornerRadius = qMin(bottomCornerRadius, mRad);
         if (!w->isDock() || (w->isDock() && isDockFloating(w, blurArea))) {
-            const QRect blurRect = blurArea.boundingRect();
-            data.opaque -= QRect(blurRect.x(), blurRect.y(), topCornerRadius, topCornerRadius);
-            data.opaque -= QRect(blurRect.x() + blurRect.width() - topCornerRadius, blurRect.y(), topCornerRadius, topCornerRadius);
-            data.opaque -= QRect(blurRect.x(), blurRect.y() + blurRect.height() - bottomCornerRadius, bottomCornerRadius, bottomCornerRadius);
-            data.opaque -= QRect(blurRect.x() + blurRect.width() - bottomCornerRadius, blurRect.y() + blurRect.height() - bottomCornerRadius, bottomCornerRadius, bottomCornerRadius);
+            const QRect blurRect = blurAreaInPaintSpace.boundingRect();
+            opaque -= QRect(blurRect.x(), blurRect.y(), topCornerRadius, topCornerRadius);
+            opaque -= QRect(blurRect.x() + blurRect.width() - topCornerRadius, blurRect.y(), topCornerRadius, topCornerRadius);
+            opaque -= QRect(blurRect.x(), blurRect.y() + blurRect.height() - bottomCornerRadius, bottomCornerRadius, bottomCornerRadius);
+            opaque -= QRect(blurRect.x() + blurRect.width() - bottomCornerRadius, blurRect.y() + blurRect.height() - bottomCornerRadius, bottomCornerRadius, bottomCornerRadius);
             data.mask |= Effect::PAINT_WINDOW_TRANSLUCENT;
         }
     }
@@ -577,28 +603,48 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
                 }
 
                 if (hadWindowBehind != it->second.hasWindowBehind) {
-                    data.paint += blurArea;
-                    data.opaque -= blurArea;
+                    paint += blurAreaInPaintSpace;
+                    opaque -= blurAreaInPaintSpace;
                 }
             }
         }
 
-        if (m_settings.staticBlur.imageSource == StaticBlurImageSource::DesktopWallpaper && w->isDesktop() && w->frameGeometry() == data.paint.boundingRect()) {
+        if (m_settings.staticBlur.imageSource == StaticBlurImageSource::DesktopWallpaper
+            && w->isDesktop()
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+            && w->frameGeometry().toRect() == paint.boundingRect()) {
+#else
+            && w->frameGeometry() == paint.boundingRect()) {
+#endif
             m_staticBlurTextures.erase(m_currentScreen);
         }
     }
 
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    data.deviceOpaque = Region(opaque);
+    data.devicePaint = Region(paint);
+    effects->prePaintWindow(view, w, data, presentTime);
+
+    opaque = static_cast<QRegion>(data.deviceOpaque);
+    paint = static_cast<QRegion>(data.devicePaint);
+#else
+    data.opaque = opaque;
+    data.paint = paint;
     effects->prePaintWindow(w, data, presentTime);
 
+    opaque = data.opaque;
+    paint = data.paint;
+#endif
+
     if (!staticBlur) {
-        const QRegion oldOpaque = data.opaque;
-        if (data.opaque.intersects(m_currentBlur)) {
+        const QRegion oldOpaque = opaque;
+        if (opaque.intersects(m_currentBlur)) {
             // to blur an area partially we have to shrink the opaque area of a window
             QRegion newOpaque;
-            for (const QRect &rect : data.opaque) {
+            for (const QRect &rect : opaque) {
                 newOpaque += rect.adjusted(m_expandSize, m_expandSize, -m_expandSize, -m_expandSize);
             }
-            data.opaque = newOpaque;
+            opaque = newOpaque;
 
             // we don't have to blur a region we don't see
             m_currentBlur -= newOpaque;
@@ -606,33 +652,40 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
         // if we have to paint a non-opaque part of this window that hasWindowBehind with the
         // currently blurred region we have to redraw the whole region
-        if ((data.paint - oldOpaque).intersects(m_currentBlur)) {
-            data.paint += m_currentBlur;
+        if ((paint - oldOpaque).intersects(m_currentBlur)) {
+            paint += m_currentBlur;
         }
 
         // if this window or a window underneath the blurred area is painted again we have to
         // blur everything
-        if (m_paintedArea.intersects(blurArea) || data.paint.intersects(blurArea)) {
-            data.paint += blurArea;
+        if (m_paintedArea.intersects(blurAreaInPaintSpace) || paint.intersects(blurAreaInPaintSpace)) {
+            paint += blurAreaInPaintSpace;
             // we have to check again whether we do not damage a blurred area
             // of a window
-            if (blurArea.intersects(m_currentBlur)) {
-                data.paint += m_currentBlur;
+            if (blurAreaInPaintSpace.intersects(m_currentBlur)) {
+                paint += m_currentBlur;
             }
         }
 
         if (w && hasWindowOverlap(w)) {
-            data.paint += w->rect().toRect();
+            paint += w->rect().toRect();
         }
 
-        m_currentBlur += blurArea;
-        if (!blurArea.isEmpty()) {
+        m_currentBlur += blurAreaInPaintSpace;
+        if (!blurAreaInPaintSpace.isEmpty()) {
             data.mask |= Effect::PAINT_WINDOW_TRANSLUCENT;
         }
     }
 
-    m_paintedArea -= data.opaque;
-    m_paintedArea += data.paint;
+    m_paintedArea -= opaque;
+    m_paintedArea += paint;
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    data.deviceOpaque = Region(opaque);
+    data.devicePaint = Region(paint);
+#else
+    data.opaque = opaque;
+    data.paint = paint;
+#endif
 }
 
 bool BlurEffect::hasWindowOverlap(EffectWindow *w)
@@ -712,7 +765,7 @@ bool BlurEffect::shouldForceBlur(const EffectWindow *w) const
         || (!matches && m_settings.forceBlur.windowClassMatchingMode == WindowClassMatchingMode::Blacklist);
 }
 
-void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
+void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &region, WindowPaintData &data)
 {
     auto it = m_windows.find(w);
     if (it != m_windows.end()) {
@@ -727,7 +780,7 @@ void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewpo
     effects->drawWindow(renderTarget, viewport, w, mask, region, data);
 }
 
-GLTexture *BlurEffect::ensureStaticBlurTexture(const Output *output, const RenderTarget &renderTarget)
+GLTexture *BlurEffect::ensureStaticBlurTexture(const BlurOutput *output, const RenderTarget &renderTarget)
 {
     if (m_staticBlurTextures.contains(output)) {
         return m_staticBlurTextures[output].get();
@@ -787,10 +840,15 @@ GLTexture *BlurEffect::ensureNoiseTexture()
     return noiseTexture.get();
 }
 
-void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const QRegion &region, WindowPaintData &data)
+void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &region, WindowPaintData &data)
 {
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    const QRegion clipRegion = static_cast<QRegion>(viewport.mapFromDeviceCoordinatesAligned(region));
+#else
+    const QRegion clipRegion = static_cast<QRegion>(region);
+#endif
     // Compute the effective blur shape. Note that if the window is transformed, so will be the blur shape.
-    QRegion blurShape = w ? blurRegion(w).translated(w->pos().toPoint()) : region;
+    QRegion blurShape = w ? blurRegion(w).translated(w->pos().toPoint()) : clipRegion;
     if (data.xScale() != 1 || data.yScale() != 1) {
         QPoint pt = blurShape.boundingRect().topLeft();
         QRegion scaledShape;
@@ -814,8 +872,12 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
 
     QList<QRectF> effectiveShape;
     effectiveShape.reserve(blurShape.rectCount());
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    if (region != Region::infinite()) {
+#else
     if (region != infiniteRegion()) {
-        for (const QRect &clipRect : region) {
+#endif
+        for (const QRect &clipRect : clipRegion) {
             const QRectF deviceClipRect = snapToPixelGridF(scaledRect(clipRect, viewport.scale()))
                     .translated(-deviceBackgroundRect.topLeft());
             for (const QRect &shapeRect : blurShape) {
@@ -922,7 +984,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
 
     // Fetch the pixels behind the shape that is going to be blurred.
     if (!staticBlurTexture) {
-        const QRegion dirtyRegion = region & backgroundRect;
+        const QRegion dirtyRegion = clipRegion & backgroundRect;
         for (const QRect &dirtyRect : dirtyRegion) {
             const auto destination = snapToPixelGrid(scaledRect(dirtyRect, viewport.scale())).translated(-deviceBackgroundRect.topLeft());
             renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport, dirtyRect, destination);
@@ -1201,11 +1263,19 @@ void BlurEffect::blur(GLTexture *texture)
 
     BlurRenderData renderData;
     const RenderTarget renderTarget(blurredFramebuffer.get());
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    const RenderViewport renderViewport(RectF(textureRect), 1.0, renderTarget, QPoint());
+#else
     const RenderViewport renderViewport(textureRect, 1.0, renderTarget);
+#endif
     WindowPaintData data;
 
     GLFramebuffer::pushFramebuffer(blurredFramebuffer.get());
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    blur(renderData, renderTarget, renderViewport, nullptr, 0, Region(Rect(textureRect)), data);
+#else
     blur(renderData, renderTarget, renderViewport, nullptr, 0, textureRect, data);
+#endif
     GLFramebuffer::popFramebuffer();
 }
 
@@ -1225,17 +1295,25 @@ GLTexture *BlurEffect::wallpaper(EffectWindow *desktop, const qreal &scale, cons
     }
 
     const RenderTarget renderTarget(desktopFramebuffer.get());
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    const RenderViewport renderViewport(desktop->frameGeometry(), scale, renderTarget, QPoint());
+#else
     const RenderViewport renderViewport(desktop->frameGeometry(), scale, renderTarget);
+#endif
     WindowPaintData data;
 
     GLFramebuffer::pushFramebuffer(desktopFramebuffer.get());
 
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    effects->drawWindow(renderTarget, renderViewport, desktop, PAINT_WINDOW_TRANSFORMED | PAINT_WINDOW_TRANSLUCENT, Region::infinite(), data);
+#else
     effects->drawWindow(renderTarget, renderViewport, desktop, PAINT_WINDOW_TRANSFORMED | PAINT_WINDOW_TRANSLUCENT, infiniteRegion(), data);
+#endif
     GLFramebuffer::popFramebuffer();
     return texture.release();
 }
 
-GLTexture *BlurEffect::createStaticBlurTextureWayland(const Output *output, const RenderTarget &renderTarget, const GLenum &textureFormat)
+GLTexture *BlurEffect::createStaticBlurTextureWayland(const BlurOutput *output, const RenderTarget &renderTarget, const GLenum &textureFormat)
 {
     EffectWindow *desktop = nullptr;
     for (EffectWindow *w : effects->stackingOrder()) {
@@ -1335,7 +1413,11 @@ GLTexture *BlurEffect::createStaticBlurTextureX11(const GLenum &textureFormat)
         projectionMatrix.translate(geometry.x(), geometry.y());
         binder.shader()->setUniform(GLShader::Mat4Uniform::ModelViewProjectionMatrix, projectionMatrix);
 
+    #if KWIN_EFFECT_API_VERSION_MINOR >= 237
+        texture->render(Region(Rect(geometry.toRect())), desktop->size());
+    #else
         texture->render(geometry.toRect(), desktop->size());
+    #endif
     }
     GLFramebuffer::popFramebuffer();
 
