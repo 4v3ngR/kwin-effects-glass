@@ -11,6 +11,11 @@
 #include "blurconfig.h"
 
 #include "core/pixelgrid.h"
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+#ifndef GLASS_X11
+#include "core/rect.h"
+#endif
+#endif
 #include "core/rendertarget.h"
 #include "core/renderviewport.h"
 #include "effect/effecthandler.h"
@@ -612,7 +617,7 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
         if (m_settings.staticBlur.imageSource == StaticBlurImageSource::DesktopWallpaper
             && w->isDesktop()
 #if KWIN_EFFECT_API_VERSION_MINOR >= 237
-            && w->frameGeometry().toRect() == paint.boundingRect()) {
+            && static_cast<QRegion>(view->mapToDeviceCoordinatesAligned(Region(QRegion(w->frameGeometry().toRect())))).boundingRect() == paint.boundingRect()) {
 #else
             && w->frameGeometry() == paint.boundingRect()) {
 #endif
@@ -668,7 +673,11 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
         }
 
         if (w && hasWindowOverlap(w)) {
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+            paint += static_cast<QRegion>(view->mapToDeviceCoordinatesAligned(Region(QRegion(w->frameGeometry().toRect()))));
+#else
             paint += w->rect().toRect();
+#endif
         }
 
         m_currentBlur += blurAreaInPaintSpace;
@@ -865,18 +874,40 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
     }
 
     const QRect backgroundRect = blurShape.boundingRect();
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    // Use viewport mapping so device coords include renderOffset (fixes blur offset at scale > 100%)
+    const QRect deviceBackgroundRect(viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect)));
+#else
     const QRect deviceBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
+#endif
     const auto opacity = w && m_settings.general.windowOpacityAffectsBlur
         ? w->opacity() * data.opacity()
         : data.opacity();
 
     QList<QRectF> effectiveShape;
-    effectiveShape.reserve(blurShape.rectCount());
 #if KWIN_EFFECT_API_VERSION_MINOR >= 237
+    // Map blurShape to device once instead of per-rect in loops
+    const Region deviceBlurShape = viewport.mapToDeviceCoordinatesAligned(Region(blurShape));
+    const QPoint deviceBackgroundTopLeft = deviceBackgroundRect.topLeft();
+    effectiveShape.reserve(deviceBlurShape.rects().size());
     if (region != Region::infinite()) {
+        for (const QRect &clipRect : clipRegion) {
+            const QRectF deviceClipRect = QRectF(viewport.mapToDeviceCoordinatesAligned(Rect(clipRect))).translated(-deviceBackgroundTopLeft);
+            for (const Rect &deviceRect : deviceBlurShape.rects()) {
+                const QRectF deviceShapeRectRel(QRect(deviceRect).translated(-deviceBackgroundTopLeft));
+                if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRectRel); !intersected.isEmpty()) {
+                    effectiveShape.append(intersected);
+                }
+            }
+        }
+    } else {
+        for (const Rect &deviceRect : deviceBlurShape.rects()) {
+            effectiveShape.append(QRectF(QRect(deviceRect).translated(-deviceBackgroundTopLeft)));
+        }
+    }
 #else
+    effectiveShape.reserve(blurShape.rectCount());
     if (region != infiniteRegion()) {
-#endif
         for (const QRect &clipRect : clipRegion) {
             const QRectF deviceClipRect = snapToPixelGridF(scaledRect(clipRect, viewport.scale()))
                     .translated(-deviceBackgroundRect.topLeft());
@@ -892,6 +923,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
             effectiveShape.append(snapToPixelGridF(scaledRect(rect.translated(-backgroundRect.topLeft()), viewport.scale())));
         }
     }
+#endif
     if (effectiveShape.isEmpty()) {
         return;
     }
@@ -986,7 +1018,11 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
     if (!staticBlurTexture) {
         const QRegion dirtyRegion = clipRegion & backgroundRect;
         for (const QRect &dirtyRect : dirtyRegion) {
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+            const auto destination = QRect(viewport.mapToDeviceCoordinatesAligned(Rect(dirtyRect))).translated(-deviceBackgroundRect.topLeft());
+#else
             const auto destination = snapToPixelGrid(scaledRect(dirtyRect, viewport.scale())).translated(-deviceBackgroundRect.topLeft());
+#endif
             renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport, dirtyRect, destination);
         }
     }
@@ -1104,7 +1140,11 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
 
         QRectF screenGeometry;
         if (m_currentScreen) {
+#if KWIN_EFFECT_API_VERSION_MINOR >= 237
+            screenGeometry = viewport.mapToDeviceCoordinates(RectF(m_currentScreen->geometryF()));
+#else
             screenGeometry = scaledRect(m_currentScreen->geometryF(), viewport.scale());
+#endif
         }
 
         m_texture.shader->setUniform(m_texture.mvpMatrixLocation, projectionMatrix);
