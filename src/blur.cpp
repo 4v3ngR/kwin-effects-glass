@@ -1270,7 +1270,8 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.edgeLightingLocation, static_cast<int>(edgeLighting));
 
         projectionMatrix = viewport.projectionMatrix();
-        projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
+        QPoint outputOrigin = m_currentScreen ? m_currentScreen->geometry().topLeft() : QPoint(0, 0);
+        projectionMatrix.translate(deviceBackgroundRect.x() + outputOrigin.x(), deviceBackgroundRect.y() + outputOrigin.y());
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
 
         const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
