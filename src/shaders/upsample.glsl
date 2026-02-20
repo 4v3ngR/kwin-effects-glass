@@ -60,7 +60,8 @@ void main(void)
         }
 
 
-        float edgeFactor = 1.0 - clamp(abs(dist) / edgeSizePixels, 0.0, 1.0);
+        float minEsp = max(min(edgeSizePixels, minHalfSize), 0.1);
+        float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
         float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
 
         // Initial 2D normal
@@ -72,7 +73,7 @@ void main(void)
 
         vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
 
-        float finalStrength = min(0.4 * concaveFactor * refractionStrength, 0.4);
+        float finalStrength = min(0.4 * concaveFactor * refractionStrength, 1.0);
 
         vec2 refractOffsetG = -normal.xy * finalStrength;
         vec2 refractOffsetR = -normal.xy * finalStrength;
