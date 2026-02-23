@@ -4,6 +4,9 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 ![Screenshot](/docs/glass.png)
 ![Did someone say liquid?](/docs/liquid_enough.png)
 
+### A dock comparison between this and Apple's liquid glass
+![macOS](/docs/dock-macos.png)
+![kde](/docs/dock-kde.png)
 ### 4v3ngR's changes
 - Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
 - modified refraction shader to produce a better convex effect
