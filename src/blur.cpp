@@ -552,10 +552,6 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
 
     bool staticBlur = hasStaticBlur(w) && m_staticBlurTextures.contains(m_currentScreen) && !blurAreaInPaintSpace.isEmpty();
     if (staticBlur) {
-        if (!m_settings.general.windowOpacityAffectsBlur) {
-            opaque += blurAreaInPaintSpace;
-        }
-
         float topCornerRadius;
         float bottomCornerRadius;
         if (w->isOnScreenDisplay()) {
@@ -878,9 +874,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
 #else
     const QRect deviceBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
 #endif
-    const auto opacity = w && m_settings.general.windowOpacityAffectsBlur
-        ? w->opacity() * data.opacity()
-        : data.opacity();
+    const auto opacity = data.opacity();
 
     QList<QRectF> effectiveShape;
 #if KWIN_EFFECT_API_VERSION_MINOR >= 237
