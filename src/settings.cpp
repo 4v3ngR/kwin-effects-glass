@@ -10,7 +10,6 @@ void BlurSettings::read()
 
     general.blurStrength = BlurConfig::blurStrength() - 1;
     general.noiseStrength = BlurConfig::noiseStrength();
-    general.windowOpacityAffectsBlur = BlurConfig::transparentBlur();
     general.brightness = BlurConfig::brightness();
     general.saturation = BlurConfig::saturation();
     general.contrast = BlurConfig::contrast();
@@ -54,7 +53,6 @@ void BlurSettings::read()
     roundedCorners.windowBottomRadius = BlurConfig::bottomCornerRadius();
     roundedCorners.menuRadius = BlurConfig::menuCornerRadius();
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
-    roundedCorners.antialiasing = BlurConfig::roundedCornersAntialiasing();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
 
     staticBlur.enable = BlurConfig::fakeBlur();

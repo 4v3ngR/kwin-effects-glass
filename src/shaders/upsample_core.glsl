@@ -25,15 +25,6 @@ uniform float refractionRGBFringing;
 in vec2 uv;
 out vec4 fragColor;
 
-// source: https://iquilezles.org/articles/distfunctions2d/
-// https://www.shadertoy.com/view/4llXD7
-float roundedRectangleDist(vec2 p, vec2 b, float topRadius, float bottomRadius)
-{
-    float r = (p.y > 0.0) ? topRadius : bottomRadius;
-    vec2 q = abs(p) - b + r;
-    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
-}
-
 void main(void)
 {
     vec2 offsets[8] = vec2[](
@@ -56,12 +47,7 @@ void main(void)
     if (refractionStrength > 0 && minHalfSize >= 16.0) {
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
-        float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
-
-        if (dist > 0.0) {
-            fragColor = roundedRectangle(uv * blurSize, texture(texUnit, uv).rgb);
-            return;
-        }
+        float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius) * 0.80;
 
         float minEsp = max(min(edgeSizePixels, minHalfSize), 0.1);
         float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);

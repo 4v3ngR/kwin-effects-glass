@@ -23,7 +23,6 @@ struct GeneralSettings
 {
     int blurStrength;
     int noiseStrength;
-    bool windowOpacityAffectsBlur;
     float brightness;
     float saturation;
     float contrast;
@@ -47,7 +46,6 @@ struct RoundedCornersSettings
     float windowBottomRadius;
     float menuRadius;
     float dockRadius;
-    float antialiasing;
     bool roundMaximized;
 };
 

@@ -167,7 +167,6 @@ private:
 
         float topCornerRadiusLocation;
         float bottomCornerRadiusLocation;
-        int antialiasingLocation;
         int blurSizeLocation;
         int opacityLocation;
 
@@ -193,7 +192,6 @@ private:
 
         float topCornerRadiusLocation;
         float bottomCornerRadiusLocation;
-        int antialiasingLocation;
         int blurSizeLocation;
         int opacityLocation;
     } m_texture;
