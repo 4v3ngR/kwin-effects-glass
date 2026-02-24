@@ -21,11 +21,11 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture)
 
     vec2 halfblurSize = blurSize * 0.5;
     vec2 p = fragCoord - halfblurSize;
-    float dist = roundedRectangleDist(p, halfblurSize, topCornerRadius, bottomCornerRadius) + 0.5;
+    float dist = roundedRectangleDist(p, halfblurSize, topCornerRadius, bottomCornerRadius) * 10.0;
     if (dist < 0.0) {
         return vec4(texture, 1.0);
     }
 
-    float s = smoothstep(0.0, 1.0,  dist);
+    float s = smoothstep(0.0, 10.0,  dist);
     return vec4(texture, mix(1.0, 0.0, s));
 }

@@ -47,12 +47,7 @@ void main(void)
     if (refractionStrength > 0 && minHalfSize >= 16.0) {
 
         vec2 position = uv * blurSize - halfBlurSize.xy;
-        float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius);
-
-        if (dist > 0.0) {
-            fragColor = roundedRectangle(uv * blurSize, texture(texUnit, uv).rgb);
-            return;
-        }
+        float dist = roundedRectangleDist(position, halfBlurSize, topCornerRadius, bottomCornerRadius) * 0.80;
 
         float minEsp = max(min(edgeSizePixels, minHalfSize), 0.1);
         float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
