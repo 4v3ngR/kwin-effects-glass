@@ -868,11 +868,12 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
     }
 
     const QRect backgroundRect = blurShape.boundingRect();
+    const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
+
 #if KWIN_EFFECT_API_VERSION_MINOR >= 237
-    // Use viewport mapping so device coords include renderOffset (fixes blur offset at scale > 100%)
     const QRect deviceBackgroundRect(viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect)));
 #else
-    const QRect deviceBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
+    const QRect deviceBackgroundRect = scaledBackgroundRect;
 #endif
     const auto opacity = data.opacity();
 
@@ -1081,10 +1082,10 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
             const float x1 = rect.right();
             const float y1 = rect.bottom();
 
-            const float u0 = x0 / deviceBackgroundRect.width();
-            const float v0 = 1.0f - y0 / deviceBackgroundRect.height();
-            const float u1 = x1 / deviceBackgroundRect.width();
-            const float v1 = 1.0f - y1 / deviceBackgroundRect.height();
+            const float u0 = x0 / scaledBackgroundRect.width();
+            const float v0 = 1.0f - y0 / scaledBackgroundRect.height();
+            const float u1 = x1 / scaledBackgroundRect.width();
+            const float v1 = 1.0f - y1 / scaledBackgroundRect.height();
 
             // first triangle
             map[vboIndex++] = GLVertex2D{
@@ -1260,12 +1261,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.edgeLightingLocation, static_cast<int>(edgeLighting));
 
         projectionMatrix = viewport.projectionMatrix();
-#if KWIN_EFFECT_API_VERSION_MINOR >= 237
-        QPoint outputOrigin = m_currentScreen ? m_currentScreen->geometry().topLeft() : QPoint(0, 0);
-        projectionMatrix.translate(deviceBackgroundRect.x() + outputOrigin.x(), deviceBackgroundRect.y() + outputOrigin.y());
-#else
-        projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
-#endif
+        projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
 
         const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
