@@ -1129,7 +1129,7 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
 
         QMatrix4x4 projectionMatrix;
         projectionMatrix = viewport.projectionMatrix();
-        projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
+        projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
         QRectF screenGeometry;
         if (m_currentScreen) {
