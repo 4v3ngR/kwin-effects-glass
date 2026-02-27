@@ -100,6 +100,17 @@ Currently supported versions: **6.6**, **6.5**
   > This copr repo is maintained by [AMA147000](https://github.com/AMA147000) rather than the upstream developer and may break on changes. For packaging/updating error please open tickets on the [packaging repo](https://github.com/AMA147000/kwin-effects-glass-packaging) instead of this one.
 </details>
 
+<details>
+  <summary>openSUSE Tumbleweed</summary>
+  <br>
+  
+  ```sh
+  sudo zypper ar https://download.opensuse.org/repositories/home:/vcalles/openSUSE_Tumbleweed/home:vcalles.repo
+  sudo zypper refresh
+  sudo zypper install kwin-effects-glass
+  ```
+</details>
+
 ## Manual
 > [!NOTE]
 > On Fedora Kinoite and other distributions based on it, the effect must be built in a container.
