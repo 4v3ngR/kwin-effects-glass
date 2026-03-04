@@ -8,6 +8,9 @@
         <entry name="EdgeLighting" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="ExcludeDocks" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="TintColor" type="String">
             <default>#00000000</default>
         </entry>

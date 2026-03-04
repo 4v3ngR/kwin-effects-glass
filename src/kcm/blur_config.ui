@@ -288,11 +288,22 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="kcfg_EdgeLighting">
-         <property name="text">
-          <string>Make the window edges brighter</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QCheckBox" name="kcfg_EdgeLighting">
+           <property name="text">
+            <string>Make the window edges brighter</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="kcfg_ExcludeDocks">
+           <property name="text">
+            <string>Don't apply tint to docks</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QWidget" name="widget" native="true">
@@ -366,7 +377,7 @@
          </property>
         </widget>
        </item>
-			 <!--
+       <!--
        <item>
         <widget class="QCheckBox" name="kcfg_BlurMenus">
          <property name="text">
@@ -381,7 +392,7 @@
          </property>
         </widget>
        </item>
-			 -->
+       -->
       </layout>
      </widget>
      <widget class="QWidget" name="widget">

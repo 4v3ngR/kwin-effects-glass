@@ -16,6 +16,7 @@ void BlurSettings::read()
     general.tintColor = BlurConfig::tintColor();
     general.glowColor = BlurConfig::glowColor();
     general.edgeLighting = BlurConfig::edgeLighting();
+    general.excludeDocks = BlurConfig::excludeDocks();
 
     forceBlur.windowClasses.clear();
     const auto blank = QStringLiteral("blank");

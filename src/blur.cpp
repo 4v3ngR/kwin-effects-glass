@@ -1197,6 +1197,24 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         QMatrix4x4 projectionMatrix;
         projectionMatrix.ortho(QRectF(0.0, 0.0, deviceBackgroundRect.width(), deviceBackgroundRect.height()));
 
+        // Set tint uniforms
+        const bool excludeDocks(m_settings.general.excludeDocks);
+        QColor tint(m_settings.general.tintColor);
+        QVector3D tintVec(tint.redF(),tint.greenF(),tint.blueF());
+        float tintStrength = excludeDocks && w->isDock() ? 0.0 : tint.alphaF();
+        m_upsamplePass.shader->setUniform(m_upsamplePass.tintColorLocation, tintVec);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.tintStrengthLocation, tintStrength);
+
+        // Set glow uniforms
+        QColor glow(m_settings.general.glowColor);
+        QVector3D glowVec(glow.redF(),glow.greenF(),glow.blueF());
+        float glowStrength = glow.alphaF();
+        m_upsamplePass.shader->setUniform(m_upsamplePass.glowColorLocation, glowVec);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.glowStrengthLocation, glowStrength);
+
+        // Set edge lighting (brightness)
+        const bool edgeLighting(m_settings.general.edgeLighting);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.edgeLightingLocation, static_cast<int>(edgeLighting));
         m_upsamplePass.shader->setUniform(m_upsamplePass.topCornerRadiusLocation, static_cast<float>(0));
         m_upsamplePass.shader->setUniform(m_upsamplePass.bottomCornerRadiusLocation, static_cast<float>(0));
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
@@ -1242,23 +1260,6 @@ void BlurEffect::blur(BlurRenderData &renderInfo, const RenderTarget &renderTarg
         m_upsamplePass.shader->setUniform(m_upsamplePass.bottomCornerRadiusLocation, bottomCornerRadius);
         m_upsamplePass.shader->setUniform(m_upsamplePass.blurSizeLocation, QVector2D(deviceBackgroundRect.width(), deviceBackgroundRect.height()));
         m_upsamplePass.shader->setUniform(m_upsamplePass.opacityLocation, static_cast<float>(opacity));
-        // Set tint uniforms
-        QColor tint(m_settings.general.tintColor);
-        QVector3D tintVec(tint.redF(),tint.greenF(),tint.blueF());
-        float tintStrength = tint.alphaF();
-        m_upsamplePass.shader->setUniform(m_upsamplePass.tintColorLocation, tintVec);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.tintStrengthLocation, tintStrength);
-
-        // Set glow uniforms
-        QColor glow(m_settings.general.glowColor);
-        QVector3D glowVec(glow.redF(),glow.greenF(),glow.blueF());
-        float glowStrength = glow.alphaF();
-        m_upsamplePass.shader->setUniform(m_upsamplePass.glowColorLocation, glowVec);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.glowStrengthLocation, glowStrength);
-
-        // Set edge lighting (brightness)
-        const bool edgeLighting(m_settings.general.edgeLighting);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.edgeLightingLocation, static_cast<int>(edgeLighting));
 
         projectionMatrix = viewport.projectionMatrix();
         projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
