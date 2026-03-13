@@ -7,15 +7,6 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 ### A dock comparison between this and Apple's liquid glass
 ![macOS](/docs/dock-macos.png)
 ![kde](/docs/dock-kde.png)
-### 4v3ngR's changes
-- Small change to blur.cpp and the shaders to have the corner roundness setting influence the refraction
-- modified refraction shader to produce a better convex effect
-- refraction now follows top and bottom corner radius settings
-- on screen display windows (eg volume control) have top and bottom corners matching top corner radius setting
-- remove edge texture option (flip/clamp) for the setting didn't appear to do anything with the new shader
-- better support for plasma 6.5
-- all console windows (settings etc) are blurred
-- context menus are blurred
 
 
 ### 4v3ngR's theme patches
@@ -28,13 +19,16 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - X11 and Wayland support
 - Force blur
 - Rounded corners with anti-aliasing
-- Static blur for much lower GPU usage
 - Adjust blur brightness, contrast and saturation
+- Tint, glow, and edge lighting (brighter edges)
 - Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
   
 ### Support for previous Plasma releases
-Currently supported versions: **6.6**, **6.5**
+Currently supported versions: **6.6**,
 - big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch for 6.6.0
+
+### Support for 6.5.x
+- The last version to support plasma 6.5.x is 0ae94cf5e709a894a9f1f54544cb17deb7f77d58
 
 # Installation
 > [!IMPORTANT]
