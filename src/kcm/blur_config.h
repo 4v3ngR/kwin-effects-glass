@@ -24,9 +24,6 @@ public:
 
     void save() override;
 
-private slots:
-    void slotStaticBlurImagePickerClicked();
-
 private:
     ::Ui::BlurEffectConfig ui;
 

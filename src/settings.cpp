@@ -56,16 +56,6 @@ void BlurSettings::read()
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
 
-    staticBlur.enable = BlurConfig::fakeBlur();
-    staticBlur.disableWhenWindowBehind = BlurConfig::fakeBlurDisableWhenWindowBehind();
-    staticBlur.customImage = QImage(BlurConfig::fakeBlurImage());
-    if (BlurConfig::fakeBlurImageSourceDesktopWallpaper()) {
-        staticBlur.imageSource = StaticBlurImageSource::DesktopWallpaper;
-    } else {
-        staticBlur.imageSource = StaticBlurImageSource::Custom;
-    }
-    staticBlur.blurCustomImage = BlurConfig::fakeBlurCustomImageBlur();
-
     refraction.edgeSizePixels = BlurConfig::refractionEdgeSize() * 10;
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;
     refraction.refractionNormalPow = BlurConfig::refractionNormalPow() / 2.0;

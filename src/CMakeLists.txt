@@ -1,22 +1,21 @@
 add_subdirectory(kcm)
 
 function(replace_shader_include input output)
-    file(READ shaders/roundedcorners.glsl ROUNDEDCORNERS_SHADER)
+    file(READ shaders/glass.glsl GLASS_SHADER)
     file(READ "${input}" SHADER)
-    string(REPLACE "#include \"roundedcorners.glsl\"" "${ROUNDEDCORNERS_SHADER}" SHADER "${SHADER}")
+    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER "${SHADER}")
     file(WRITE "${output}" "${SHADER}")
 endfunction()
 
-replace_shader_include(shaders/texture.glsl shaders/texture.frag)
-replace_shader_include(shaders/texture_core.glsl shaders/texture_core.frag)
-replace_shader_include(shaders/upsample.glsl shaders/upsample.frag)
-replace_shader_include(shaders/upsample_core.glsl shaders/upsample_core.frag)
+# replace_shader_include(shaders/onscreen.glsl shaders/onscreen.frag)
+# replace_shader_include(shaders/onscreen_core.glsl shaders/onscreen_core.frag)
+replace_shader_include(shaders/onscreen_rounded.glsl shaders/onscreen_rounded.frag)
+replace_shader_include(shaders/onscreen_rounded_core.glsl shaders/onscreen_rounded_core.frag)
 
 set(glass_SOURCES
     blur.cpp
     blur.qrc
     main.cpp
-    settings.cpp
 )
 
 kconfig_add_kcfg_files(glass_SOURCES

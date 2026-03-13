@@ -2,8 +2,12 @@
 <qresource prefix="/effects/glass/">
   <file>shaders/downsample.frag</file>
   <file>shaders/downsample_core.frag</file>
-  <file>shaders/texture.frag</file>
-  <file>shaders/texture_core.frag</file>
+  <file>shaders/noise.frag</file>
+  <file>shaders/noise_core.frag</file>
+  <file>shaders/onscreen_rounded_core.frag</file>
+  <file>shaders/onscreen_rounded.frag</file>
+  <file>shaders/onscreen_rounded_core.vert</file>
+  <file>shaders/onscreen_rounded.vert</file>
   <file>shaders/upsample.frag</file>
   <file>shaders/upsample_core.frag</file>
   <file>shaders/vertex.vert</file>

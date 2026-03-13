@@ -6,12 +6,6 @@
 namespace KWin
 {
 
-enum class StaticBlurImageSource
-{
-    Custom,
-    DesktopWallpaper
-};
-
 enum class WindowClassMatchingMode
 {
     Blacklist,
@@ -50,15 +44,6 @@ struct RoundedCornersSettings
     bool roundMaximized;
 };
 
-struct StaticBlurSettings
-{
-    bool enable;
-    bool disableWhenWindowBehind;
-    StaticBlurImageSource imageSource;
-    QImage customImage;
-    bool blurCustomImage;
-};
-
 struct RefractionSettings
 {
     float edgeSizePixels;
@@ -73,7 +58,6 @@ public:
     GeneralSettings general{};
     ForceBlurSettings forceBlur{};
     RoundedCornersSettings roundedCorners{};
-    StaticBlurSettings staticBlur{};
     RefractionSettings refraction{};
 
     void read();

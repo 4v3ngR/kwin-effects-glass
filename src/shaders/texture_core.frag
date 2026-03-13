@@ -1,3 +1,5 @@
+#version 140
+
 uniform float topCornerRadius;
 uniform float bottomCornerRadius;
 
@@ -28,4 +30,19 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture)
 
     float s = smoothstep(0.0, 10.0,  dist);
     return vec4(texture, mix(1.0, 0.0, s) * opacity);
+}
+
+
+uniform sampler2D texUnit;
+uniform vec2 textureSize;
+uniform vec2 texStartPos;
+
+in vec2 uv;
+
+out vec4 fragColor;
+
+void main(void)
+{
+    vec2 tex = (texStartPos.xy + vec2(uv.x, 1.0 - uv.y) * blurSize) / textureSize;
+    fragColor = roundedRectangle(uv * blurSize, texture(texUnit, tex).rgb);
 }
