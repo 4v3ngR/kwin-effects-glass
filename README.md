@@ -1,3 +1,6 @@
+# Warning!!! Arch and Fedora users
+There have been reports that the aur and copr packages are broken with last main branch and will not install (build failures). My recommendation is to build from source until the package maintainers update their packages.
+
 # Glass
 Glass is a fork of the Plasma 6 blur effect with additional features and bug fixes.
 
