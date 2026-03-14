@@ -12,6 +12,7 @@
 #include "scene/item.h"
 
 #include <QList>
+#include <QStringList>
 
 #include <unordered_map>
 
@@ -166,6 +167,8 @@ private:
     int m_offset;
     int m_expandSize;
     int m_noiseStrength;
+    QStringList m_windowClasses;
+    bool m_whitelist;
 
     struct OffsetStruct
     {

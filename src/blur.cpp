@@ -300,6 +300,37 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         BlurConfig::brightness()
     );
 
+    m_whitelist = BlurConfig::blurMatching();
+
+    // build the classes list
+    m_windowClasses.clear();
+    const auto blank = QStringLiteral("blank");
+    for (const auto &line : BlurConfig::windowClasses().split("\n", Qt::SkipEmptyParts)) {
+        QString unescaped = "";
+        bool consumed = false;
+        for (qsizetype i = 0; i < line.size(); i++) {
+            const auto character = line[i];
+            if (character == QChar('$') && !consumed) {
+                consumed = true;
+                continue;
+            }
+            if (consumed) {
+                const qsizetype skips = blank.size();
+                if (line.mid(i, skips) == blank) {
+                    consumed = false;
+                    i += skips - 1;
+                    continue;
+                }
+            }
+            consumed = false;
+            unescaped += character;
+        }
+        if (consumed) {
+            unescaped += QChar('$');
+        }
+        m_windowClasses << unescaped;
+    }
+
     // Update all windows for the blur to take effect
     effects->addRepaintFull();
 }
@@ -352,9 +383,10 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         frame = decorationBlurRegion(w);
     }
 
-    // TODO: wrap in appropriate setting checks
     content = Rect(w->contentsRect().translated(-w->contentsRect().topLeft()).toRect());
-    frame = Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
+    if (BlurConfig::blurDecorations()) {
+        frame = Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
+    }
 
     if (content.has_value() || frame.has_value()) {
         BlurEffectData &data = m_windows[w];
@@ -633,6 +665,15 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
     }
 
     if (w->isDesktop()) {
+        return false;
+    }
+
+    const auto windowClass = w->window()->resourceClass();
+    const auto resourceName = w->window()->resourceName();
+
+    const auto matches = m_windowClasses.contains(windowClass) || m_windowClasses.contains(resourceName);
+
+    if ((m_whitelist && !matches) || (!m_whitelist && matches)) {
         return false;
     }
 
