@@ -1,5 +1,5 @@
-# Warning!!! Arch and Fedora users
-There have been reports that the aur and copr packages are broken with last main branch and will not install (build failures). My recommendation is to build from source until the package maintainers update their packages.
+# Warning!!! X11 users
+It appears that X11 support for plasma is "maintenance" mode only. As such, the push to latest code base has broken building against X11. Therefore, the last version of the glass effect to support X11 is 0ae94cf5e709a894a9f1f54544cb17deb7f77d58
 
 # Glass
 Glass is a fork of the Plasma 6 blur effect with additional features and bug fixes.
@@ -27,11 +27,11 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
   
 ### Support for previous Plasma releases
-Currently supported versions: **6.6**,
+Currently supported versions: **6.6** (Wayland only)
 - big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch for 6.6.0
 
-### Support for 6.5.x
-- The last version to support plasma 6.5.x is 0ae94cf5e709a894a9f1f54544cb17deb7f77d58
+### Support for 6.5.x (and X11 builds)
+- The last version to support plasma 6.5.x (and X11) is 0ae94cf5e709a894a9f1f54544cb17deb7f77d58
 
 # Installation
 > [!IMPORTANT]
