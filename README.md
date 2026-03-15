@@ -19,7 +19,7 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - [Glass](https://github.com/4v3ngR/Glass) is a fork of Darkly to complement the improved refraction shader for that liquid refraction goodness.
   
 ### Features
-- X11 and Wayland support
+- Wayland support (X11 support is currently broken)
 - Force blur
 - Rounded corners with anti-aliasing
 - Adjust blur brightness, contrast and saturation
