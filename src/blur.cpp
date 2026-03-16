@@ -772,7 +772,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const QRect backgroundRect = blurShape.boundingRect();
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
     const QRect deviceBackgroundRect = snapToPixelGrid(viewport.mapToDeviceCoordinates(backgroundRect));
-    const auto opacity = w->opacity() * data.opacity();
+    const auto opacity = data.opacity();
 
     // Get the effective shape that will be actually blurred. It's possible that all of it will be clipped.
     QList<RectF> effectiveShape;
