@@ -383,8 +383,16 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         frame = decorationBlurRegion(w);
     }
 
-    content = Rect(w->contentsRect().translated(-w->contentsRect().topLeft()).toRect());
-    if (BlurConfig::blurDecorations()) {
+    if (
+        BlurConfig::blurDecorations() &&
+        !(
+            w->isDock() ||
+            w->isMenu() ||
+            w->isDropdownMenu() ||
+            w->isPopupMenu() ||
+            w->isPopupWindow()
+        )
+    ) {
         frame = Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
     }
 
@@ -985,7 +993,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         ShaderManager::instance()->popShader();
     }
 
-    const QMatrix4x4 &colorMatrix = /*blurInfo.colorMatrix ? *blurInfo.colorMatrix :*/ m_colorMatrix;
+    const QMatrix4x4 &colorMatrix = m_colorMatrix;
     const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();

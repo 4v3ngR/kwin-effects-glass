@@ -40,7 +40,7 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture, vec4 cornerRadius)
 {
     vec2 halfblurSize = blurSize * 0.5;
     vec2 p = fragCoord - halfblurSize;
-    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius) * 10.0;
+    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius);
 
     if (dist <= 0.0) {
         return vec4(texture, 1.0);
@@ -120,6 +120,18 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
 void main(void)
 {
+    vec2 halfBlurSize = blurSize * 0.5;
+    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+
+    vec2 position = uv * blurSize - halfBlurSize.xy;
+    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+
+    if (dist >= 0.0) {
+        float df = fwidth(dist);
+        fragColor = texture(texUnit, uv) * (1.0 - clamp(0.5 + dist / df, 0.0, 1.0));
+        return;
+    }
+
     vec4 sum = texture(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
     sum += texture(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
     sum += texture(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
@@ -128,17 +140,17 @@ void main(void)
     sum += texture(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
     sum += texture(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
     sum += texture(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
+    sum /= 12.0;
 
     float minBlurSize = min(blurSize.x, blurSize.y);
     float maxDiam = max(cornerRadius.x + cornerRadius.y, cornerRadius.w + cornerRadius.z);
 
     if (minBlurSize >= maxDiam) {
-        fragColor = glass((sum / 12.0), cornerRadius) * colorMatrix * opacity;
-
+        sum = glass(sum, cornerRadius);
         float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
         float df = fwidth(f);
-        fragColor *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
-    } else {
-        fragColor = (sum / 12.0) * colorMatrix * opacity;
+        sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
     }
+
+    fragColor = sum * colorMatrix * opacity;
 }

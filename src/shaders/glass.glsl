@@ -22,7 +22,7 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture, vec4 cornerRadius)
 {
     vec2 halfblurSize = blurSize * 0.5;
     vec2 p = fragCoord - halfblurSize;
-    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius) * 10.0;
+    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius);
 
     if (dist <= 0.0) {
         return vec4(texture, 1.0);

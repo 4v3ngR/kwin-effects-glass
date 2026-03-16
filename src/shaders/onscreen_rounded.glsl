@@ -17,6 +17,18 @@ varying vec2 vertex;
 
 void main(void)
 {
+    vec2 halfBlurSize = blurSize * 0.5;
+    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+
+    vec2 position = uv * blurSize - halfBlurSize.xy;
+    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+
+    if (dist >= 0.0) {
+        float df = fwidth(dist);
+        fragColor = texture(texUnit, uv) * (1.0 - clamp(0.5 + dist / df, 0.0, 1.0));
+        return;
+    }
+
     vec4 sum = texture2D(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
     sum += texture2D(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
     sum += texture2D(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
@@ -26,11 +38,18 @@ void main(void)
     sum += texture2D(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
     sum += texture2D(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
 
-    vec4 fragColor = glass((sum / 12.0), cornerRadius) * colorMatrix * opacity;
+    float minBlurSize = min(blurSize.x, blurSize.y);
+    float maxDiam = max(cornerRadius.x + cornerRadius.y, cornerRadius.w + cornerRadius.z);
 
-    float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
-    float df = fwidth(f);
-    fragColor *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
+    if (minBlurSize >= maxDiam) {
+        sum = glass(sum, cornerRadius);
+
+        float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
+        float df = fwidth(f);
+        sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
+    }
+
+    fragColor = sum * colorMatrix * opacity;
 
     gl_FragColor = fragColor;
 }
