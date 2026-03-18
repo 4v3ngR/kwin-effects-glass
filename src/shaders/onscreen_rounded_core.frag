@@ -63,16 +63,13 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     }
 
     float minEsp = clamp(edgeSizePixels, 0.1, minHalfSize * 0.9);
-
-    // float minEsp = max(min(edgeSizePixels, 128.0), 0.1);
     float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
-    edgeFactor = smoothstep(0.0, 1.0, edgeFactor);
-    float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
+    float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
 
     if (refractionStrength > 0 && minHalfSize >= 16.0) {
         // Initial 2D normal
         const float h = 1.0;
-        vec4 r = cornerRadius * 1.6; //vec4(128.0,128.0,128.0,128.0);
+        vec4 r = cornerRadius * 1.6;
         vec2 gradient = vec2(
                 roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
                 roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
