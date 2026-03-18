@@ -50,7 +50,7 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture, vec4 cornerRadius)
 vec4 glass(vec4 sum, vec4 cornerRadius)
 {
     vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+    float minHalfSize = min(128.0, min(halfBlurSize.x, halfBlurSize.y));
 
     vec2 position = uv * blurSize - halfBlurSize.xy;
     float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
