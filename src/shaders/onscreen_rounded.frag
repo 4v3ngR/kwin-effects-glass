@@ -50,7 +50,7 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 texture, vec4 cornerRadius)
 vec4 glass(vec4 sum, vec4 cornerRadius)
 {
     vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(128.0, min(halfBlurSize.x, halfBlurSize.y));
+    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
 
     vec2 position = uv * blurSize - halfBlurSize.xy;
     float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
@@ -59,14 +59,14 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         return sum;
     }
 
-    float minEsp = max(min(edgeSizePixels, minHalfSize), 0.1);
+    float minEsp = max(min(edgeSizePixels, 128.0), 0.1);
     float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
     float concaveFactor = 1.0 - sqrt(1.0 - pow(edgeFactor, refractionNormalPow));
 
     if (refractionStrength > 0 && minHalfSize >= 16.0) {
         // Initial 2D normal
         const float h = 1.0;
-        vec4 r = vec4(minHalfSize,minHalfSize,minHalfSize,minHalfSize);
+        vec4 r = vec4(128.0,128.0,128.0,128.0);
         vec2 gradient = vec2(
                 roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
                 roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
