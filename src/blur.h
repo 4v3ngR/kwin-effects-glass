@@ -191,7 +191,6 @@ private:
     QMap<EffectWindow *, QMetaObject::Connection> windowContrastChangedConnections;
     QMap<EffectWindow *, QMetaObject::Connection> windowFrameGeometryChangedConnections;
     std::unordered_map<EffectWindow *, BlurEffectData> m_windows;
-    std::vector<EffectWindow *> m_allWindows;
 
     static BlurManagerInterface *s_blurManager;
     static QTimer *s_blurManagerRemoveTimer;

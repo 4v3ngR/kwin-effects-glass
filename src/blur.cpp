@@ -414,7 +414,10 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
 {
     SurfaceInterface *surf = w->surface();
 
-    m_allWindows.push_back(w);
+    // TODO: work out why gtk apps get content reflections in the frame. This hack seems to stop it happening
+    if (w->opacity() == 1.0 && w->window()) {
+        w->window()->setOpacity(0.99);
+    }
 
     if (surf) {
         windowBlurChangedConnections[w] = connect(surf, &SurfaceInterface::blurChanged, this, [this, w]() {
@@ -427,12 +430,13 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
                 updateBlurRegion(w);
             }
         });
-        windowFrameGeometryChangedConnections[w] = connect(w, &EffectWindow::windowFrameGeometryChanged, this, [this,w]() {
-            if (w) {
-                updateBlurRegion(w);
-            }
-        });
     }
+
+    windowFrameGeometryChangedConnections[w] = connect(w, &EffectWindow::windowFrameGeometryChanged, this, [this,w]() {
+        if (w) {
+            updateBlurRegion(w);
+        }
+    });
 
     if (auto internal = w->internalWindow()) {
         internal->installEventFilter(this);
@@ -464,9 +468,6 @@ void BlurEffect::slotWindowDeleted(EffectWindow *w)
     if (auto it = windowFrameGeometryChangedConnections.find(w); it != windowFrameGeometryChangedConnections.end()) {
         disconnect(*it);
         windowFrameGeometryChangedConnections.erase(it);
-    }
-    if (auto it = std::find(m_allWindows.begin(), m_allWindows.end(), w); it != m_allWindows.end()) {
-        m_allWindows.erase(it);
     }
 }
 
@@ -646,20 +647,20 @@ bool BlurEffect::hasWindowOverlap(EffectWindow *w)
         return false;
     }
 
-    for (EffectWindow *other : m_allWindows) {
-        if (other && !other->isDock()) {
-            if (other == w ||
-                    w->window()->stackingOrder() > other->window()->stackingOrder() ||
-                    other->isDesktop() ||
-                    !other->isOnCurrentDesktop() ||
-                    !other->isOnCurrentActivity() ||
-                    other->window()->resourceClass() == "xwaylandvideobridge" ||
-                    other->isMinimized()) {
+    for (auto &[window, data] : m_windows) {
+        if (window && !window->isDock()) {
+            if (window == w ||
+                    w->window()->stackingOrder() > window->window()->stackingOrder() ||
+                    window->isDesktop() ||
+                    !window->isOnCurrentDesktop() ||
+                    !window->isOnCurrentActivity() ||
+                    window->window()->resourceClass() == "xwaylandvideobridge" ||
+                    window->isMinimized()) {
                 continue;
             }
         }
 
-        if (w->frameGeometry().intersects(other->frameGeometry())) {
+        if (w->frameGeometry().intersects(window->frameGeometry())) {
             return true;
         }
     }
@@ -1079,8 +1080,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     read->colorAttachment()->bind();
 
+    // glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     vbo->draw(GL_TRIANGLES, 6, vertexCount);
 
@@ -1093,11 +1095,14 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         // artifacts, which often happens due to the smooth color transitions in the blurred image.
 
         glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        /*
         if (opacity < 1.0) {
             glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
         } else {
             glBlendFunc(GL_ONE, GL_ONE);
         }
+        */
 
         if (GLTexture *noiseTexture = ensureNoiseTexture()) {
             ShaderManager::instance()->pushShader(m_noisePass.shader.get());
