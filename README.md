@@ -9,6 +9,7 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 
 ![Screenshot](/docs/glass.png)
 ![Did someone say liquid?](/docs/liquid_enough.png)
+![Latest shader effect](/docs/latest.png)
 
 ### A dock comparison between this and Apple's liquid glass
 ![macOS](/docs/dock-macos.png)
