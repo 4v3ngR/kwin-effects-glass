@@ -37,17 +37,13 @@ void main(void)
     sum += texture2D(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
     sum += texture2D(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
     sum += texture2D(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
+    sum /= 12.0
 
-    float minBlurSize = min(blurSize.x, blurSize.y);
-    float maxDiam = max(cornerRadius.x + cornerRadius.y, cornerRadius.w + cornerRadius.z);
+    sum = glass(sum, cornerRadius);
 
-    if (minBlurSize >= maxDiam) {
-        sum = glass(sum, cornerRadius);
-
-        float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
-        float df = fwidth(f);
-        sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
-    }
+    float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
+    float df = fwidth(f);
+    sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
 
     fragColor = sum * colorMatrix * opacity;
 

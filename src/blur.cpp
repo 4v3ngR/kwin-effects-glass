@@ -414,11 +414,6 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
 {
     SurfaceInterface *surf = w->surface();
 
-    // TODO: work out why gtk apps get content reflections in the frame. This hack seems to stop it happening
-    if (w->opacity() == 1.0 && w->window()) {
-        w->window()->setOpacity(0.99);
-    }
-
     if (surf) {
         windowBlurChangedConnections[w] = connect(surf, &SurfaceInterface::blurChanged, this, [this, w]() {
             if (w) {
@@ -594,77 +589,39 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseco
 
 void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
 {
-    // this effect relies on prePaintWindow being called in the bottom to top order
-
     effects->prePaintWindow(view, w, data, presentTime);
 
-    const Region oldOpaque = data.deviceOpaque;
-    if (data.deviceOpaque.intersects(m_currentDeviceBlur)) {
-        // to blur an area partially we have to shrink the opaque area of a window
-        Region newOpaque;
-        for (const Rect &rect : data.deviceOpaque.rects()) {
-            newOpaque += rect.adjusted(m_expandSize, m_expandSize, -m_expandSize, -m_expandSize);
+    // 1. Determine the area this window intends to blur
+    const Region blurArea = view->mapToDeviceCoordinatesAligned(
+        QRectF(blurRegion(w).boundingRect()).translated(w->pos())
+    );
+
+    if (!blurArea.isEmpty()) {
+        // 2. FORCE TRANSPARENCY: Remove the blur area from the opaque region.
+        // This prevents KWin from "occluding" (skipping) the rendering of
+        // windows/wallpaper behind this specific area.
+        data.deviceOpaque -= blurArea;
+
+        // 3. EXPAND PAINT REGION: If we are blurring, we might need to
+        // pull in pixels from slightly outside the immediate window
+        // bounds for the refraction/dual-kawase offset.
+        Region expandedBlur = blurArea;
+        for (const Rect &rect : blurArea.rects()) {
+            expandedBlur += rect.adjusted(-m_expandSize, -m_expandSize, m_expandSize, m_expandSize);
         }
-        data.deviceOpaque = newOpaque;
 
-        // we don't have to blur a region we don't see
-        m_currentDeviceBlur -= newOpaque;
+        // Ensure the compositor actually paints the background we need to sample
+        data.devicePaint += (expandedBlur - data.deviceOpaque);
     }
 
-    // if we have to paint a non-opaque part of this window that intersects with the
-    // currently blurred region we have to redraw the whole region
-    if ((data.devicePaint - oldOpaque).intersects(m_currentDeviceBlur)) {
-        data.devicePaint += m_currentDeviceBlur;
-    }
-
-    // in case this window has regions to be blurred
-    const Region blurArea = view->mapToDeviceCoordinatesAligned(QRectF(blurRegion(w).boundingRect()).translated(w->pos()));
-
-    // if this window or a window underneath the blurred area is painted again we have to
-    // blur everything
+    // Carry over the blur "damage" to windows lower in the stack
     if (m_paintedDeviceArea.intersects(blurArea) || data.devicePaint.intersects(blurArea)) {
         data.devicePaint += blurArea;
-        // we have to check again whether we do not damage a blurred area
-        // of a window
-        if (blurArea.intersects(m_currentDeviceBlur)) {
-            data.devicePaint += m_currentDeviceBlur;
-        }
-    }
-
-    if (w && hasWindowOverlap(w)) {
-        data.devicePaint += w->frameGeometry().translated(-w->x(), -w->y()).toRect();
     }
 
     m_currentDeviceBlur += blurArea;
-
     m_paintedDeviceArea -= data.deviceOpaque;
     m_paintedDeviceArea += data.devicePaint;
-}
-
-bool BlurEffect::hasWindowOverlap(EffectWindow *w)
-{
-    if (!w || w->isDesktop()) {
-        return false;
-    }
-
-    for (auto &[window, data] : m_windows) {
-        if (window && !window->isDock()) {
-            if (window == w ||
-                    w->window()->stackingOrder() > window->window()->stackingOrder() ||
-                    window->isDesktop() ||
-                    !window->isOnCurrentDesktop() ||
-                    !window->isOnCurrentActivity() ||
-                    window->window()->resourceClass() == "xwaylandvideobridge" ||
-                    window->isMinimized()) {
-                continue;
-            }
-        }
-
-        if (w->frameGeometry().intersects(window->frameGeometry())) {
-            return true;
-        }
-    }
-    return false;
 }
 
 bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const
@@ -1023,7 +980,25 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         bottomCornerRadius = BlurConfig::bottomCornerRadius();
     }
 
-    if (topCornerRadius || bottomCornerRadius) {
+    if (topCornerRadius > 0 || bottomCornerRadius > 0) {
+        const QRectF frame = w->frameGeometry();
+        const float winWidth = frame.width();
+        const float winHeight = frame.height();
+
+        bool isOverRounded = (topCornerRadius + bottomCornerRadius) > winHeight ||
+            (topCornerRadius * 2) > winWidth;
+
+        if (isOverRounded) {
+            if (w->isDock()) {
+                topCornerRadius = 0;
+                bottomCornerRadius = 0;
+            } else {
+                float minRadius = std::min(winWidth, winHeight) / 2.0;
+                topCornerRadius = minRadius;
+                bottomCornerRadius = minRadius;
+            }
+        }
+
         cornerRadius = BorderRadius(
             topCornerRadius,
             topCornerRadius,
@@ -1031,6 +1006,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             bottomCornerRadius
         );
     }
+
 
     ShaderManager::instance()->pushShader(m_roundedOnscreenPass.shader.get());
 
@@ -1080,9 +1056,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     read->colorAttachment()->bind();
 
-    // glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     vbo->draw(GL_TRIANGLES, 6, vertexCount);
 
@@ -1095,14 +1070,11 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         // artifacts, which often happens due to the smooth color transitions in the blurred image.
 
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        /*
         if (opacity < 1.0) {
             glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
         } else {
             glBlendFunc(GL_ONE, GL_ONE);
         }
-        */
 
         if (GLTexture *noiseTexture = ensureNoiseTexture()) {
             ShaderManager::instance()->pushShader(m_noisePass.shader.get());
