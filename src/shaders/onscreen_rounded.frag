@@ -63,7 +63,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
     float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
 
-    if (refractionStrength > 0 && minHalfSize >= 16.0) {
+    if (refractionStrength > 0) {
         // Initial 2D normal
         const float h = 1.0;
         vec4 r = clamp(cornerRadius * 2.0, 64.0, 128.0);
@@ -139,16 +139,11 @@ void main(void)
     sum += texture2D(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
     sum /= 12.0
 
-    // float minBlurSize = min(blurSize.x, blurSize.y);
-    // float maxDiam = max(cornerRadius.x + cornerRadius.y, cornerRadius.w + cornerRadius.z);
+    sum = glass(sum, cornerRadius);
 
-    // if (minBlurSize >= maxDiam) {
-        sum = glass(sum, cornerRadius);
-
-        float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
-        float df = fwidth(f);
-        sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
-    // }
+    float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
+    float df = fwidth(f);
+    sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
 
     fragColor = sum * colorMatrix * opacity;
 

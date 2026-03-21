@@ -48,7 +48,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
     float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
 
-    if (refractionStrength > 0 && minHalfSize >= 16.0) {
+    if (refractionStrength > 0) {
         // Initial 2D normal
         const float h = 1.0;
         vec4 r = clamp(cornerRadius * 2.0, 64.0, 128.0);
