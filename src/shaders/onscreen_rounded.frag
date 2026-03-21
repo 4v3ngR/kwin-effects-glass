@@ -27,8 +27,8 @@ uniform float refractionRGBFringing;
 float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
 {
     float r = p.x > 0.0
-        ? (p.y < 0.0 ? cornerRadius.y : cornerRadius.w)
-        : (p.y < 0.0 ? cornerRadius.x : cornerRadius.z);
+        ? (p.y > 0.0 ? cornerRadius.y : cornerRadius.w)
+        : (p.y > 0.0 ? cornerRadius.x : cornerRadius.z);
     vec2 q = abs(p) - b + r;
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }

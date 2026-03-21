@@ -1000,10 +1000,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
 
         cornerRadius = BorderRadius(
-            topCornerRadius,
-            topCornerRadius,
-            bottomCornerRadius,
-            bottomCornerRadius
+            topCornerRadius, // top left
+            topCornerRadius, // top right
+            bottomCornerRadius, // bottom right
+            bottomCornerRadius // bottom left
         );
     }
 
