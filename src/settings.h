@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QImage>
 #include <QStringList>
 
 namespace KWin
 {
+
+QStringList parseWindowClasses(const QString &input);
 
 enum class WindowClassMatchingMode
 {

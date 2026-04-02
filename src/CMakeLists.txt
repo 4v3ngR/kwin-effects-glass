@@ -1,19 +1,38 @@
 add_subdirectory(kcm)
 
-function(replace_shader_include input output)
-    file(READ shaders/glass.glsl GLASS_SHADER)
-    file(READ "${input}" SHADER)
-    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER "${SHADER}")
-    file(WRITE "${output}" "${SHADER}")
+# Read compat preambles
+file(READ shaders/compat_core.glsl COMPAT_CORE)
+file(READ shaders/compat_legacy.glsl COMPAT_LEGACY)
+file(READ shaders/glass.glsl GLASS_SHADER)
+
+# Generate a core and legacy shader variant from a single .glsl source.
+# Output goes into generated/ to keep source shaders/ clean.
+function(generate_shader_variants input_glsl output_base)
+    file(READ "${input_glsl}" SHADER_SRC)
+
+    # Expand glass.glsl includes
+    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC}")
+
+    # Core variant
+    file(WRITE "generated/${output_base}_core${ARGN}" "${COMPAT_CORE}\n${SHADER_SRC_EXPANDED}")
+
+    # Legacy variant
+    file(WRITE "generated/${output_base}${ARGN}" "${COMPAT_LEGACY}\n${SHADER_SRC_EXPANDED}")
 endfunction()
 
-# replace_shader_include(shaders/onscreen.glsl shaders/onscreen.frag)
-# replace_shader_include(shaders/onscreen_core.glsl shaders/onscreen_core.frag)
-replace_shader_include(shaders/onscreen_rounded.glsl shaders/onscreen_rounded.frag)
-replace_shader_include(shaders/onscreen_rounded_core.glsl shaders/onscreen_rounded_core.frag)
+# Generate vertex shaders
+generate_shader_variants(shaders/vertex.glsl vertex .vert)
+generate_shader_variants(shaders/onscreen_rounded_vertex.glsl onscreen_rounded .vert)
+
+# Generate fragment shaders
+generate_shader_variants(shaders/downsample.glsl downsample .frag)
+generate_shader_variants(shaders/upsample.glsl upsample .frag)
+generate_shader_variants(shaders/noise.glsl noise .frag)
+generate_shader_variants(shaders/onscreen_rounded.glsl onscreen_rounded .frag)
 
 set(glass_SOURCES
     blur.cpp
+    settings.cpp
     blur.qrc
     main.cpp
 )

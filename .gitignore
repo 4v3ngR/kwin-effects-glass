@@ -2,3 +2,4 @@ result*
 .idea
 cmake-build-debug
 build
+src/generated
