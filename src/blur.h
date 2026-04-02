@@ -144,6 +144,8 @@ private:
         int edgeLightingLocation;
         int noiseStrengthLocation;
         int windowDataLocation;
+
+        int saturationBoostLocation;
     } m_roundedOnscreenPass;
 
     struct

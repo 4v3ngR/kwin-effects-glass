@@ -126,6 +126,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.edgeLightingLocation = m_roundedOnscreenPass.shader->uniformLocation("edgeLighting");
         m_roundedOnscreenPass.noiseStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("noiseStrength");
         m_roundedOnscreenPass.windowDataLocation = m_roundedOnscreenPass.shader->uniformLocation("windowData");
+        m_roundedOnscreenPass.saturationBoostLocation = m_roundedOnscreenPass.shader->uniformLocation("saturationBoost");
     }
 
     m_downsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -292,8 +293,9 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_noiseStrength = m_settings.general.noiseStrength;
     m_blurRadius = m_settings.general.blurRadius;
     m_upsampleOffset = m_settings.general.upsampleOffset;
+    // Saturation is now handled in the shader via Oklab color space,
     m_colorMatrix = colorTransformMatrix(
-        m_settings.general.saturation,
+        1.0,
         m_settings.general.contrast,
         m_settings.general.brightness
     );
@@ -1095,6 +1097,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.noiseStrengthLocation, static_cast<float>(m_noiseStrength) / 255.0f);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.windowDataLocation, QVector3D(scaledBackgroundRect.x(), scaledBackgroundRect.y(), blurInfo.noiseOffset));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.saturationBoostLocation, m_settings.general.saturation);
 
     read->colorAttachment()->bind();
 
