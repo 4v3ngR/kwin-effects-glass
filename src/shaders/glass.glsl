@@ -32,62 +32,97 @@ vec4 roundedRectangle(vec2 fragCoord, vec3 color, vec4 cornerRadius)
     return vec4(color, mix(1.0, 0.0, s));
 }
 
+// Compute the glass surface height at a given position.
+// Models a convex slab: steep bevel at edges, flat plateau in the center.
+// Returns height in pixel-scale units for meaningful normal computation.
+float glassHeight(vec2 pos, vec2 halfSize, vec4 cr)
+{
+    float d = -roundedRectangleDist(pos, halfSize, cr);
+    if (d <= 0.0) return 0.0;
+
+    float t = clamp(d / max(edgeSizePixels, 0.1), 0.0, 1.0);
+    float h = 1.0 - pow(1.0 - t, refractionNormalPow);
+
+    return h * edgeSizePixels * 0.15;
+}
+
+// Compute 3D surface normal from the height field via central differences.
+vec3 glassNormal(vec2 pos, vec2 halfSize, vec4 cr)
+{
+    const float eps = 1.0;
+    float hx0 = glassHeight(pos - vec2(eps, 0.0), halfSize, cr);
+    float hx1 = glassHeight(pos + vec2(eps, 0.0), halfSize, cr);
+    float hy0 = glassHeight(pos - vec2(0.0, eps), halfSize, cr);
+    float hy1 = glassHeight(pos + vec2(0.0, eps), halfSize, cr);
+
+    vec2 grad = vec2(hx1 - hx0, hy1 - hy0) / (2.0 * eps);
+
+    return normalize(vec3(-grad, 1.0));
+}
+
 vec4 glass(vec4 sum, vec4 cornerRadius)
 {
     vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
 
-    vec2 position = uv * blurSize - halfBlurSize.xy;
+    vec2 position = uv * blurSize - halfBlurSize;
     float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
 
     if (dist >= 0.0) {
         return sum;
     }
 
-    float minEsp = clamp(edgeSizePixels, 0.1, minHalfSize * 0.9);
-    float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
-    float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
+    float ior = 1.0 + refractionStrength;
 
-    if (refractionStrength > 0) {
-        // Initial 2D normal
-        const float h = 1.0;
-        vec4 r = clamp(cornerRadius * 2.0, 64.0, 128.0);
-        vec2 gradient = vec2(
-                roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
-                roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
-        );
+    if (ior > 1.001) {
+        vec3 N = glassNormal(position, halfBlurSize, cornerRadius);
 
-        vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
+        vec3 I = vec3(0.0, 0.0, -1.0);
 
-        float finalStrength = min(0.4 * concaveFactor * refractionStrength, 1.0);
+        // Glass slab thickness: controls how far refracted rays displace
+        // the background sample point. Proportional to bevel size.
+        float thickness = edgeSizePixels * 0.5;
 
-        vec2 refractOffsetG = -normal.xy * finalStrength;
-        vec2 refractOffsetR = -normal.xy * finalStrength;
-        vec2 refractOffsetB = -normal.xy * finalStrength;
+        // Chromatic dispersion: different IOR per channel
+        float dispersion = refractionRGBFringing * 0.04;
+        float ior_r = ior - dispersion; // red bends least (longest wavelength)
+        float ior_g = ior;
+        float ior_b = ior + dispersion; // blue bends most (shortest wavelength)
 
-        // Different refraction offsets for each color channel
-        float fringingFactor = refractionRGBFringing * 0.3;
-        if (fringingFactor > 0.0) {
-            // Red bends most
-            refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
-            // Blue bends least
-            refractOffsetB = -normal.xy * (finalStrength * (1.0 - fringingFactor));
-        }
+        // Snell's law refraction via GLSL refract()
+        vec3 R_r = refract(I, N, 1.0 / max(ior_r, 1.001));
+        vec3 R_g = refract(I, N, 1.0 / max(ior_g, 1.001));
+        vec3 R_b = refract(I, N, 1.0 / max(ior_b, 1.001));
 
-        vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
-        vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
-        vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
+        // Handle total internal reflection (refract returns 0 vector)
+        if (length(R_r) < 0.001) R_r = vec3(0.0, 0.0, -1.0);
+        if (length(R_g) < 0.001) R_g = vec3(0.0, 0.0, -1.0);
+        if (length(R_b) < 0.001) R_b = vec3(0.0, 0.0, -1.0);
 
-        sum.r = TEXTURE(texUnit, coordR).r;
-        sum.g = TEXTURE(texUnit, coordG).g;
-        sum.b = TEXTURE(texUnit, coordB).b;
-        sum.a = TEXTURE(texUnit, coordG).a;
-    }
+        // Project refracted rays to UV displacement.
+        // The refracted ray exits the flat bottom surface of the slab;
+        // the lateral offset = R.xy / |R.z| * thickness.
+        vec2 uvScale = 1.0 / blurSize;
+        vec2 offset_r = R_r.xy / abs(R_r.z) * thickness * uvScale;
+        vec2 offset_g = R_g.xy / abs(R_g.z) * thickness * uvScale;
+        vec2 offset_b = R_b.xy / abs(R_b.z) * thickness * uvScale;
 
-    if (concaveFactor < 1.0) {
-        vec3 glow = mix(sum.rgb, glowColor, clamp(0.25 * concaveFactor, 0.0, glowStrength));
+        // Sample the blurred background with per-channel refracted coordinates.
+        sum.r = TEXTURE(texUnit, clamp(uv + offset_r, 0.0, 1.0)).r;
+        sum.g = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0)).g;
+        sum.b = TEXTURE(texUnit, clamp(uv + offset_b, 0.0, 1.0)).b;
+        sum.a = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0)).a;
+
+        // Fresnel reflection
+        float F0 = pow((ior - 1.0) / (ior + 1.0), 2.0);
+        float cosTheta = max(dot(N, vec3(0.0, 0.0, 1.0)), 0.0);
+        float fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+
+        // Apply Fresnel-modulated edge highlight
+        sum.rgb = mix(sum.rgb, glowColor, fresnel * glowStrength);
+
         if (edgeLighting == 1) {
-            glow += (sum.rgb * concaveFactor);
+            // Specular highlight: brighten edges based on Fresnel
+            sum.rgb += sum.rgb * fresnel * 0.5;
         }
 
         if (glowStrength > 0.0) {
