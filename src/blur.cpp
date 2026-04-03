@@ -930,7 +930,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     float topCornerRadius = 0.0;
     float bottomCornerRadius = 0.0;
-    if (w->isDock()) {
+    if (w->isOnScreenDisplay() || w->isTooltip()) {
+        topCornerRadius = m_settings.roundedCorners.windowTopRadius;
+        bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
+    } else if (w->isDock()) {
         topCornerRadius = m_settings.roundedCorners.dockRadius;
         bottomCornerRadius = m_settings.roundedCorners.dockRadius;
     } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
