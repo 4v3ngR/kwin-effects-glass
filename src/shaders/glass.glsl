@@ -189,9 +189,9 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensOffset = -sdfGrad * lensMag * uvScale;
 
-        vec2 offset_r = R_r.xy / abs(R_r.z) * thickness * uvScale + lensOffset;
-        vec2 offset_g = R_g.xy / abs(R_g.z) * thickness * uvScale + lensOffset;
-        vec2 offset_b = R_b.xy / abs(R_b.z) * thickness * uvScale + lensOffset;
+        vec2 offset_r = -R_r.xy / abs(R_r.z) * thickness * uvScale + lensOffset;
+        vec2 offset_g = -R_g.xy / abs(R_g.z) * thickness * uvScale + lensOffset;
+        vec2 offset_b = -R_b.xy / abs(R_b.z) * thickness * uvScale + lensOffset;
 
         // Sample the blurred background with per-channel refracted coordinates.
         sum.r = TEXTURE(texUnit, clamp(uv + offset_r, 0.0, 1.0)).r;
