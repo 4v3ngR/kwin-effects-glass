@@ -62,9 +62,7 @@ vec3 oklabSatBoost(vec3 color, float amount)
 
     vec3 linear = srgbToLinear(clamp(color, 0.0, 1.0));
     vec3 lab = linearToOklab(linear);
-
     lab.yz *= amount;
-
     vec3 result = oklabToLinear(lab);
     return linearToSrgb(clamp(result, 0.0, 1.0));
 }
@@ -78,56 +76,15 @@ float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
 
-vec4 roundedRectangle(vec2 fragCoord, vec3 color, vec4 cornerRadius)
-{
-    vec2 halfblurSize = blurSize * 0.5;
-    vec2 p = fragCoord - halfblurSize;
-    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius);
-
-    if (dist <= 0.0) {
-        return vec4(color, 1.0);
-    }
-
-    float s = smoothstep(0.0, 1.0, dist);
-    return vec4(color, mix(1.0, 0.0, s));
-}
-
-// Compute the glass surface height at a given position.
-// Models a convex slab: steep bevel at edges, flat plateau in the center.
-// Returns height in pixel-scale units for meaningful normal computation.
-float glassHeight(vec2 pos, vec2 halfSize, vec4 cr)
-{
-    float d = -roundedRectangleDist(pos, halfSize, cr);
-    if (d <= 0.0) return 0.0;
-
-    float t = clamp(d / max(edgeSizePixels, 0.1), 0.0, 1.0);
-    float h = 1.0 - pow(1.0 - t, refractionNormalPow);
-
-    return h * edgeSizePixels * 0.15;
-}
-
-// Compute 3D surface normal from the height field via central differences.
-vec3 glassNormal(vec2 pos, vec2 halfSize, vec4 cr)
-{
-    const float eps = 1.0;
-    float hx0 = glassHeight(pos - vec2(eps, 0.0), halfSize, cr);
-    float hx1 = glassHeight(pos + vec2(eps, 0.0), halfSize, cr);
-    float hy0 = glassHeight(pos - vec2(0.0, eps), halfSize, cr);
-    float hy1 = glassHeight(pos + vec2(0.0, eps), halfSize, cr);
-
-    vec2 grad = vec2(hx1 - hx0, hy1 - hy0) / (2.0 * eps);
-
-    return normalize(vec3(-grad, 1.0));
-}
-
-
-
 vec4 glass(vec4 sum, vec4 cornerRadius)
 {
     vec2 halfBlurSize = blurSize * 0.5;
-
     vec2 position = uv * blurSize - halfBlurSize;
-    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+
+    // --- Inline SDF + analytical gradient (one SDF, reused everywhere) ---
+    float cr = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+    vec2 q = abs(position) - halfBlurSize + cr;
+    float dist = min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - cr;
 
     if (dist >= 0.0) {
         return sum;
@@ -136,56 +93,50 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     float ior = 1.0 + refractionStrength;
 
     if (ior > 1.001) {
-        vec3 N = glassNormal(position, halfBlurSize, cornerRadius);
-
-        vec3 I = vec3(0.0, 0.0, -1.0);
-
-        // Glass slab thickness: controls how far refracted rays displace
-        // the background sample point. Proportional to bevel size.
-        float thickness = edgeSizePixels * 0.5;
-
-        // Chromatic dispersion: different IOR per channel
-        float dispersion = refractionRGBFringing * 0.04;
-        float ior_r = ior - dispersion; // red bends least (longest wavelength)
-        float ior_g = ior;
-        float ior_b = ior + dispersion; // blue bends most (shortest wavelength)
-
-        // Snell's law refraction via GLSL refract()
-        vec3 R_r = refract(I, N, 1.0 / max(ior_r, 1.001));
-        vec3 R_g = refract(I, N, 1.0 / max(ior_g, 1.001));
-        vec3 R_b = refract(I, N, 1.0 / max(ior_b, 1.001));
-
-        // Handle total internal reflection (refract returns 0 vector)
-        if (length(R_r) < 0.001) R_r = vec3(0.0, 0.0, -1.0);
-        if (length(R_g) < 0.001) R_g = vec3(0.0, 0.0, -1.0);
-        if (length(R_b) < 0.001) R_b = vec3(0.0, 0.0, -1.0);
-
-        // --- SDF-driven lens distortion (analytical gradient) ---
-        // Derive the gradient directly from the rounded-rect SDF math,
-        float r = position.x > 0.0 ? (position.y > 0.0 ? cornerRadius.y : cornerRadius.w) : (position.y > 0.0 ? cornerRadius.x : cornerRadius.z);
-        vec2 q = abs(position) - halfBlurSize + r;
+        // Analytical SDF gradient
         vec2 s = sign(position);
-
         vec2 gradQ;
         if (q.x > 0.0 && q.y > 0.0) {
-            gradQ = normalize(q);           // corner: radial
+            gradQ = normalize(q);
         } else if (q.x > 0.0) {
-            gradQ = vec2(1.0, 0.0);         // near horizontal edge
+            gradQ = vec2(1.0, 0.0);
         } else if (q.y > 0.0) {
-            gradQ = vec2(0.0, 1.0);         // near vertical edge
+            gradQ = vec2(0.0, 1.0);
         } else {
-            gradQ = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0); // interior
+            gradQ = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
         }
         vec2 sdfGrad = gradQ * s;
 
-        float edgeFactor = 1.0 - clamp(-dist / max(edgeSizePixels, 0.1), 0.0, 1.0);
+        // --- Analytical glass normal ---
+        float invEdge = 1.0 / max(edgeSizePixels, 0.1);
+        float t = clamp(-dist * invEdge, 0.0, 1.0);
+        float dh = refractionNormalPow * pow(1.0 - t, refractionNormalPow - 1.0) * 0.15;
+        vec3 N = normalize(vec3(dh * sdfGrad, 1.0));
+
+        vec3 I = vec3(0.0, 0.0, -1.0);
+        float thickness = edgeSizePixels * 0.5;
+
+        // Chromatic dispersion
+        float dispersion = refractionRGBFringing * 0.04;
+        float ior_r = ior - dispersion;
+        float ior_b = ior + dispersion;
+
+        vec3 R_r = refract(I, N, 1.0 / max(ior_r, 1.001));
+        vec3 R_g = refract(I, N, 1.0 / max(ior, 1.001));
+        vec3 R_b = refract(I, N, 1.0 / max(ior_b, 1.001));
+
+        // handle total internal reflection 
+        if (dot(R_r, R_r) < 0.000001) R_r = vec3(0.0, 0.0, -1.0);
+        if (dot(R_g, R_g) < 0.000001) R_g = vec3(0.0, 0.0, -1.0);
+        if (dot(R_b, R_b) < 0.000001) R_b = vec3(0.0, 0.0, -1.0);
+
+        // --- SDF-driven lens distortion ---
+        float edgeFactor = 1.0 - clamp(-dist * invEdge, 0.0, 1.0);
         float lensMag = edgeFactor * edgeSizePixels;
 
-        // Fan-out: blend the normalized position from center into the SDF
-        // gradient so the lens diverges vertically. 
+        // Fan-out: diverge toward corners based on position from center
         sdfGrad += 0.5 * (position / halfBlurSize) * edgeFactor;
 
-        // Combine Snell's law refraction with SDF lens pull.
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensOffset = -sdfGrad * lensMag * uvScale;
 
@@ -193,22 +144,22 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         vec2 offset_g = -R_g.xy / abs(R_g.z) * thickness * uvScale + lensOffset;
         vec2 offset_b = -R_b.xy / abs(R_b.z) * thickness * uvScale + lensOffset;
 
-        // Sample the blurred background with per-channel refracted coordinates.
+        vec4 sampleG = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0));
         sum.r = TEXTURE(texUnit, clamp(uv + offset_r, 0.0, 1.0)).r;
-        sum.g = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0)).g;
+        sum.g = sampleG.g;
         sum.b = TEXTURE(texUnit, clamp(uv + offset_b, 0.0, 1.0)).b;
-        sum.a = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0)).a;
+        sum.a = sampleG.a;
 
-        // Fresnel reflection
+        // Fresnel
+        float cosTheta = N.z;
         float F0 = pow((ior - 1.0) / (ior + 1.0), 2.0);
-        float cosTheta = max(dot(N, vec3(0.0, 0.0, 1.0)), 0.0);
-        float fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+        float oneMinusCos = 1.0 - cosTheta;
+        float oneMinusCos2 = oneMinusCos * oneMinusCos;
+        float fresnel = F0 + (1.0 - F0) * oneMinusCos2 * oneMinusCos2 * oneMinusCos;
 
-        // Apply Fresnel-modulated edge highlight
         sum.rgb = mix(sum.rgb, glowColor, fresnel * glowStrength);
 
         if (edgeLighting == 1) {
-            // Specular highlight: brighten edges based on Fresnel
             sum.rgb += sum.rgb * fresnel * 0.5;
         }
 
@@ -232,8 +183,12 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.b = glow.b;
     }
 
-    sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
+    if (abs(saturationBoost - 1.0) > 0.001) {
+        sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
+    }
 
     vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
-    return roundedRectangle(uv * blurSize, tinted, cornerRadius);
+
+    // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
+    return vec4(tinted, 1.0);
 }
