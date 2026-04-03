@@ -120,6 +120,8 @@ vec3 glassNormal(vec2 pos, vec2 halfSize, vec4 cr)
     return normalize(vec3(-grad, 1.0));
 }
 
+
+
 vec4 glass(vec4 sum, vec4 cornerRadius)
 {
     vec2 halfBlurSize = blurSize * 0.5;
@@ -158,13 +160,38 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         if (length(R_g) < 0.001) R_g = vec3(0.0, 0.0, -1.0);
         if (length(R_b) < 0.001) R_b = vec3(0.0, 0.0, -1.0);
 
-        // Project refracted rays to UV displacement.
-        // The refracted ray exits the flat bottom surface of the slab;
-        // the lateral offset = R.xy / |R.z| * thickness.
+        // --- SDF-driven lens distortion (analytical gradient) ---
+        // Derive the gradient directly from the rounded-rect SDF math,
+        float r = position.x > 0.0 ? (position.y > 0.0 ? cornerRadius.y : cornerRadius.w) : (position.y > 0.0 ? cornerRadius.x : cornerRadius.z);
+        vec2 q = abs(position) - halfBlurSize + r;
+        vec2 s = sign(position);
+
+        vec2 gradQ;
+        if (q.x > 0.0 && q.y > 0.0) {
+            gradQ = normalize(q);           // corner: radial
+        } else if (q.x > 0.0) {
+            gradQ = vec2(1.0, 0.0);         // near horizontal edge
+        } else if (q.y > 0.0) {
+            gradQ = vec2(0.0, 1.0);         // near vertical edge
+        } else {
+            gradQ = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0); // interior
+        }
+        vec2 sdfGrad = gradQ * s;
+
+        float edgeFactor = 1.0 - clamp(-dist / max(edgeSizePixels, 0.1), 0.0, 1.0);
+        float lensMag = edgeFactor * edgeSizePixels;
+
+        // Fan-out: blend the normalized position from center into the SDF
+        // gradient so the lens diverges vertically. 
+        sdfGrad += 0.5 * (position / halfBlurSize) * edgeFactor;
+
+        // Combine Snell's law refraction with SDF lens pull.
         vec2 uvScale = 1.0 / blurSize;
-        vec2 offset_r = R_r.xy / abs(R_r.z) * thickness * uvScale;
-        vec2 offset_g = R_g.xy / abs(R_g.z) * thickness * uvScale;
-        vec2 offset_b = R_b.xy / abs(R_b.z) * thickness * uvScale;
+        vec2 lensOffset = -sdfGrad * lensMag * uvScale;
+
+        vec2 offset_r = R_r.xy / abs(R_r.z) * thickness * uvScale + lensOffset;
+        vec2 offset_g = R_g.xy / abs(R_g.z) * thickness * uvScale + lensOffset;
+        vec2 offset_b = R_b.xy / abs(R_b.z) * thickness * uvScale + lensOffset;
 
         // Sample the blurred background with per-channel refracted coordinates.
         sum.r = TEXTURE(texUnit, clamp(uv + offset_r, 0.0, 1.0)).r;
