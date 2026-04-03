@@ -262,12 +262,10 @@ void BlurEffect::initBlurStrengthValues()
      */
 
     // {minOffset, maxOffset, expandSize}
-    blurOffsets.append({1.0, 2.0, 10}); // Down sample size / 2
-    blurOffsets.append({2.0, 3.0, 20}); // Down sample size / 4
-    blurOffsets.append({2.0, 5.0, 50}); // Down sample size / 8
-    blurOffsets.append({3.0, 8.0, 150}); // Down sample size / 16
-    // blurOffsets.append({5.0, 10.0, 400}); // Down sample size / 32
-    // blurOffsets.append({7.0, ?.0});       // Down sample size / 64
+    blurOffsets.append({1.0, 2.0, 10});  // Down sample size / 2
+    blurOffsets.append({1.5, 3.0, 20});  // Down sample size / 4
+    blurOffsets.append({2.0, 4.0, 50});  // Down sample size / 8
+    blurOffsets.append({2.5, 6.0, 150}); // Down sample size / 16
 
     float offsetSum = 0;
 
@@ -301,6 +299,8 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_offset = blurStrengthValues[m_settings.general.blurStrength].offset;
     m_expandSize = blurOffsets[m_iterationCount - 1].expandSize;
     m_noiseStrength = m_settings.general.noiseStrength;
+    m_blurRadius = m_settings.general.blurRadius;
+    m_upsampleOffset = m_settings.general.upsampleOffset;
     m_colorMatrix = colorTransformMatrix(
         m_settings.general.saturation,
         m_settings.general.contrast,
@@ -981,7 +981,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
         m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, float(m_offset));
+        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, float(m_offset) * m_blurRadius);
 
         for (size_t i = 1; i < renderInfo.framebuffers.size(); ++i) {
             const auto &read = renderInfo.framebuffers[i - 1];
@@ -1008,7 +1008,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset));
+        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset) * m_upsampleOffset);
 
         for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
@@ -1100,7 +1100,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(m_offset));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(m_offset) * m_upsampleOffset);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation, QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);

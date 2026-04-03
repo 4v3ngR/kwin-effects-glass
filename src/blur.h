@@ -181,6 +181,8 @@ private:
     int m_offset;
     int m_expandSize;
     int m_noiseStrength;
+    float m_blurRadius;
+    float m_upsampleOffset;
     QStringList m_windowClasses;
     bool m_whitelist;
 

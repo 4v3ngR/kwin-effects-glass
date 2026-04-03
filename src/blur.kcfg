@@ -24,7 +24,13 @@
             <default>#00000000</default>
         </entry>
         <entry name="BlurStrength" type="Int">
-            <default>15</default>
+            <default>10</default>
+        </entry>
+        <entry name="BlurRadius" type="Int">
+            <default>10</default>
+        </entry>
+        <entry name="UpsampleOffset" type="Int">
+            <default>10</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
             <default>5</default>
