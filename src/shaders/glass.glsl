@@ -114,7 +114,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         vec3 N = normalize(vec3(dh * sdfGrad, 1.0));
 
         vec3 I = vec3(0.0, 0.0, -1.0);
-        float thickness = edgeSizePixels * 0.5;
+        float thickness = edgeSizePixels;
 
         // Chromatic dispersion
         float dispersion = refractionRGBFringing * 0.04;
@@ -134,8 +134,9 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float edgeFactor = 1.0 - clamp(-dist * invEdge, 0.0, 1.0);
         float lensMag = edgeFactor * edgeSizePixels;
 
-        // Fan-out: diverge toward corners based on position from center
-        sdfGrad += 0.5 * (position / halfBlurSize) * edgeFactor * 2;
+        // Edge UV bending
+        vec2 normalizedPos = position / halfBlurSize;
+        sdfGrad += normalizedPos * edgeFactor;
 
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensOffset = -sdfGrad * lensMag * uvScale;
