@@ -23,12 +23,6 @@ void main(void)
     vec2 position = uv * blurSize - halfBlurSize.xy;
     float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
 
-    if (dist >= 0.0) {
-        float df = fwidth(dist);
-        fragColor = texture(texUnit, uv) * (1.0 - clamp(0.5 + dist / df, 0.0, 1.0));
-        return;
-    }
-
     vec4 sum = texture2D(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
     sum += texture2D(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
     sum += texture2D(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
