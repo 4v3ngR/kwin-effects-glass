@@ -135,7 +135,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float lensMag = edgeFactor * edgeSizePixels;
 
         // Fan-out: diverge toward corners based on position from center
-        sdfGrad += 0.5 * (position / halfBlurSize) * edgeFactor;
+        sdfGrad += 0.5 * (position / halfBlurSize) * edgeFactor * 2;
 
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensOffset = -sdfGrad * lensMag * uvScale;
