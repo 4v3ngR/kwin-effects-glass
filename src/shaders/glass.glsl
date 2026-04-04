@@ -18,18 +18,18 @@ float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
 
-vec4 roundedRectangle(vec2 fragCoord, vec3 texture, vec4 cornerRadius)
+vec4 roundedRectangle(vec2 fragCoord, vec3 color, vec4 cornerRadius)
 {
     vec2 halfblurSize = blurSize * 0.5;
     vec2 p = fragCoord - halfblurSize;
     float dist = roundedRectangleDist(p, halfblurSize, cornerRadius);
 
     if (dist <= 0.0) {
-        return vec4(texture, 1.0);
+        return vec4(color, 1.0);
     }
 
-    float s = smoothstep(0.0, 1.0,  dist);
-    return vec4(texture, mix(1.0, 0.0, s));
+    float s = smoothstep(0.0, 1.0, dist);
+    return vec4(color, mix(1.0, 0.0, s));
 }
 
 vec4 glass(vec4 sum, vec4 cornerRadius)
@@ -78,10 +78,10 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
         vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
 
-        sum.r = texture(texUnit, coordR).r;
-        sum.g = texture(texUnit, coordG).g;
-        sum.b = texture(texUnit, coordB).b;
-        sum.a = texture(texUnit, coordG).a;
+        sum.r = TEXTURE(texUnit, coordR).r;
+        sum.g = TEXTURE(texUnit, coordG).g;
+        sum.b = TEXTURE(texUnit, coordB).b;
+        sum.a = TEXTURE(texUnit, coordG).a;
     }
 
     if (concaveFactor < 1.0) {

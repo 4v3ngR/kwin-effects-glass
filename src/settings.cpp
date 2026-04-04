@@ -4,23 +4,11 @@
 namespace KWin
 {
 
-void BlurSettings::read()
+QStringList parseWindowClasses(const QString &input)
 {
-    BlurConfig::self()->read();
-
-    general.blurStrength = BlurConfig::blurStrength() - 1;
-    general.noiseStrength = BlurConfig::noiseStrength();
-    general.brightness = BlurConfig::brightness();
-    general.saturation = BlurConfig::saturation();
-    general.contrast = BlurConfig::contrast();
-    general.tintColor = BlurConfig::tintColor();
-    general.glowColor = BlurConfig::glowColor();
-    general.edgeLighting = BlurConfig::edgeLighting();
-    general.excludeDocks = BlurConfig::excludeDocks();
-
-    forceBlur.windowClasses.clear();
+    QStringList result;
     const auto blank = QStringLiteral("blank");
-    for (const auto &line : BlurConfig::windowClasses().split("\n", Qt::SkipEmptyParts)) {
+    for (const auto &line : input.split("\n", Qt::SkipEmptyParts)) {
         QString unescaped = "";
         bool consumed = false;
         for (qsizetype i = 0; i < line.size(); i++) {
@@ -43,8 +31,26 @@ void BlurSettings::read()
         if (consumed) {
             unescaped += QChar('$');
         }
-        forceBlur.windowClasses << unescaped;
+        result << unescaped;
     }
+    return result;
+}
+
+void BlurSettings::read()
+{
+    BlurConfig::self()->read();
+
+    general.blurStrength = BlurConfig::blurStrength() - 1;
+    general.noiseStrength = BlurConfig::noiseStrength();
+    general.brightness = BlurConfig::brightness();
+    general.saturation = BlurConfig::saturation();
+    general.contrast = BlurConfig::contrast();
+    general.tintColor = BlurConfig::tintColor();
+    general.glowColor = BlurConfig::glowColor();
+    general.edgeLighting = BlurConfig::edgeLighting();
+    general.excludeDocks = BlurConfig::excludeDocks();
+
+    forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());
     forceBlur.windowClassMatchingMode = BlurConfig::blurMatching() ? WindowClassMatchingMode::Whitelist : WindowClassMatchingMode::Blacklist;
     forceBlur.blurDecorations = BlurConfig::blurDecorations();
     forceBlur.blurMenus = BlurConfig::blurMenus();
@@ -59,7 +65,7 @@ void BlurSettings::read()
     refraction.edgeSizePixels = BlurConfig::refractionEdgeSize() * 10;
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;
     refraction.refractionNormalPow = BlurConfig::refractionNormalPow() / 2.0;
-    refraction.refractionRGBFringing = BlurConfig::refractionRGBFringing() / 20.0;  // Scale to 0-1 range
+    refraction.refractionRGBFringing = BlurConfig::refractionRGBFringing() / 20.0;
 }
 
 }

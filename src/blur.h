@@ -10,6 +10,7 @@
 #include "effect/effect.h"
 #include "opengl/glutils.h"
 #include "scene/item.h"
+#include "settings.h"
 
 #include <QList>
 #include <QStringList>
@@ -153,6 +154,7 @@ private:
         int noiseTextureStength = 0;
     } m_noisePass;
 
+    BlurSettings m_settings;
     bool m_valid = false;
 #if KWIN_BUILD_X11
     long net_wm_blur_region = 0;
