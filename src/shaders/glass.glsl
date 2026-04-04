@@ -132,7 +132,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         if (dot(R_b, R_b) < 0.000001) R_b = vec3(0.0, 0.0, -1.0);
 
         // --- SDF-driven lens distortion ---
-        float edgeFactor = 1.0 - clamp(-dist * invEdge, 0.0, 1.0);
+        float edgeFactor = 1.0 - smoothstep(0.0, 1.0, -dist * invEdge);
         float lensMag = edgeFactor * edgeSizePixels;
 
         // Edge UV bending
