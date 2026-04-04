@@ -119,6 +119,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.refractionStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionStrength");
         m_roundedOnscreenPass.refractionNormalPowLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionNormalPow");
         m_roundedOnscreenPass.refractionRGBFringingLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionRGBFringing");
+        m_roundedOnscreenPass.refractionRadialBendingLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionRadialBending");
         m_roundedOnscreenPass.tintColorLocation = m_roundedOnscreenPass.shader->uniformLocation("tintColor");
         m_roundedOnscreenPass.tintStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("tintStrength");
         m_roundedOnscreenPass.glowColorLocation = m_roundedOnscreenPass.shader->uniformLocation("glowColor");
@@ -1078,6 +1079,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionStrengthLocation, m_settings.refraction.refractionStrength);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionNormalPowLocation, m_settings.refraction.refractionNormalPow);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionRGBFringingLocation, m_settings.refraction.refractionRGBFringing);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionRadialBendingLocation, 0.0f);
 
     QColor tint(m_settings.general.tintColor);
     QVector3D tintVec(tint.redF(), tint.greenF(), tint.blueF());

@@ -115,5 +115,8 @@ class3</default>
         <entry name="RefractionRGBFringing" type="Double">
             <default>1.0</default>
         </entry>
+        <entry name="RefractionRadialBending" type="Double">
+            <default>0.0</default>
+        </entry>
     </group>
 </kcfg>

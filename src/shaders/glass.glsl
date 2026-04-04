@@ -8,6 +8,7 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
+uniform float refractionRadialBending;
 
 uniform float saturationBoost;
 uniform float glassBrightness;
@@ -139,7 +140,13 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
         // Edge UV bending
         vec2 normalizedPos = position / halfBlurSize;
-        sdfGrad += normalizedPos * edgeFactor;
+
+        if(abs(refractionRadialBending) > 0) {
+            vec2 tangent = vec2(refractionRadialBending * sdfGrad.y, refractionRadialBending * -sdfGrad.x);
+            sdfGrad += tangent * edgeFactor;
+        } else {
+            sdfGrad += normalizedPos * edgeFactor;
+        }
 
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensOffset = -sdfGrad * lensMag * uvScale;
