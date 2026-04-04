@@ -4,7 +4,7 @@ uniform vec3 glowColor;
 uniform float glowStrength;
 uniform int edgeLighting;
 
-uniform float edgeSizePixels;
+uniform vec2 edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
@@ -111,14 +111,15 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         vec2 sdfGrad = gradQ * s;
 
         // --- Analytical glass normal ---
-        float invEdge = 1.0 / max(edgeSizePixels, 0.1);
+        float effectiveEdge = dot(abs(sdfGrad), edgeSizePixels);
+        float invEdge = 1.0 / max(effectiveEdge, 0.1);
         float t = clamp(-dist * invEdge, 0.0, 1.0);
 
         float dh = 6.0 * t * (1.0 - t) * refractionNormalPow * 0.15;
         vec3 N = normalize(vec3(dh * sdfGrad, 1.0));
 
         vec3 I = vec3(0.0, 0.0, -1.0);
-        float thickness = edgeSizePixels;
+        float thickness = effectiveEdge;
 
         // Chromatic dispersion
         float dispersion = refractionRGBFringing * 0.04;
@@ -136,7 +137,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
         // --- SDF-driven lens distortion ---
         float edgeFactor = 1.0 - smoothstep(0.0, 1.0, -dist * invEdge);
-        float lensMag = edgeFactor * edgeSizePixels;
+        float lensMag = edgeFactor * effectiveEdge;
 
         // Edge UV bending
         vec2 normalizedPos = position / halfBlurSize;
@@ -169,7 +170,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float fresnel = F0 + (1.0 - F0) * oneMinusCos2 * oneMinusCos2 * oneMinusCos;
 
         if (edgeLighting == 1) {
-            float edgeBright = 1.0 - smoothstep(0.0, edgeSizePixels, -dist);
+            float edgeBright = 1.0 - smoothstep(0.0, effectiveEdge, -dist);
             brightnessMod += edgeBright * glowStrength;
         }
 
@@ -193,7 +194,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.b = glow.b;
     }
 
-    float rimWidth = max(edgeSizePixels * 0.015, 0.9);
+    float rimWidth = max(min(edgeSizePixels.x, edgeSizePixels.y) * 0.015, 0.9);
     float rim = exp(-(-dist) / rimWidth);
     brightnessMod += rim * 2.0 * glowStrength;
 
