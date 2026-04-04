@@ -10,6 +10,7 @@ uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
 
 uniform float saturationBoost;
+uniform float glassBrightness;
 
 // --- Oklab color space conversion ---
 vec3 srgbToLinear(vec3 c)
@@ -90,6 +91,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         return sum;
     }
 
+    float brightnessMod = glassBrightness;
     float ior = 1.0 + refractionStrength;
 
     if (ior > 1.001) {
@@ -190,6 +192,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     }
 
     vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
+    tinted *= brightnessMod;
 
     // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
     return vec4(tinted, 1.0);
