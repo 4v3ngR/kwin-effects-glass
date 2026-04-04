@@ -195,7 +195,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
     float rimWidth = max(edgeSizePixels * 0.015, 0.9);
     float rim = exp(-(-dist) / rimWidth);
-    brightnessMod += rim * 2 * glowStrength;
+    brightnessMod += rim * 2.0 * glowStrength;
 
     if (abs(saturationBoost - 1.0) > 0.001) {
         sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
@@ -203,6 +203,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
     vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
     tinted *= brightnessMod;
+    tinted += glowColor * rim * glowStrength;
 
     // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
     return vec4(tinted, 1.0);
