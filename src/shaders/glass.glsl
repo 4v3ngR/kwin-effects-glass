@@ -110,7 +110,8 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         // --- Analytical glass normal ---
         float invEdge = 1.0 / max(edgeSizePixels, 0.1);
         float t = clamp(-dist * invEdge, 0.0, 1.0);
-        float dh = refractionNormalPow * pow(1.0 - t, refractionNormalPow - 1.0) * 0.15;
+
+        float dh = 6.0 * t * (1.0 - t) * refractionNormalPow * 0.15;
         vec3 N = normalize(vec3(dh * sdfGrad, 1.0));
 
         vec3 I = vec3(0.0, 0.0, -1.0);
