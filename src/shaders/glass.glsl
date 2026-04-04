@@ -161,10 +161,9 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float oneMinusCos2 = oneMinusCos * oneMinusCos;
         float fresnel = F0 + (1.0 - F0) * oneMinusCos2 * oneMinusCos2 * oneMinusCos;
 
-        sum.rgb = mix(sum.rgb, glowColor, fresnel * glowStrength);
-
         if (edgeLighting == 1) {
-            sum.rgb += sum.rgb * fresnel * 0.5;
+            float edgeBright = 1.0 - smoothstep(0.0, edgeSizePixels, -dist);
+            brightnessMod += edgeBright * glowStrength;
         }
 
         if (glowStrength > 0.0) {
@@ -186,6 +185,10 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.g = glow.g;
         sum.b = glow.b;
     }
+
+    float rimWidth = max(edgeSizePixels * 0.015, 0.9);
+    float rim = exp(-(-dist) / rimWidth);
+    brightnessMod += rim * 2 * glowStrength;
 
     if (abs(saturationBoost - 1.0) > 0.001) {
         sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
