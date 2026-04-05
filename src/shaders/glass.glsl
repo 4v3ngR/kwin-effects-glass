@@ -163,12 +163,8 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.b = TEXTURE(texUnit, clamp(uv + offset_b, 0.0, 1.0)).b;
         sum.a = sampleG.a;
 
-        // Fresnel
-        float cosTheta = N.z;
-        float F0 = pow((ior - 1.0) / (ior + 1.0), 2.0);
-        float oneMinusCos = 1.0 - cosTheta;
-        float oneMinusCos2 = oneMinusCos * oneMinusCos;
-        float fresnel = F0 + (1.0 - F0) * oneMinusCos2 * oneMinusCos2 * oneMinusCos;
+        float edgeSatBoost = 1.0 + edgeFactor * 0.5;
+        sum.rgb = oklabSatBoost(sum.rgb, edgeSatBoost);
 
         if (edgeLighting == 1) {
             float edgeBright = 1.0 - smoothstep(0.0, effectiveEdge, -dist);
@@ -204,7 +200,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     }
 
     vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
-    tinted *= brightnessMod;
+    tinted *= min(brightnessMod, 2.5);
     tinted += glowColor * rim * glowStrength;
 
     // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
