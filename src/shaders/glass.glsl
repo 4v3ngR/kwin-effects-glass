@@ -145,7 +145,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
         if(abs(refractionRadialBending) > 0) {
             vec2 tangent = vec2(refractionRadialBending * sdfGrad.y, refractionRadialBending * -sdfGrad.x);
-            sdfGrad += tangent * edgeFactor * refractionBendingStrength;
+            sdfGrad += tangent * edgeFactor * (refractionBendingStrength * 0.5);
         } else {
             sdfGrad += normalizedPos * edgeFactor * refractionBendingStrength;
         }
