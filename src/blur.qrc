@@ -2,9 +2,7 @@
 <qresource prefix="/effects/glass/">
   <file>generated/downsample.frag</file>
   <file>generated/downsample_core.frag</file>
-  <file>generated/noise.frag</file>
-  <file>generated/noise_core.frag</file>
-  <file>generated/onscreen_rounded.frag</file>
+<file>generated/onscreen_rounded.frag</file>
   <file>generated/onscreen_rounded_core.frag</file>
   <file>generated/onscreen_rounded.vert</file>
   <file>generated/onscreen_rounded_core.vert</file>

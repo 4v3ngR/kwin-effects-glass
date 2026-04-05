@@ -1,11 +1,9 @@
-uniform sampler2D texUnit;
-uniform vec2 noiseTextureSize;
+uniform float noiseStrength;
+uniform vec2 windowPosition;
 
-VARYING_IN vec2 uv;
-
-void main(void)
+float hashNoise(vec2 p)
 {
-    vec2 uvNoise = vec2(gl_FragCoord.xy / noiseTextureSize);
-
-    FRAG_COLOR = vec4(TEXTURE(texUnit, uvNoise).rrr, 0);
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }

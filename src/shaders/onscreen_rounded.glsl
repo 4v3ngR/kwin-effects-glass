@@ -13,6 +13,7 @@ VARYING_IN vec2 uv;
 VARYING_IN vec2 vertex;
 
 #include "glass.glsl"
+#include "noise.glsl"
 
 void main(void)
 {
@@ -41,5 +42,12 @@ void main(void)
     float df = fwidth(f);
     sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
 
-    FRAG_COLOR = sum * colorMatrix * opacity;
+    vec4 result = sum * colorMatrix * opacity;
+
+    if (noiseStrength > 0.0) {
+        float n = (hashNoise(gl_FragCoord.xy - windowPosition) - 0.5) * noiseStrength;
+        result.rgb += vec3(n);
+    }
+
+    FRAG_COLOR = result;
 }
