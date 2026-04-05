@@ -73,6 +73,8 @@ void BlurSettings::read()
     refraction.refractionNormalPow = BlurConfig::refractionNormalPow() / 2.0;
     refraction.refractionRGBFringing = BlurConfig::refractionRGBFringing() / 20.0;
     refraction.refractionRadialBending = BlurConfig::refractionRadialBending() / 10.0;
+    refraction.refractionBendingStrength = BlurConfig::refractionBendingStrength() / 10.0;
+
 }
 
 }

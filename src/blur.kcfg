@@ -118,5 +118,8 @@ class3</default>
         <entry name="RefractionRadialBending" type="Double">
             <default>0.0</default>
         </entry>
+        <entry name="RefractionBendingStrength" type="Double">
+            <default>10.0</default>
+        </entry>
     </group>
 </kcfg>
