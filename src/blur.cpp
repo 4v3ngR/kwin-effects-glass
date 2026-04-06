@@ -125,7 +125,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.glowStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("glowStrength");
         m_roundedOnscreenPass.edgeLightingLocation = m_roundedOnscreenPass.shader->uniformLocation("edgeLighting");
         m_roundedOnscreenPass.noiseStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("noiseStrength");
-        m_roundedOnscreenPass.windowPositionLocation = m_roundedOnscreenPass.shader->uniformLocation("windowPosition");
+        m_roundedOnscreenPass.windowDataLocation = m_roundedOnscreenPass.shader->uniformLocation("windowData");
     }
 
     m_downsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -379,6 +379,9 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         data.frame = frame;
         data.colorMatrix = colorTransformMatrix(saturation.value_or(1.0), contrast.value_or(1.0), 1.0);
         data.windowEffect = ItemEffect(w->windowItem());
+        if (data.noiseOffset == 0.0f) {
+            data.noiseOffset = static_cast<float>(reinterpret_cast<uintptr_t>(w) % 10000);
+        }
     } else {
         if (auto it = m_windows.find(w); it != m_windows.end()) {
             effects->makeOpenGLContextCurrent();
@@ -1082,7 +1085,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     }
 
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.noiseStrengthLocation, static_cast<float>(m_noiseStrength) / 255.0f);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.windowPositionLocation, QVector2D(scaledBackgroundRect.x(), scaledBackgroundRect.y()));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.windowDataLocation, QVector3D(scaledBackgroundRect.x(), scaledBackgroundRect.y(), blurInfo.noiseOffset));
 
     read->colorAttachment()->bind();
 

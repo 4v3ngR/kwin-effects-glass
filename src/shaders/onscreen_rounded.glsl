@@ -1,5 +1,8 @@
 #include "sdf.glsl"
 
+VARYING_IN vec2 uv;
+VARYING_IN vec2 vertex;
+
 uniform sampler2D texUnit;
 uniform mat4 colorMatrix;
 uniform float offset;
@@ -9,11 +12,17 @@ uniform vec4 cornerRadius;
 uniform float opacity;
 uniform vec2 blurSize;
 
-VARYING_IN vec2 uv;
-VARYING_IN vec2 vertex;
+uniform float noiseStrength;
+uniform vec3 windowData;
+
+float hashNoise(vec2 p)
+{
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
 
 #include "glass.glsl"
-#include "noise.glsl"
 
 void main(void)
 {
@@ -45,7 +54,7 @@ void main(void)
     vec4 result = sum * colorMatrix * opacity;
 
     if (noiseStrength > 0.0) {
-        float n = (hashNoise(gl_FragCoord.xy - windowPosition) - 0.5) * noiseStrength;
+        float n = (hashNoise(gl_FragCoord.xy - windowData.xy) - 0.5) * noiseStrength;
         result.rgb += vec3(n);
     }
 

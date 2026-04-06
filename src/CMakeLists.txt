@@ -4,16 +4,14 @@ add_subdirectory(kcm)
 file(READ shaders/compat_core.glsl COMPAT_CORE)
 file(READ shaders/compat_legacy.glsl COMPAT_LEGACY)
 file(READ shaders/glass.glsl GLASS_SHADER)
-file(READ shaders/noise.glsl NOISE_SHADER)
 
 # Generate a core and legacy shader variant from a single .glsl source.
 # Output goes into generated/ to keep source shaders/ clean.
 function(generate_shader_variants input_glsl output_base)
     file(READ "${input_glsl}" SHADER_SRC)
 
-    # Expand includes
+    # Expand glass include
     string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC}")
-    string(REPLACE "#include \"noise.glsl\"" "${NOISE_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC_EXPANDED}")
 
     # Core variant
     file(WRITE "generated/${output_base}_core${ARGN}" "${COMPAT_CORE}\n${SHADER_SRC_EXPANDED}")

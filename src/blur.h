@@ -53,6 +53,11 @@ struct BlurEffectData
      */
     std::unordered_map<BlurOutput *, BlurRenderData> render;
 
+    /**
+     * Per-window offset for the noise shader
+     */
+    float noiseOffset = 0.0f;
+
     ItemEffect windowEffect;
 
     /**
@@ -138,7 +143,7 @@ private:
         int glowStrengthLocation;
         int edgeLightingLocation;
         int noiseStrengthLocation;
-        int windowPositionLocation;
+        int windowDataLocation;
     } m_roundedOnscreenPass;
 
     struct
