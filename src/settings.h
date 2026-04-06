@@ -56,7 +56,7 @@ struct RefractionSettings
     float refractionStrength;
     float refractionNormalPow;
     float refractionRGBFringing;
-    float refractionRadialBending;
+    bool refractionRadialBending;
     float refractionBendingStrength;
 };
 
