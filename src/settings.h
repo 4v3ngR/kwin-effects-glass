@@ -28,6 +28,8 @@ struct GeneralSettings
     bool edgeLighting;
     bool edgeLightingDock;
     bool edgeLightingTooltip;
+    bool blendGlowColor;
+    bool boostEdgeSaturation;
     bool excludeDocks;
 };
 

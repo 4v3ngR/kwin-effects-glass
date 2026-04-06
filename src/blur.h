@@ -144,6 +144,8 @@ private:
         int glowColorLocation;
         int glowStrengthLocation;
         int edgeLightingLocation;
+        int blendGlowColorLocation;
+        int boostEdgeSaturationLocation;
         int noiseStrengthLocation;
         int windowDataLocation;
 

@@ -511,6 +511,24 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QCheckBox" name="kcfg_BlendGlowColor">
+           <property name="text">
+            <string>Blend glow color into rim</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="kcfg_BoostEdgeSaturation">
+           <property name="text">
+            <string>Boost edge saturation</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">

@@ -126,6 +126,8 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.glowColorLocation = m_roundedOnscreenPass.shader->uniformLocation("glowColor");
         m_roundedOnscreenPass.glowStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("glowStrength");
         m_roundedOnscreenPass.edgeLightingLocation = m_roundedOnscreenPass.shader->uniformLocation("edgeLighting");
+        m_roundedOnscreenPass.blendGlowColorLocation = m_roundedOnscreenPass.shader->uniformLocation("blendGlowColor");
+        m_roundedOnscreenPass.boostEdgeSaturationLocation = m_roundedOnscreenPass.shader->uniformLocation("boostEdgeSaturation");
         m_roundedOnscreenPass.noiseStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("noiseStrength");
         m_roundedOnscreenPass.windowDataLocation = m_roundedOnscreenPass.shader->uniformLocation("windowData");
         m_roundedOnscreenPass.saturationBoostLocation = m_roundedOnscreenPass.shader->uniformLocation("saturationBoost");
@@ -1103,6 +1105,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.edgeLightingLocation, m_settings.general.edgeLighting);
     }
 
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blendGlowColorLocation, m_settings.general.blendGlowColor);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boostEdgeSaturationLocation, m_settings.general.boostEdgeSaturation);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.noiseStrengthLocation, static_cast<float>(m_noiseStrength) / 255.0f);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.windowDataLocation, QVector3D(scaledBackgroundRect.x(), scaledBackgroundRect.y(), blurInfo.noiseOffset));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.saturationBoostLocation, m_settings.general.saturation);

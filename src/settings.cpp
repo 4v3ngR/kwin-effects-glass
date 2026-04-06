@@ -53,6 +53,8 @@ void BlurSettings::read()
     general.edgeLighting = BlurConfig::edgeLighting();
     general.edgeLightingDock = BlurConfig::edgeLightingDock();
     general.edgeLightingTooltip = BlurConfig::edgeLightingTooltip();
+    general.blendGlowColor = BlurConfig::blendGlowColor();
+    general.boostEdgeSaturation = BlurConfig::boostEdgeSaturation();
     general.excludeDocks = BlurConfig::excludeDocks();
 
     forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());

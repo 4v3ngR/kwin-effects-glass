@@ -13,6 +13,8 @@ uniform float refractionBendingStrength;
 
 uniform float saturationBoost;
 uniform float glassBrightness;
+uniform int blendGlowColor;
+uniform int boostEdgeSaturation;
 
 // --- Oklab color space conversion ---
 vec3 srgbToLinear(vec3 c)
@@ -163,8 +165,10 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.b = TEXTURE(texUnit, clamp(uv + offset_b, 0.0, 1.0)).b;
         sum.a = sampleG.a;
 
-        float edgeSatBoost = 1.0 + edgeFactor * 0.5;
-        sum.rgb = oklabSatBoost(sum.rgb, edgeSatBoost);
+        if (boostEdgeSaturation == 1) {
+            float edgeSatBoost = 1.0 + edgeFactor * 0.5;
+            sum.rgb = oklabSatBoost(sum.rgb, edgeSatBoost);
+        }
 
         if (edgeLighting == 1) {
             float edgeBright = 1.0 - smoothstep(0.0, effectiveEdge, -dist);
@@ -191,9 +195,11 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         sum.b = glow.b;
     }
 
-    float rimWidth = max(min(edgeSizePixels.x, edgeSizePixels.y) * 0.015, 0.9);
+    float rimWidth = max(min(edgeSizePixels.x, edgeSizePixels.y) * 0.025, 0.9);
     float rim = exp(-(-dist) / rimWidth);
-    brightnessMod += rim * 2.0 * glowStrength;
+    if (blendGlowColor == 1) {
+        brightnessMod += rim * 2.0 * glowStrength;
+    }
 
     if (abs(saturationBoost - 1.0) > 0.001) {
         sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
@@ -201,7 +207,11 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
 
     vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
     tinted *= min(brightnessMod, 2.5);
-    tinted += glowColor * rim * glowStrength;
+    if (blendGlowColor == 1) {
+        tinted += glowColor * rim * glowStrength;
+    } else {
+        tinted = mix(tinted, glowColor, rim * glowStrength);
+    }
 
     // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
     return vec4(tinted, 1.0);
