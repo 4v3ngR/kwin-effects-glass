@@ -16,7 +16,6 @@ uniform float glassBrightness;
 uniform int blendGlowColor;
 uniform int boostEdgeSaturation;
 
-// --- Oklab color space conversion ---
 vec3 srgbToLinear(vec3 c)
 {
     return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c));
@@ -72,107 +71,102 @@ vec3 oklabSatBoost(vec3 color, float amount)
     return linearToSrgb(clamp(result, 0.0, 1.0));
 }
 
-float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
+float roundedRectangleDist(vec2 pos, vec2 halfSize, vec4 radius)
 {
-    float r = p.x > 0.0
-        ? (p.y > 0.0 ? cornerRadius.y : cornerRadius.w)
-        : (p.y > 0.0 ? cornerRadius.x : cornerRadius.z);
-    vec2 q = abs(p) - b + r;
+    float r = pos.x > 0.0
+        ? (pos.y > 0.0 ? radius.y : radius.w)
+        : (pos.y > 0.0 ? radius.x : radius.z);
+    vec2 q = abs(pos) - halfSize + r;
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
 
-vec4 glass(vec4 sum, vec4 cornerRadius)
+vec4 glass(vec4 color, vec4 radius)
 {
-    vec2 halfBlurSize = blurSize * 0.5;
-    vec2 position = uv * blurSize - halfBlurSize;
+    vec2 halfSize = blurSize * 0.5;
+    vec2 pixelPos = uv * blurSize - halfSize;
 
-    // --- Inline SDF + analytical gradient (one SDF, reused everywhere) ---
-    float cr = roundedRectangleDist(position, halfBlurSize, cornerRadius);
-    vec2 q = abs(position) - halfBlurSize + cr;
-    float dist = min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - cr;
+    float cornerRadius = pixelPos.x > 0.0
+        ? (pixelPos.y > 0.0 ? radius.y : radius.w)
+        : (pixelPos.y > 0.0 ? radius.x : radius.z);
+    vec2 q = abs(pixelPos) - halfSize + cornerRadius;
+    float dist = min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - cornerRadius;
 
     if (dist >= 0.0) {
-        return sum;
+        return color;
     }
 
-    float brightnessMod = glassBrightness;
+    float brightness = glassBrightness;
     float ior = 1.0 + refractionStrength;
 
     if (ior > 1.001) {
-        // Analytical SDF gradient
-        vec2 s = sign(position);
-        vec2 gradQ;
+        vec2 signPos = sign(pixelPos);
+        vec2 surfaceNormal;
         if (q.x > 0.0 && q.y > 0.0) {
-            gradQ = normalize(q);
+            surfaceNormal = normalize(q);
         } else if (q.x > 0.0) {
-            gradQ = vec2(1.0, 0.0);
+            surfaceNormal = vec2(1.0, 0.0);
         } else if (q.y > 0.0) {
-            gradQ = vec2(0.0, 1.0);
+            surfaceNormal = vec2(0.0, 1.0);
         } else {
-            gradQ = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+            surfaceNormal = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
         }
-        vec2 sdfGrad = gradQ * s;
+        surfaceNormal *= signPos;
 
-        // --- Analytical glass normal ---
-        float effectiveEdge = dot(abs(sdfGrad), edgeSizePixels);
-        float invEdge = 1.0 / max(effectiveEdge, 0.1);
-        float t = clamp(-dist * invEdge, 0.0, 1.0);
+        float bandWidth = dot(abs(surfaceNormal), edgeSizePixels) * 0.5;
+        float inverseBandWidth = 1.0 / max(bandWidth, 0.1);
+        float edgeBlend = clamp(-dist * inverseBandWidth, 0.0, 1.0);
 
-        float dh = 6.0 * t * (1.0 - t) * refractionNormalPow * 0.15;
-        vec3 N = normalize(vec3(dh * sdfGrad, 1.0));
+        float normalHeight = 6.0 * edgeBlend * (1.0 - edgeBlend) * refractionNormalPow * 0.15;
+        vec3 glassNormal = normalize(vec3(normalHeight * surfaceNormal, 1.0));
 
-        vec3 I = vec3(0.0, 0.0, -1.0);
-        float thickness = effectiveEdge;
+        vec3 viewRay = vec3(0.0, 0.0, -1.0);
+        float refractionDepth = bandWidth;
 
-        // Chromatic dispersion
         float dispersion = refractionRGBFringing * 0.04;
-        float ior_r = ior - dispersion;
-        float ior_b = ior + dispersion;
+        float iorRed = ior - dispersion;
+        float iorBlue = ior + dispersion;
 
-        vec3 R_r = refract(I, N, 1.0 / max(ior_r, 1.001));
-        vec3 R_g = refract(I, N, 1.0 / max(ior, 1.001));
-        vec3 R_b = refract(I, N, 1.0 / max(ior_b, 1.001));
+        vec3 refractRed = refract(viewRay, glassNormal, 1.0 / max(iorRed, 1.001));
+        vec3 refractGreen = refract(viewRay, glassNormal, 1.0 / max(ior, 1.001));
+        vec3 refractBlue = refract(viewRay, glassNormal, 1.0 / max(iorBlue, 1.001));
 
-        // handle total internal reflection 
-        if (dot(R_r, R_r) < 0.000001) R_r = vec3(0.0, 0.0, -1.0);
-        if (dot(R_g, R_g) < 0.000001) R_g = vec3(0.0, 0.0, -1.0);
-        if (dot(R_b, R_b) < 0.000001) R_b = vec3(0.0, 0.0, -1.0);
+        if (dot(refractRed, refractRed) < 0.000001) refractRed = vec3(0.0, 0.0, -1.0);
+        if (dot(refractGreen, refractGreen) < 0.000001) refractGreen = vec3(0.0, 0.0, -1.0);
+        if (dot(refractBlue, refractBlue) < 0.000001) refractBlue = vec3(0.0, 0.0, -1.0);
 
-        // --- SDF-driven lens distortion ---
-        float edgeFactor = 1.0 - smoothstep(0.0, 1.0, -dist * invEdge);
-        float lensMag = edgeFactor * effectiveEdge;
+        float lensBlend = 1.0 - smoothstep(0.0, 1.0, -dist * inverseBandWidth);
+        float lensMagnitude = lensBlend * bandWidth;
 
-        // Edge UV bending
-        vec2 normalizedPos = position / blurSize;
+        vec2 normalizedPos = pixelPos / blurSize;
 
-        if(abs(refractionRadialBending) > 0) {
-            vec2 tangent = vec2(refractionRadialBending * sdfGrad.y, refractionRadialBending * -sdfGrad.x);
-            sdfGrad += tangent * edgeFactor * (refractionBendingStrength * 0.5);
+        if (abs(refractionRadialBending) > 0) {
+            vec2 tangent = vec2(refractionRadialBending * surfaceNormal.y, refractionRadialBending * -surfaceNormal.x);
+            surfaceNormal += tangent * lensBlend * (refractionBendingStrength * 0.5);
         } else {
-            sdfGrad += normalizedPos * edgeFactor * refractionBendingStrength;
+            surfaceNormal += normalizedPos * lensBlend * refractionBendingStrength;
         }
 
         vec2 uvScale = 1.0 / blurSize;
-        vec2 lensOffset = -sdfGrad * lensMag * uvScale;
+        vec2 lensShift = -surfaceNormal * lensMagnitude * uvScale;
 
-        vec2 offset_r = -R_r.xy / abs(R_r.z) * thickness * uvScale + lensOffset;
-        vec2 offset_g = -R_g.xy / abs(R_g.z) * thickness * uvScale + lensOffset;
-        vec2 offset_b = -R_b.xy / abs(R_b.z) * thickness * uvScale + lensOffset;
+        vec2 uvShiftRed = -refractRed.xy / abs(refractRed.z) * refractionDepth * uvScale + lensShift;
+        vec2 uvShiftGreen = -refractGreen.xy / abs(refractGreen.z) * refractionDepth * uvScale + lensShift;
+        vec2 uvShiftBlue = -refractBlue.xy / abs(refractBlue.z) * refractionDepth * uvScale + lensShift;
 
-        vec4 sampleG = TEXTURE(texUnit, clamp(uv + offset_g, 0.0, 1.0));
-        sum.r = TEXTURE(texUnit, clamp(uv + offset_r, 0.0, 1.0)).r;
-        sum.g = sampleG.g;
-        sum.b = TEXTURE(texUnit, clamp(uv + offset_b, 0.0, 1.0)).b;
-        sum.a = sampleG.a;
+        vec4 sampleGreen = TEXTURE(texUnit, clamp(uv + uvShiftGreen, 0.0, 1.0));
+        color.r = TEXTURE(texUnit, clamp(uv + uvShiftRed, 0.0, 1.0)).r;
+        color.g = sampleGreen.g;
+        color.b = TEXTURE(texUnit, clamp(uv + uvShiftBlue, 0.0, 1.0)).b;
+        color.a = sampleGreen.a;
 
         if (boostEdgeSaturation == 1) {
-            float edgeSatBoost = 1.0 + edgeFactor * 0.5;
-            sum.rgb = oklabSatBoost(sum.rgb, edgeSatBoost);
+            float edgeSaturation = 1.0 + lensBlend * 0.5;
+            color.rgb = oklabSatBoost(color.rgb, edgeSaturation);
         }
 
         if (edgeLighting == 1) {
-            float edgeBright = 1.0 - smoothstep(0.0, effectiveEdge, -dist);
-            brightnessMod += edgeBright * glowStrength;
+            float edgeBrightness = 1.0 - smoothstep(0.0, bandWidth, -dist);
+            brightness += edgeBrightness * glowStrength;
         }
 
         if (glowStrength > 0.0) {
@@ -196,23 +190,22 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     }
 
     float rimWidth = max(min(edgeSizePixels.x, edgeSizePixels.y) * 0.025, 0.9);
-    float rim = exp(-(-dist) / rimWidth);
+    float rimIntensity = exp(-(-dist) / rimWidth);
     if (blendGlowColor == 1) {
-        brightnessMod += rim * 2.0 * glowStrength;
+        brightness += rimIntensity * 2.0 * glowStrength;
     }
 
     if (abs(saturationBoost - 1.0) > 0.001) {
-        sum.rgb = oklabSatBoost(sum.rgb, saturationBoost);
+        color.rgb = oklabSatBoost(color.rgb, saturationBoost);
     }
 
-    vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
-    tinted *= min(brightnessMod, 2.5);
+    vec3 tinted = mix(color.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
+    tinted *= min(brightness, 2.5);
     if (blendGlowColor == 1) {
-        tinted += glowColor * rim * glowStrength;
+        tinted += glowColor * rimIntensity * glowStrength;
     } else {
-        tinted = mix(tinted, glowColor, rim * glowStrength);
+        tinted = mix(tinted, glowColor, rimIntensity * glowStrength);
     }
 
-    // dist < 0 guaranteed here; outer sdfRoundedBox handles edge AA
     return vec4(tinted, 1.0);
 }
