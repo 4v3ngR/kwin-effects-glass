@@ -99,25 +99,23 @@ vec4 glass(vec4 color, vec4 radius)
     float ior = 1.0 + refractionStrength;
 
     if (ior > 1.001) {
-        vec2 signPos = sign(pixelPos);
-        vec2 surfaceNormal;
-        if (q.x > 0.0 && q.y > 0.0) {
-            surfaceNormal = normalize(q);
-        } else if (q.x > 0.0) {
-            surfaceNormal = vec2(1.0, 0.0);
-        } else if (q.y > 0.0) {
-            surfaceNormal = vec2(0.0, 1.0);
-        } else {
-            surfaceNormal = q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-        }
-        surfaceNormal *= signPos;
+        float bandWidth = max(edgeSizePixels.x, edgeSizePixels.y) * 0.5;
+        float sdfBlend = clamp(-dist / max(bandWidth, 0.1), 0.0, 1.0);
+        float sdfProfile = 6.0 * sdfBlend * (1.0 - sdfBlend);
 
-        float bandWidth = dot(abs(surfaceNormal), edgeSizePixels) * 0.5;
-        float inverseBandWidth = 1.0 / max(bandWidth, 0.1);
-        float edgeBlend = clamp(-dist * inverseBandWidth, 0.0, 1.0);
+        float eps = bandWidth * 0.75;
+        float dxp = roundedRectangleDist(pixelPos + vec2(eps, 0.0), halfSize, radius);
+        float dxn = roundedRectangleDist(pixelPos - vec2(eps, 0.0), halfSize, radius);
+        float dyp = roundedRectangleDist(pixelPos + vec2(0.0, eps), halfSize, radius);
+        float dyn = roundedRectangleDist(pixelPos - vec2(0.0, eps), halfSize, radius);
+        vec2 smoothGrad = vec2(dxp - dxn, dyp - dyn);
+        float gradLen = length(smoothGrad);
 
-        float normalHeight = 6.0 * edgeBlend * (1.0 - edgeBlend) * refractionNormalPow * 0.15;
-        vec3 glassNormal = normalize(vec3(normalHeight * surfaceNormal, 1.0));
+        float normalHeight = min(sdfProfile * refractionNormalPow * 0.15, 2.0);
+        vec2 normalXY = gradLen > 0.001
+            ? (smoothGrad / gradLen) * normalHeight
+            : vec2(0.0);
+        vec3 glassNormal = normalize(vec3(normalXY, 1.0));
 
         vec3 viewRay = vec3(0.0, 0.0, -1.0);
         float refractionDepth = bandWidth;
@@ -134,9 +132,11 @@ vec4 glass(vec4 color, vec4 radius)
         if (dot(refractGreen, refractGreen) < 0.000001) refractGreen = vec3(0.0, 0.0, -1.0);
         if (dot(refractBlue, refractBlue) < 0.000001) refractBlue = vec3(0.0, 0.0, -1.0);
 
+        float inverseBandWidth = 1.0 / max(bandWidth, 0.1);
         float lensBlend = 1.0 - smoothstep(0.0, 1.0, -dist * inverseBandWidth);
         float lensMagnitude = lensBlend * bandWidth;
 
+        vec2 surfaceNormal = gradLen > 0.001 ? smoothGrad / gradLen : vec2(1.0, 0.0);
         vec2 normalizedPos = pixelPos / blurSize;
 
         if (abs(refractionRadialBending) > 0) {
