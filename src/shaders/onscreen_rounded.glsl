@@ -22,6 +22,30 @@ float hashNoise(vec2 p)
     return fract((p3.x + p3.y) * p3.z);
 }
 
+float valueNoise(vec2 p)
+{
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+
+    float a = hashNoise(i);
+    float b = hashNoise(i + vec2(1.0, 0.0));
+    float c = hashNoise(i + vec2(0.0, 1.0));
+    float d = hashNoise(i + vec2(1.0, 1.0));
+
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float glassNoise(vec2 p)
+{
+    float n = 0.0;
+    n += valueNoise(p * 1.0) * 0.5;
+    n += valueNoise(p * 2.0) * 0.25;
+    n += valueNoise(p * 4.0) * 0.125;
+    n += valueNoise(p * 8.0) * 0.0625;
+    return n / 0.95;
+}
+
 #include "glass.glsl"
 
 void main(void)
@@ -54,8 +78,10 @@ void main(void)
     vec4 result = sum * colorMatrix * opacity;
 
     if (noiseStrength > 0.0) {
-        float n = (hashNoise(gl_FragCoord.xy - windowData.xy) - 0.5) * noiseStrength;
-        result.rgb += vec3(n);
+        vec2 noiseCoord = (gl_FragCoord.xy - windowData.xy) * 0.8 + windowData.z;
+        float n = (glassNoise(noiseCoord) - 0.5) * noiseStrength * 2.0;
+        float detail = (hashNoise(gl_FragCoord.xy - windowData.xy) - 0.5) * noiseStrength * 0.3;
+        result.rgb += vec3(n + detail);
     }
 
     FRAG_COLOR = result;
