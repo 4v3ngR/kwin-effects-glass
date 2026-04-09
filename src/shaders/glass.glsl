@@ -90,7 +90,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
             glow += (sum.rgb * concaveFactor);
         }
 
-        if (glowStrength) {
+        if (glowStrength > 0.0) {
             float edgeMask = smoothstep(0.0, -2.0, dist); 
             float borderInner = smoothstep(-1.0, -3.0, dist);
             float edgeProfile = edgeMask - borderInner; 
