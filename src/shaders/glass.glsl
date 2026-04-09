@@ -93,11 +93,14 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float edgeMask = smoothstep(0.0, -2.0, dist); 
         float borderInner = smoothstep(-1.0, -3.0, dist);
         float edgeProfile = edgeMask - borderInner; 
-        vec2 normalEdge = normalize(position); 
-        float lightDir = dot(normalEdge, vec2(0.5, 0.5)); 
-        vec3 edgeColor = mix(glowColor, tintColor, 0.5);
-        float edgeIntensity = edgeProfile * max(lightDir, 0.2);
-        glow += edgeColor * edgeIntensity;
+        float thicknessShadow = pow(edgeProfile, 0.7); 
+        float shadowMask = smoothstep(blurSize.y, -blurSize.y, position.y) * 
+                           smoothstep(blurSize.x, -blurSize.x, -position.x);
+        float highlightMask = smoothstep(-blurSize.y, blurSize.y, position.y) * 
+                              smoothstep(-blurSize.x, blurSize.x, -position.x);
+
+        glow = mix(glow, vec3(0.2), thicknessShadow * shadowMask);
+        glow = mix(glow, vec3(1.0), thicknessShadow * highlightMask);
 
 
         sum.r = glow.r;
