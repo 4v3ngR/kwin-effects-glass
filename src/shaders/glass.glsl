@@ -90,6 +90,16 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
             glow += (sum.rgb * concaveFactor);
         }
 
+        float edgeMask = smoothstep(0.0, -2.0, dist); 
+        float borderInner = smoothstep(-1.0, -3.0, dist);
+        float edgeProfile = edgeMask - borderInner; 
+        vec2 normalEdge = normalize(position); 
+        float lightDir = dot(normalEdge, vec2(0.5, 0.5)); 
+        vec3 edgeColor = mix(glowColor, tintColor, 0.5);
+        float edgeIntensity = edgeProfile * max(lightDir, 0.2);
+        glow += edgeColor * edgeIntensity;
+
+
         sum.r = glow.r;
         sum.g = glow.g;
         sum.b = glow.b;
