@@ -150,6 +150,7 @@ BlurEffect::BlurEffect()
         m_upsamplePass.mvpMatrixLocation = m_upsamplePass.shader->uniformLocation("modelViewProjectionMatrix");
         m_upsamplePass.offsetLocation = m_upsamplePass.shader->uniformLocation("offset");
         m_upsamplePass.halfpixelLocation = m_upsamplePass.shader->uniformLocation("halfpixel");
+        m_upsamplePass.saturationCompensationLocation = m_upsamplePass.shader->uniformLocation("satCompensation");
     }
 
     initBlurStrengthValues();
@@ -967,6 +968,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
         m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset) * m_upsampleOffset);
 
+        const float upsampleSaturationBoost = 1.0f + m_settings.general.saturation * 0.15f
+            + (m_blurRadius - 1.0f) * 0.125f
+            + (m_upsampleOffset - 1.0f) * 0.175f;
+
         for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
             const auto &read = renderInfo.framebuffers[i];
@@ -974,6 +979,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
                                       0.5 / read->colorAttachment()->height());
             m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
+            m_upsamplePass.shader->setUniform(m_upsamplePass.saturationCompensationLocation, upsampleSaturationBoost);
 
             read->colorAttachment()->bind();
 

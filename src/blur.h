@@ -160,6 +160,7 @@ private:
         int mvpMatrixLocation;
         int offsetLocation;
         int halfpixelLocation;
+        int saturationCompensationLocation;
     } m_upsamplePass;
 
 
