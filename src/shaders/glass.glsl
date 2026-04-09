@@ -4,7 +4,7 @@ uniform vec3 glowColor;
 uniform float glowStrength;
 uniform int edgeLighting;
 
-uniform vec2 edgeSizePixels;
+uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
@@ -97,7 +97,7 @@ vec4 glass(vec4 color, vec4 radius)
     float ior = 1.0 + refractionStrength;
 
     if (ior > 1.001) {
-        float bandWidth = max(edgeSizePixels.x, edgeSizePixels.y) * 0.5;
+        float bandWidth = edgeSizePixels * 0.5;
         float sdfBlend = clamp(-dist / max(bandWidth, 0.1), 0.0, 1.0);
         float sdfProfile = 6.0 * sdfBlend * (1.0 - sdfBlend);
 
@@ -182,7 +182,7 @@ vec4 glass(vec4 color, vec4 radius)
         sum.b = glow.b;
     }
 
-    float rimWidth = max(min(edgeSizePixels.x, edgeSizePixels.y) * 0.025, 0.9);
+    float rimWidth = max(edgeSizePixels * 0.025, 0.9);
     float rimIntensity = exp(-(-dist) / rimWidth);
     if (blendGlowColor == 1) {
         brightness += rimIntensity * 2.0 * glowStrength;
