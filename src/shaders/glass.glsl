@@ -93,7 +93,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
         float edgeMask = smoothstep(0.0, -2.0, dist); 
         float borderInner = smoothstep(-1.0, -3.0, dist);
         float edgeProfile = edgeMask - borderInner; 
-        float thicknessShadow = pow(edgeProfile, 0.6);
+        float thicknessShadow = pow(edgeProfile, 0.8);
         float shadowMask = smoothstep(blurSize.y, -blurSize.y, position.y) * 
                            smoothstep(blurSize.x, -blurSize.x, -position.x);
         float highlightMask = smoothstep(-blurSize.y, blurSize.y, position.y) * 
