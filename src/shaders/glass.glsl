@@ -90,17 +90,19 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
             glow += (sum.rgb * concaveFactor);
         }
 
-        float edgeMask = smoothstep(0.0, -2.0, dist); 
-        float borderInner = smoothstep(-1.0, -3.0, dist);
-        float edgeProfile = edgeMask - borderInner; 
-        float thicknessShadow = pow(edgeProfile, 0.8);
-        float shadowMask = smoothstep(blurSize.y, -blurSize.y, position.y) * 
-                           smoothstep(blurSize.x, -blurSize.x, -position.x);
-        float highlightMask = smoothstep(-blurSize.y, blurSize.y, position.y) * 
-                              smoothstep(-blurSize.x, blurSize.x, -position.x);
+        if (glowStrength) {
+            float edgeMask = smoothstep(0.0, -2.0, dist); 
+            float borderInner = smoothstep(-1.0, -3.0, dist);
+            float edgeProfile = edgeMask - borderInner; 
+            float thicknessShadow = pow(edgeProfile, 0.8);
+            float shadowMask = smoothstep(blurSize.y, -blurSize.y, position.y) * 
+                               smoothstep(blurSize.x, -blurSize.x, -position.x);
+            float highlightMask = smoothstep(-blurSize.y, blurSize.y, position.y) * 
+                                  smoothstep(-blurSize.x, blurSize.x, -position.x);
 
-        glow = mix(glow, vec3(0.2), thicknessShadow * shadowMask * 0.5);
-        glow = mix(glow, vec3(1.0), thicknessShadow * highlightMask);
+            glow = mix(glow, vec3(0.2), thicknessShadow * shadowMask * 0.5);
+            glow = mix(glow, vec3(1.0), thicknessShadow * highlightMask);
+        }
 
 
         sum.r = glow.r;
