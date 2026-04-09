@@ -968,9 +968,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
         m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset) * m_upsampleOffset);
 
-        const float upsampleSaturationBoost = 1.0f + m_settings.general.saturation * 0.15f
-            + (m_blurRadius - 1.0f) * 0.125f
-            + (m_upsampleOffset - 1.0f) * 0.175f;
+        // Compensate for saturation loss caused by averaging in sRGB space.
+        // More iterations, larger offset, and wider radius all increase desaturation.
+        const float blurIntensity = float(m_iterationCount) * float(m_offset);
+        const float radiusWeight = m_blurRadius + m_upsampleOffset * 1.05f;
+        const float numPasses = std::max(float(renderInfo.framebuffers.size()) - 2.0f, 1.0f);
+        const float upsampleSaturationBoost = 1.0f + (blurIntensity * radiusWeight * 0.03f) / numPasses;
 
         for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
