@@ -8,8 +8,6 @@ uniform vec2 edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
-uniform float refractionRadialBending;
-uniform float refractionBendingStrength;
 
 uniform float saturationBoost;
 uniform float glassBrightness;
@@ -138,13 +136,8 @@ vec4 glass(vec4 color, vec4 radius)
 
         vec2 surfaceNormal = gradLen > 0.001 ? smoothGrad / gradLen : vec2(1.0, 0.0);
         vec2 normalizedPos = pixelPos / blurSize;
-
-        if (abs(refractionRadialBending) > 0) {
-            vec2 tangent = vec2(refractionRadialBending * surfaceNormal.y, refractionRadialBending * -surfaceNormal.x);
-            surfaceNormal += tangent * lensBlend * (refractionBendingStrength * 0.5);
-        } else {
-            surfaceNormal += normalizedPos * lensBlend * refractionBendingStrength;
-        }
+        float cornerWeight = dot(normalizedPos, normalizedPos) * 4.0;
+        surfaceNormal += normalizedPos * lensBlend * cornerWeight;
 
         vec2 uvScale = 1.0 / blurSize;
         vec2 lensShift = -surfaceNormal * lensMagnitude * uvScale;
