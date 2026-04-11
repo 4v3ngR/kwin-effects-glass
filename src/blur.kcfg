@@ -27,7 +27,7 @@
             <default>#00000000</default>
         </entry>
         <entry name="GlowColor" type="String">
-            <default>#00FFFFFF</default>
+            <default>#44FFFFFF</default>
         </entry>
         <entry name="BlurStrength" type="Int">
             <default>7</default>
