@@ -944,12 +944,13 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
     }
 
+    bool isOverRounded = false;
     if (topCornerRadius > 0 || bottomCornerRadius > 0) {
         const QRectF frame = w->frameGeometry();
         const float winWidth = frame.width();
         const float winHeight = frame.height();
 
-        bool isOverRounded = (topCornerRadius + bottomCornerRadius) > winHeight ||
+        isOverRounded = (topCornerRadius + bottomCornerRadius) > winHeight ||
             (topCornerRadius * 2) > winWidth;
 
         if (isOverRounded) {
@@ -1015,7 +1016,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     QColor glow(m_settings.general.glowColor);
     QVector3D glowVec(glow.redF(), glow.greenF(), glow.blueF());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowColorLocation, glowVec);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowStrengthLocation, static_cast<float>(glow.alphaF()));
+    if (isOverRounded && w->isDock()) {
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowStrengthLocation, 0.0);
+    } else {
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowStrengthLocation, static_cast<float>(glow.alphaF()));
+    }
+
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.edgeLightingLocation, m_settings.general.edgeLighting);
 
     read->colorAttachment()->bind();
