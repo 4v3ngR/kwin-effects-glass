@@ -23,6 +23,14 @@ namespace KWin
 class BlurManagerInterface;
 class ContrastManagerInterface;
 
+#ifdef GLASS_X11
+using BlurOutput = Output;
+using BlurRegion = QRegion;
+#else
+using BlurOutput = RenderView;
+using BlurRegion = Region;
+#endif
+
 struct BlurRenderData
 {
     /// Temporary render targets needed for the Dual Kawase algorithm, the first texture
@@ -34,16 +42,16 @@ struct BlurRenderData
 struct BlurEffectData
 {
     /// The region that should be blurred behind the window
-    std::optional<Region> content;
+    std::optional<BlurRegion> content;
 
     /// The region that should be blurred behind the frame
-    std::optional<Region> frame;
+    std::optional<BlurRegion> frame;
 
     /**
      * The render data per render view, as they can have different
      *  color spaces and even different windows on them
      */
-    std::unordered_map<RenderView *, BlurRenderData> render;
+    std::unordered_map<BlurOutput *, BlurRenderData> render;
 
     ItemEffect windowEffect;
 
@@ -66,8 +74,12 @@ public:
 
     void reconfigure(ReconfigureFlags flags) override;
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
+#ifdef GLASS_X11
+    void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
+#else
     void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
-    void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const Region &deviceRegion, WindowPaintData &data) override;
+#endif
+    void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data) override;
 
     bool provides(Feature feature) override;
     bool isActive() const override;
@@ -84,7 +96,7 @@ public:
 public Q_SLOTS:
     void slotWindowAdded(KWin::EffectWindow *w);
     void slotWindowDeleted(KWin::EffectWindow *w);
-    void slotViewRemoved(KWin::RenderView *view);
+    void slotOutputRemoved(KWin::BlurOutput *output);
 #if KWIN_BUILD_X11
     void slotPropertyNotify(KWin::EffectWindow *w, long atom);
 #endif
@@ -92,12 +104,12 @@ public Q_SLOTS:
 
 private:
     void initBlurStrengthValues();
-    Region blurRegion(EffectWindow *w) const;
-    Region decorationBlurRegion(const EffectWindow *w) const;
+    BlurRegion blurRegion(EffectWindow *w) const;
+    BlurRegion decorationBlurRegion(const EffectWindow *w) const;
     bool decorationSupportsBlurBehind(const EffectWindow *w) const;
     bool shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const;
     void updateBlurRegion(EffectWindow *w);
-    void blur(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const Region &deviceRegion, WindowPaintData &data);
+    void blur(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data);
     GLTexture *ensureNoiseTexture();
     QMatrix4x4 colorMatrix(const float &brightness, const float &saturation, const float &contrast) const;
 
@@ -159,9 +171,9 @@ private:
 #if KWIN_BUILD_X11
     long net_wm_blur_region = 0;
 #endif
-    Region m_paintedDeviceArea; // keeps track of all painted areas (from bottom to top)
-    Region m_currentDeviceBlur; // keeps track of currently blurred area of the windows (from bottom to top)
-    RenderView *m_currentView = nullptr;
+    BlurRegion m_paintedDeviceArea; // keeps track of all painted areas (from bottom to top)
+    BlurRegion m_currentDeviceBlur; // keeps track of currently blurred area of the windows (from bottom to top)
+    BlurOutput *m_currentOutput = nullptr;
 
     QMatrix4x4 m_colorMatrix;
     size_t m_iterationCount; // number of times the texture will be downsized to half size
