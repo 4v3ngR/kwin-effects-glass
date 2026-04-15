@@ -1118,7 +1118,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     QColor glow(m_settings.general.glowColor);
     QVector3D glowVec(glow.redF(), glow.greenF(), glow.blueF());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowColorLocation, glowVec);
-    if (isOverRounded && w->isDock()) {
+    if (isOverRounded && w->isDock() || m_settings.general.edgeLightingDock && w->isDock() || m_settings.general.edgeLightingTooltip && w->isTooltip()) {
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowStrengthLocation, 0.0);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.edgeLightingLocation, false);
     } else {

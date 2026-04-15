@@ -8,6 +8,12 @@
         <entry name="EdgeLighting" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="EdgeLightingDock" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="EdgeLightingTooltip" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="ExcludeDocks" type="Bool">
             <default>false</default>
         </entry>
