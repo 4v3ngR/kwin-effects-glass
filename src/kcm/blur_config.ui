@@ -861,6 +861,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="kcfg_DynamicCorners">
+         <property name="text">
+          <string>Dynamic corner radius</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">

@@ -92,6 +92,7 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     bool blocksDirectScanout() const override;
+    bool shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner);
 
 public Q_SLOTS:
     void slotWindowAdded(KWin::EffectWindow *w);

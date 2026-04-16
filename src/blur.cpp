@@ -1067,10 +1067,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
 
         cornerRadius = BorderRadius(
-            topCornerRadius, // top left
-            topCornerRadius, // top right
-            bottomCornerRadius, // bottom right
-            bottomCornerRadius // bottom left
+            shouldFlattenCorner(w, Qt::TopLeftCorner) ? 0.0f : topCornerRadius, // top left
+            shouldFlattenCorner(w, Qt::TopRightCorner) ? 0.0f : topCornerRadius, // top right
+            shouldFlattenCorner(w, Qt::BottomRightCorner) ? 0.0f : bottomCornerRadius, // bottom right
+            shouldFlattenCorner(w, Qt::BottomLeftCorner) ? 0.0f : bottomCornerRadius // bottom left
         );
     }
 
@@ -1178,6 +1178,54 @@ bool BlurEffect::isActive() const
 
 bool BlurEffect::blocksDirectScanout() const
 {
+    return false;
+}
+
+bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
+    if (!w || w->isTooltip() || w->isDock() || !m_settings.roundedCorners.dynamicCorners) {
+        return false;
+    }
+
+    const QRectF rect = w->frameGeometry();
+    const double margin = 1.0; // Tolerance in pixels
+
+    QPointF cornerPos;
+    bool isLeft = corner == Qt::TopLeftCorner || corner == Qt::BottomLeftCorner;
+    bool isRight = corner == Qt::TopRightCorner || corner == Qt::BottomRightCorner;
+    bool isTop = corner == Qt::TopLeftCorner || corner == Qt::TopRightCorner;
+    bool isBottom = corner == Qt::BottomLeftCorner || corner == Qt::BottomRightCorner;
+
+    switch (corner) {
+        case Qt::TopLeftCorner:     cornerPos = rect.topLeft(); break;
+        case Qt::TopRightCorner:    cornerPos = rect.topRight(); break;
+        case Qt::BottomLeftCorner:  cornerPos = rect.bottomLeft(); break;
+        case Qt::BottomRightCorner: cornerPos = rect.bottomRight(); break;
+    }
+
+    for (auto it = m_windows.begin(); it != m_windows.end(); ++it) {
+        KWin::EffectWindow *other = it->first;
+        if (other == w || other->isMinimized() || !other->isManaged()) continue;
+
+        const QRectF otherRect = other->frameGeometry();
+
+        bool onLeft   = isRight  && std::abs(cornerPos.x() - otherRect.left())   < margin;
+        bool onRight  = isLeft   && std::abs(cornerPos.x() - otherRect.right())  < margin;
+        bool onTop    = isBottom && std::abs(cornerPos.y() - otherRect.top())    < margin;
+        bool onBottom = isTop    && std::abs(cornerPos.y() - otherRect.bottom()) < margin;
+
+        if (onLeft || onRight) {
+            if (cornerPos.y() >= (otherRect.top() - margin) && cornerPos.y() <= (otherRect.bottom() + margin)) {
+                return true;
+            }
+        }
+
+        if (onTop || onBottom) {
+            if (cornerPos.x() >= (otherRect.left() - margin) && cornerPos.x() <= (otherRect.right() + margin)) {
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 

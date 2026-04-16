@@ -63,6 +63,7 @@ void BlurSettings::read()
     roundedCorners.menuRadius = BlurConfig::menuCornerRadius();
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
+    roundedCorners.dynamicCorners = BlurConfig::dynamicCorners();
 
     refraction.edgeSizePixels = BlurConfig::refractionEdgeSize() * 10;
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;

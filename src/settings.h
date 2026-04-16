@@ -45,6 +45,7 @@ struct RoundedCornersSettings
     float menuRadius;
     float dockRadius;
     bool roundMaximized;
+    bool dynamicCorners;
 };
 
 struct RefractionSettings
