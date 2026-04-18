@@ -1182,7 +1182,7 @@ bool BlurEffect::blocksDirectScanout() const
 }
 
 bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
-    if (!w || w->isTooltip() || w->isDock() || !m_settings.roundedCorners.dynamicCorners) {
+    if (!w || !m_settings.roundedCorners.dynamicCorners) {
         return false;
     }
 
@@ -1204,7 +1204,12 @@ bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
 
     for (auto it = m_windows.begin(); it != m_windows.end(); ++it) {
         KWin::EffectWindow *other = it->first;
-        if (other == w || other->isMinimized() || !other->isManaged()) continue;
+        if (other == w ||
+            other->isMinimized() ||
+            !other->isManaged() ||
+            !other->isOnCurrentDesktop() ||
+            !other->isOnCurrentActivity()
+        ) continue;
 
         const QRectF otherRect = other->frameGeometry();
 
