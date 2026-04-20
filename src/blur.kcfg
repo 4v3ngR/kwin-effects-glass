@@ -121,5 +121,8 @@ class3</default>
         <entry name="RefractionRGBFringing" type="Double">
             <default>5.0</default>
         </entry>
+        <entry name="RefractionOffsetStrength" type="Double">
+            <default>8.0</default>
+        </entry>
     </group>
 </kcfg>

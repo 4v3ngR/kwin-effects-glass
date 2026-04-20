@@ -8,6 +8,7 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
+uniform float refractionOffsetStrength;
 
 uniform float saturationBoost;
 uniform float glassBrightness;
@@ -125,7 +126,7 @@ vec4 glass(vec4 color, vec4 radius) {
 
         vec2 surfaceNormal = gradLen > 0.001 ? smoothGrad / gradLen : vec2(1.0, 0.0);
         vec2 normalizedPos = pixelPos / blurSize;
-        float cornerWeight = dot(normalizedPos, normalizedPos) * 3.0;
+        float cornerWeight = dot(normalizedPos, normalizedPos) * refractionOffsetStrength;
         surfaceNormal += normalizedPos * lensBlend * cornerWeight;
 
         vec2 uvScale = 1.0 / blurSize;
