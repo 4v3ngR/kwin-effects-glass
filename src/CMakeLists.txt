@@ -10,7 +10,7 @@ file(READ shaders/glass.glsl GLASS_SHADER)
 function(generate_shader_variants input_glsl output_base)
     file(READ "${input_glsl}" SHADER_SRC)
 
-    # Expand glass.glsl includes
+    # Expand glass include
     string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC}")
 
     # Core variant
@@ -27,7 +27,6 @@ generate_shader_variants(shaders/onscreen_rounded_vertex.glsl onscreen_rounded .
 # Generate fragment shaders
 generate_shader_variants(shaders/downsample.glsl downsample .frag)
 generate_shader_variants(shaders/upsample.glsl upsample .frag)
-generate_shader_variants(shaders/noise.glsl noise .frag)
 generate_shader_variants(shaders/onscreen_rounded.glsl onscreen_rounded .frag)
 
 set(glass_SOURCES

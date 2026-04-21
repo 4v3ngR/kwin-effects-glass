@@ -14,6 +14,12 @@
         <entry name="EdgeLightingTooltip" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="BlendGlowColor" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="BoostEdgeSaturation" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="ExcludeDocks" type="Bool">
             <default>false</default>
         </entry>
@@ -21,16 +27,22 @@
             <default>#00000000</default>
         </entry>
         <entry name="GlowColor" type="String">
-            <default>#00000000</default>
+            <default>#44FFFFFF</default>
         </entry>
         <entry name="BlurStrength" type="Int">
-            <default>15</default>
+            <default>7</default>
+        </entry>
+        <entry name="BlurRadius" type="Int">
+            <default>12</default>
+        </entry>
+        <entry name="UpsampleOffset" type="Int">
+            <default>10</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
-            <default>5</default>
+            <default>3</default>
         </entry>
         <entry name="BlurDecorations" type="Bool">
-            <default>false</default>
+            <default>true</default>
         </entry>
         <entry name="WindowClasses" type="String">
             <default>class1
@@ -38,10 +50,10 @@ class2
 class3</default>
         </entry>
         <entry name="BlurMatching" type="Bool">
-            <default>true</default>
+            <default>false</default>
         </entry>
         <entry name="BlurNonMatching" type="Bool">
-            <default>false</default>
+            <default>true</default>
         </entry>
         <entry name="TransparentBlur" type="Bool">
             <default>true</default>
@@ -104,10 +116,13 @@ class3</default>
             <default>0.0</default>
         </entry>
         <entry name="RefractionEdgeSize" type="Double">
-            <default>20.0</default>
+            <default>9.0</default>
         </entry>
         <entry name="RefractionRGBFringing" type="Double">
-            <default>1.0</default>
+            <default>5.0</default>
+        </entry>
+        <entry name="RefractionOffsetStrength" type="Double">
+            <default>8.0</default>
         </entry>
     </group>
 </kcfg>

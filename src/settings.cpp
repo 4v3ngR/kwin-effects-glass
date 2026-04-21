@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "blurconfig.h"
+#include <algorithm>
 
 namespace KWin
 {
@@ -45,11 +46,15 @@ void BlurSettings::read()
     general.brightness = BlurConfig::brightness();
     general.saturation = BlurConfig::saturation();
     general.contrast = BlurConfig::contrast();
+    general.blurRadius = std::max(0.2f, BlurConfig::blurRadius() / 10.0f);
+    general.upsampleOffset = std::max(0.2f, BlurConfig::upsampleOffset() / 10.0f);
     general.tintColor = BlurConfig::tintColor();
     general.glowColor = BlurConfig::glowColor();
     general.edgeLighting = BlurConfig::edgeLighting();
     general.edgeLightingDock = BlurConfig::edgeLightingDock();
     general.edgeLightingTooltip = BlurConfig::edgeLightingTooltip();
+    general.blendGlowColor = BlurConfig::blendGlowColor();
+    general.boostEdgeSaturation = BlurConfig::boostEdgeSaturation();
     general.excludeDocks = BlurConfig::excludeDocks();
 
     forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());
@@ -69,6 +74,8 @@ void BlurSettings::read()
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;
     refraction.refractionNormalPow = BlurConfig::refractionNormalPow() / 2.0;
     refraction.refractionRGBFringing = BlurConfig::refractionRGBFringing() / 20.0;
+    refraction.refractionOffsetStrength = BlurConfig::refractionOffsetStrength() / 2.0;
+
 }
 
 }

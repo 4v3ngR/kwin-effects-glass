@@ -8,108 +8,162 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
+uniform float refractionOffsetStrength;
 
-float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
-{
-    float r = p.x > 0.0
-        ? (p.y > 0.0 ? cornerRadius.y : cornerRadius.w)
-        : (p.y > 0.0 ? cornerRadius.x : cornerRadius.z);
-    vec2 q = abs(p) - b + r;
-    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
+uniform float saturationBoost;
+uniform float glassBrightness;
+uniform int blendGlowColor;
+uniform int boostEdgeSaturation;
+
+vec3 srgbToLinear(vec3 c) {
+    return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c));
 }
 
-vec4 roundedRectangle(vec2 fragCoord, vec3 color, vec4 cornerRadius)
-{
-    vec2 halfblurSize = blurSize * 0.5;
-    vec2 p = fragCoord - halfblurSize;
-    float dist = roundedRectangleDist(p, halfblurSize, cornerRadius);
-
-    if (dist <= 0.0) {
-        return vec4(color, 1.0);
-    }
-
-    float s = smoothstep(0.0, 1.0, dist);
-    return vec4(color, mix(1.0, 0.0, s));
+vec3 linearToSrgb(vec3 c) {
+    return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c));
 }
 
-vec4 glass(vec4 sum, vec4 cornerRadius)
-{
-    vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+vec3 linearToOklab(vec3 c) {
+    float l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
+    float m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
+    float s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
 
-    vec2 position = uv * blurSize - halfBlurSize.xy;
-    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+    float l_ = pow(max(l, 0.0), 1.0 / 3.0);
+    float m_ = pow(max(m, 0.0), 1.0 / 3.0);
+    float s_ = pow(max(s, 0.0), 1.0 / 3.0);
 
-    if (dist >= 0.0) {
-        return sum;
+    return vec3(0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_, 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_, 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_);
+}
+
+vec3 oklabToLinear(vec3 lab) {
+    float l_ = lab.x + 0.3963377774 * lab.y + 0.2158037573 * lab.z;
+    float m_ = lab.x - 0.1055613458 * lab.y - 0.0638541728 * lab.z;
+    float s_ = lab.x - 0.0894841775 * lab.y - 1.2914855480 * lab.z;
+
+    float l = l_ * l_ * l_;
+    float m = m_ * m_ * m_;
+    float s = s_ * s_ * s_;
+
+    return vec3(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);
+}
+
+vec3 oklabSatBoost(vec3 color, float amount) {
+    if(abs(amount - 1.0) < 0.001)
+        return color;
+
+    vec3 linear = srgbToLinear(clamp(color, 0.0, 1.0));
+    vec3 lab = linearToOklab(linear);
+    lab.yz *= amount;
+    vec3 result = oklabToLinear(lab);
+    return linearToSrgb(clamp(result, 0.0, 1.0));
+}
+
+float roundedRectangleDist(vec2 pos, vec2 halfSize, vec4 radius) {
+    vec2 quadrant = step(0.0, pos);
+    float rad = mix(mix(radius.z, radius.x, quadrant.y), mix(radius.w, radius.y, quadrant.y), quadrant.x);
+    vec2 q = abs(pos) - halfSize + rad;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - rad;
+}
+
+vec4 processSample(sampler2D tex, vec2 baseUv, vec3 glassNormal, float ior, float dispersion, float bandWidth, vec2 uvScale, vec2 lensShift) {
+    vec3 viewRay = vec3(0.0, 0.0, -1.0);
+
+    vec3 refractG = refract(viewRay, glassNormal, 1.0 / ior);
+    vec2 shiftG = (-refractG.xy / max(abs(refractG.z), 0.001)) * bandWidth * uvScale + lensShift;
+    vec4 sampleG = TEXTURE(tex, clamp(baseUv + shiftG, 0.0, 1.0));
+    
+    if(dispersion > 0.001) {
+        vec3 refractR = refract(viewRay, glassNormal, 1.0 / (ior - dispersion));
+        vec2 shiftR = (-refractR.xy / max(abs(refractR.z), 0.001)) * bandWidth * uvScale + lensShift;
+
+        vec3 refractB = refract(viewRay, glassNormal, 1.0 / (ior + dispersion));
+        vec2 shiftB = (-refractB.xy / max(abs(refractB.z), 0.001)) * bandWidth * uvScale + lensShift;
+
+        float r = TEXTURE(tex, clamp(baseUv + shiftR, 0.0, 1.0)).r;
+        float b = TEXTURE(tex, clamp(baseUv + shiftB, 0.0, 1.0)).b;
+        return vec4(r, sampleG.g, b, sampleG.a);
+    }
+    return sampleG;
+}
+
+vec4 glass(vec4 color, vec4 radius) {
+    vec2 halfSize = blurSize * 0.5;
+    vec2 pixelPos = uv * blurSize - halfSize;
+    float dist = roundedRectangleDist(pixelPos, halfSize, radius);
+
+    if(dist >= 0.0) {
+        return color;
     }
 
-    float minEsp = clamp(edgeSizePixels, 0.1, minHalfSize * 0.9);
-    float edgeFactor = 1.0 - clamp(abs(dist) / minEsp, 0.0, 1.0);
-    float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
+    float bandWidth = max(edgeSizePixels * 0.5, 0.1);
+    float invBandWidth = 1.0 / bandWidth;
+    float rimWidth = max(edgeSizePixels * 0.025, 0.9);
+    float rimIntensity = exp(dist / rimWidth);
 
-    if (refractionStrength > 0) {
-        // Initial 2D normal
-        const float h = 1.0;
-        vec4 r = clamp(cornerRadius * 2.0, 64.0, 128.0);
-        vec2 gradient = vec2(
-                roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
-                roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
-        );
+    float brightness = glassBrightness;
+    float ior = 1.0 + refractionStrength;
 
-        vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
+    if(ior > 1.001) {
+        float sdfBlend = clamp(-dist / max(bandWidth, 0.1), 0.0, 1.0);
+        float sdfProfile = 6.0 * sdfBlend * (1.0 - sdfBlend);
 
-        float finalStrength = min(0.4 * concaveFactor * refractionStrength, 1.0);
+        float eps = bandWidth * 0.75;
+        float dxp = roundedRectangleDist(pixelPos + vec2(eps, 0.0), halfSize, radius);
+        float dxn = roundedRectangleDist(pixelPos - vec2(eps, 0.0), halfSize, radius);
+        float dyp = roundedRectangleDist(pixelPos + vec2(0.0, eps), halfSize, radius);
+        float dyn = roundedRectangleDist(pixelPos - vec2(0.0, eps), halfSize, radius);
+        vec2 smoothGrad = vec2(dxp - dxn, dyp - dyn);
+        float gradLen = length(smoothGrad);
 
-        vec2 refractOffsetG = -normal.xy * finalStrength;
-        vec2 refractOffsetR = -normal.xy * finalStrength;
-        vec2 refractOffsetB = -normal.xy * finalStrength;
+        float normalHeight = min(sdfProfile * refractionNormalPow * 0.15, 2.0);
+        vec2 normalXY = gradLen > 0.001 ? (smoothGrad / gradLen) * normalHeight : vec2(0.0);
+        vec3 glassNormal = normalize(vec3(normalXY, 1.0));
 
-        // Different refraction offsets for each color channel
-        float fringingFactor = refractionRGBFringing * 0.3;
-        if (fringingFactor > 0.0) {
-            // Red bends most
-            refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
-            // Blue bends least
-            refractOffsetB = -normal.xy * (finalStrength * (1.0 - fringingFactor));
+        float dispersion = refractionRGBFringing;
+
+        float lensBlend = 1.0 - smoothstep(0.0, 1.0, -dist * invBandWidth);
+        float lensMagnitude = lensBlend * bandWidth;
+
+        vec2 surfaceNormal = gradLen > 0.001 ? smoothGrad / gradLen : vec2(1.0, 0.0);
+        vec2 normalizedPos = pixelPos / blurSize;
+        float cornerWeight = dot(normalizedPos, normalizedPos) * refractionOffsetStrength;
+        surfaceNormal += normalizedPos * lensBlend * cornerWeight;
+
+        vec2 uvScale = 1.0 / blurSize;
+        vec2 lensShift = -surfaceNormal * lensMagnitude * uvScale;
+
+        color = processSample(texUnit, uv, glassNormal, ior, dispersion, bandWidth, uvScale, lensShift);
+
+        if(edgeLighting == 1) {
+            float edgeBrightness = 1.0 - smoothstep(0.0, bandWidth, -dist);
+            brightness += edgeBrightness * glowStrength;
         }
-
-        vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
-        vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
-        vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
-
-        sum.r = TEXTURE(texUnit, coordR).r;
-        sum.g = TEXTURE(texUnit, coordG).g;
-        sum.b = TEXTURE(texUnit, coordB).b;
-        sum.a = TEXTURE(texUnit, coordG).a;
     }
 
-    if (concaveFactor < 1.0) {
-        vec3 glow = mix(sum.rgb, glowColor, clamp(0.25 * concaveFactor, 0.0, glowStrength));
-        if (edgeLighting == 1) {
-            glow += (sum.rgb * concaveFactor);
-        }
-
-        if (glowStrength > 0.0) {
-            float edgeMask = smoothstep(0.0, -2.0, dist); 
-            float borderInner = smoothstep(-1.0, -3.0, dist);
-            float edgeProfile = edgeMask - borderInner; 
-            float thicknessShadow = pow(edgeProfile, 0.9);
-            float shadowMask = smoothstep(blurSize.y * 0.7 , -blurSize.y * 0.7 , position.y) *
-                               smoothstep(blurSize.x * 0.7 , -blurSize.x * 0.7 , -position.x);
-            float highlightMask = smoothstep(-blurSize.y * 0.7 , blurSize.y * 0.7 , position.y) *
-                                  smoothstep(-blurSize.x * 0.7 , blurSize.x * 0.7 , -position.x);
-
-            glow = mix(glow, vec3(1.0), thicknessShadow * shadowMask);
-            glow = mix(glow, vec3(1.0), thicknessShadow * highlightMask);
-        }
-
-
-        sum.r = glow.r;
-        sum.g = glow.g;
-        sum.b = glow.b;
+    if(boostEdgeSaturation == 1) {
+        float satFactor = (ior > 1.001) ? (1.0 + (1.0 - smoothstep(0.0, 1.0, -dist * invBandWidth)) * 0.5) : (1.0 + rimIntensity * 1.5);
+        color.rgb = oklabSatBoost(color.rgb, satFactor);
     }
 
-    vec3 tinted = mix(sum.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
-    return roundedRectangle(uv * blurSize, tinted, cornerRadius);
+    if(blendGlowColor == 1) {
+        brightness += rimIntensity * 2.0 * glowStrength;
+    }
+
+    if(abs(saturationBoost - 1.0) > 0.001) {
+        color.rgb = oklabSatBoost(color.rgb, saturationBoost);
+    }
+
+    vec3 tinted = mix(color.rgb, tintColor, clamp(tintStrength, 0.0, 1.0));
+    float glowMask = rimIntensity * glowStrength;
+    float glowBrightness = brightness + (float(blendGlowColor == 1) * glowMask * 2.0);
+    tinted *= min(glowBrightness, 2.5);
+
+    vec3 finalRGB;
+    if(blendGlowColor == 1) {
+        finalRGB = tinted + (glowColor * glowMask);
+    } else {
+        finalRGB = mix(tinted, glowColor, glowMask);
+    }
+    
+    return vec4(finalRGB, 1.0);
 }

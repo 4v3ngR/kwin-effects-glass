@@ -53,6 +53,11 @@ struct BlurEffectData
      */
     std::unordered_map<BlurOutput *, BlurRenderData> render;
 
+    /**
+     * Per-window offset for the noise shader
+     */
+    float noiseOffset = 0.0f;
+
     ItemEffect windowEffect;
 
     /**
@@ -111,7 +116,6 @@ private:
     bool shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const;
     void updateBlurRegion(EffectWindow *w);
     void blur(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data);
-    GLTexture *ensureNoiseTexture();
     QMatrix4x4 colorMatrix(const float &brightness, const float &saturation, const float &contrast) const;
 
 private:
@@ -131,6 +135,7 @@ private:
         int refractionStrengthLocation;
         int refractionNormalPowLocation;
         int refractionRGBFringingLocation;
+        int refractionOffsetStrengthLocation;
 
         int tintColorLocation;
         int tintStrengthLocation;
@@ -138,6 +143,13 @@ private:
         int glowColorLocation;
         int glowStrengthLocation;
         int edgeLightingLocation;
+        int blendGlowColorLocation;
+        int boostEdgeSaturationLocation;
+        int noiseStrengthLocation;
+        int windowDataLocation;
+
+        int saturationBoostLocation;
+        int brightnessLocation;
     } m_roundedOnscreenPass;
 
     struct
@@ -154,18 +166,9 @@ private:
         int mvpMatrixLocation;
         int offsetLocation;
         int halfpixelLocation;
+        int saturationCompensationLocation;
     } m_upsamplePass;
 
-    struct
-    {
-        std::unique_ptr<GLShader> shader;
-        int mvpMatrixLocation;
-        int noiseTextureSizeLocation;
-
-        std::unique_ptr<GLTexture> noiseTexture;
-        qreal noiseTextureScale = 1.0;
-        int noiseTextureStength = 0;
-    } m_noisePass;
 
     BlurSettings m_settings;
     bool m_valid = false;
@@ -181,6 +184,8 @@ private:
     int m_offset;
     int m_expandSize;
     int m_noiseStrength;
+    float m_blurRadius;
+    float m_upsampleOffset;
     QStringList m_windowClasses;
     bool m_whitelist;
 

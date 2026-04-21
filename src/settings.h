@@ -21,11 +21,15 @@ struct GeneralSettings
     float brightness;
     float saturation;
     float contrast;
+    float blurRadius;
+    float upsampleOffset;
     QString tintColor;
     QString glowColor;
     bool edgeLighting;
     bool edgeLightingDock;
     bool edgeLightingTooltip;
+    bool blendGlowColor;
+    bool boostEdgeSaturation;
     bool excludeDocks;
 };
 
@@ -54,6 +58,7 @@ struct RefractionSettings
     float refractionStrength;
     float refractionNormalPow;
     float refractionRGBFringing;
+    float refractionOffsetStrength;
 };
 
 class BlurSettings
