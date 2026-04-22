@@ -16,12 +16,14 @@
 #include <QStringList>
 
 #include <unordered_map>
+#include <Plasma/plasma_version.h>
 
 namespace KWin
 {
 
 class BlurManagerInterface;
 class ContrastManagerInterface;
+class BackgroundEffectItem;
 
 #ifdef GLASS_X11
 using BlurOutput = Output;
@@ -52,6 +54,9 @@ struct BlurEffectData
      *  color spaces and even different windows on them
      */
     std::unordered_map<BlurOutput *, BlurRenderData> render;
+#if PLASMA_VERSION >= 0x060404
+    std::unique_ptr<BackgroundEffectItem> blurItem;
+#endif
 
     ItemEffect windowEffect;
 
@@ -74,10 +79,13 @@ public:
 
     void reconfigure(ReconfigureFlags flags) override;
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
+
+#if PLASMA_VERSION < 0x060404
 #ifdef GLASS_X11
     void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
 #else
     void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
+#endif
 #endif
     void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data) override;
 
@@ -172,8 +180,10 @@ private:
 #if KWIN_BUILD_X11
     long net_wm_blur_region = 0;
 #endif
+#if PLASMA_VERSION < 0x060404
     BlurRegion m_paintedDeviceArea; // keeps track of all painted areas (from bottom to top)
     BlurRegion m_currentDeviceBlur; // keeps track of currently blurred area of the windows (from bottom to top)
+#endif
     BlurOutput *m_currentOutput = nullptr;
 
     QMatrix4x4 m_colorMatrix;

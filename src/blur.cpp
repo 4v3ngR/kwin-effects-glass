@@ -26,6 +26,10 @@
 #include "wayland/surface.h"
 #include "window.h"
 
+#if PLASMA_VERSION >= 0x060404
+#include <scene/backgroundeffectitem.h>
+#endif
+
 #if KWIN_BUILD_X11
 #include "utils/xcbutils.h"
 #endif
@@ -305,6 +309,11 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         m_settings.general.contrast,
         m_settings.general.brightness
     );
+#if PLASMA_VERSION >= 0x060404
+    for (auto &[window, data] : m_windows) {
+        data.blurItem->setPixelsToExpandRepaintsBelowOpaqueRegions(m_expandSize);
+    }
+#endif
 
     m_whitelist = (m_settings.forceBlur.windowClassMatchingMode == WindowClassMatchingMode::Whitelist);
     m_windowClasses = m_settings.forceBlur.windowClasses;
@@ -387,7 +396,15 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         data.content = content;
         data.frame = frame;
         data.colorMatrix = colorTransformMatrix(saturation.value_or(1.0), contrast.value_or(1.0), 1.0);
+#if PLASMA_VERSION < 0x060404
         data.windowEffect = ItemEffect(w->windowItem());
+#else
+        if (!data.blurItem) {
+            data.blurItem = std::make_unique<BackgroundEffectItem>(w->windowItem());
+        }
+        data.blurItem->setPixelsToExpandRepaintsBelowOpaqueRegions(m_expandSize);
+        data.blurItem->setEffectBoundingRect(blurRegion(w).boundingRect());
+#endif
     } else {
         if (auto it = m_windows.find(w); it != m_windows.end()) {
             effects->makeOpenGLContextCurrent();
@@ -574,8 +591,10 @@ BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
 
 void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime)
 {
+#if PLASMA_VERSION < 0x060404
     m_paintedDeviceArea = BlurRegion();
     m_currentDeviceBlur = BlurRegion();
+#endif
 #ifdef GLASS_X11
     m_currentOutput = effects->waylandDisplay() ? data.screen : nullptr;
 #else
@@ -585,6 +604,7 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseco
     effects->prePaintScreen(data, presentTime);
 }
 
+#if PLASMA_VERSION < 0x060404
 #ifdef GLASS_X11
 void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
 {
@@ -648,12 +668,16 @@ void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePain
     // Carry over the blur "damage" to windows lower in the stack
     if (m_paintedDeviceArea.intersects(blurArea) || data.devicePaint.intersects(blurArea)) {
         data.devicePaint += blurArea;
+        if (blurArea.intersects(m_currentDeviceBlur)) {
+            data.devicePaint += m_currentDeviceBlur;
+        }
     }
 
     m_currentDeviceBlur += blurArea;
     m_paintedDeviceArea -= data.deviceOpaque;
     m_paintedDeviceArea += data.devicePaint;
 }
+#endif
 #endif
 
 bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const
