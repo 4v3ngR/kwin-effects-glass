@@ -591,10 +591,8 @@ BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
 
 void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime)
 {
-#if PLASMA_VERSION < 0x060404
     m_paintedDeviceArea = BlurRegion();
     m_currentDeviceBlur = BlurRegion();
-#endif
 #ifdef GLASS_X11
     m_currentOutput = effects->waylandDisplay() ? data.screen : nullptr;
 #else
@@ -604,7 +602,6 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseco
     effects->prePaintScreen(data, presentTime);
 }
 
-#if PLASMA_VERSION < 0x060404
 #ifdef GLASS_X11
 void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
 {
@@ -677,7 +674,6 @@ void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePain
     m_paintedDeviceArea -= data.deviceOpaque;
     m_paintedDeviceArea += data.devicePaint;
 }
-#endif
 #endif
 
 bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const
