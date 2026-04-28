@@ -51,7 +51,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     if (refractionStrength > 0) {
         // Initial 2D normal
         const float h = 1.0;
-        vec4 r = clamp(cornerRadius * 2.0, 64.0, 128.0);
+        vec4 r = clamp(cornerRadius * 2.0, min(64.0, minHalfSize), min(128.0, minHalfSize));
         vec2 gradient = vec2(
                 roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
                 roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
