@@ -1,17 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR This file is copyright:
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# File containing translation for base plugin.
+# Copyright (C) 2026 This file is copyright:
+# This file is distributed under the same license as the kwin-effects-glass package.
+# Matthieu Carteron <rubisetcie@gmail.com>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Project-Id-Version: kwin-effects-glass\n"
+"Report-Msgid-Bugs-To: https://github.com/4v3ngR/kwin-effects-glass\n"
 "POT-Creation-Date: 2026-05-15 19:45+0200\n"
 "PO-Revision-Date: 2026-05-15 20:01+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Last-Translator: Matthieu Carteron <rubisetcie@gmail.com>\n"
+"Language-Team:\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
