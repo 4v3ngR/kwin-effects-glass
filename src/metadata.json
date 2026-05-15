@@ -15,10 +15,12 @@
             }
         ],
         "Category": "Appearance",
-        "Description": "Fork of the KWin Blur effect for KDE Plasma 6 with force blur and more",
+        "Description": "Glass effect with refraction, blur and more",
+        "Description[fr]": "Effet de verre avec réfraction, flou et plus",
         "EnabledByDefault": false,
         "License": "GPL",
-        "Name": "Glass"
+        "Name": "Glass",
+        "Name[fr]": "Verre"
     },
     "X-KDE-ConfigModule": "kwin_glass_config"
 }

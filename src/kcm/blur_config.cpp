@@ -31,6 +31,7 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
     QFile about(":/effects/glass/kcm/about.html");
     if (about.open(QIODevice::ReadOnly)) {
         const auto html = about.readAll()
+            .replace("${title}", dgettext("kwin_effects_glass", "Glass"))
             .replace("${version}", ABOUT_VERSION_STRING)
             .replace("${repo}", "https://github.com/4v3ngR/kwin-effects-glass");
         ui.aboutText->setHtml(html);
@@ -63,9 +64,7 @@ void BlurEffectConfig::setupContextualHelp()
 {
     setContextualHelp(
         ui.windowClassesContextualHelp,
-        QStringLiteral("<p>Specify one window class per line.</p>") +
-        QStringLiteral("<p>Use <code>$blank</code> to match empty window classes.<br/>") +
-        QStringLiteral("Use <code>$$</code> for literal dollar sign.</p>"),
+        i18n("<p>Specify one window class per line.</p><p>Use <code>$blank</code> to match empty window classes.<br/>Use <code>$$</code> for literal dollar sign.</p>"),
         ui.windowClassesBriefDescription
     );
 }
