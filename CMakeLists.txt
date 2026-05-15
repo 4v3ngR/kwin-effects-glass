@@ -39,7 +39,6 @@ find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Gui
     Core
     DBus
-    UiTools
     Widgets
     OpenGL
     Network
@@ -50,27 +49,10 @@ include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6Network_INCLUDE_DIRS} ${Qt6O
 add_definitions(${Qt6Widgets_DEFINITIONS})
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
-    Config
-    ConfigWidgets
-    CoreAddons
-    Crash
-    GlobalAccel
     I18n
-    KIO
-    Service
-    #Init
-    Notifications
-    Service
-    WidgetsAddons
-    WindowSystem
     GuiAddons
     KCMUtils
 )
-
-find_package(epoxy REQUIRED)
-
-find_package(X11 REQUIRED)
-find_package(XCB REQUIRED COMPONENTS XCB)
 
 if(GLASS_WAYLAND)
     find_package(KWin COMPONENTS
@@ -83,6 +65,8 @@ if(GLASS_WAYLAND)
     endif()
 endif()
 if(GLASS_X11)
+    find_package(X11 REQUIRED)
+    find_package(XCB REQUIRED COMPONENTS XCB)
     find_package(KWinX11 COMPONENTS
         kwineffects
     )
@@ -101,5 +85,7 @@ endif()
 find_package(KDecoration3 REQUIRED)
 
 add_subdirectory(src)
+
+ki18n_install(po)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
