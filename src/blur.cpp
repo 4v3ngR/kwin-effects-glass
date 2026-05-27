@@ -1099,6 +1099,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             shouldFlattenCorner(w, Qt::BottomRightCorner) ? 0.0f : bottomCornerRadius, // bottom right
             shouldFlattenCorner(w, Qt::BottomLeftCorner) ? 0.0f : bottomCornerRadius // bottom left
         );
+        w->window()->setBorderRadius(cornerRadius);
     }
 
 
