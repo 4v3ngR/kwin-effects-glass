@@ -691,9 +691,9 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
 
     auto classes = m_windowClasses;
 
-    // Add spectacle to the exclusion list
+    // Add some apps to the exclusion list
     if (!m_whitelist) {
-      classes << QString("spectacle");
+      classes << QString("spectacle") << QString("xwaylandvideobridge");
     }
 
     const auto matches = classes.contains(windowClass) || classes.contains(resourceName);
