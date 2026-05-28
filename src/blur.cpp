@@ -804,8 +804,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const BlurRegion effectShape = transformShape(blurRegion(w));
     const BlurRegion contentShape = transformShape(contentRegion(w));
     const bool splitContentBlur = m_settings.forceBlur.blurDecorations &&
-        m_settings.forceBlur.onlyBlurContentWindow &&
-        !contentShape.isEmpty();
+        m_settings.forceBlur.onlyBlurContentWindow;
     const BlurRegion frameOnlyShape = splitContentBlur ? (effectShape - contentShape) : BlurRegion();
     const QRect backgroundRect = effectShape.boundingRect();
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
