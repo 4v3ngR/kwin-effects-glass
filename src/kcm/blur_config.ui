@@ -440,7 +440,14 @@
        <item>
         <widget class="QCheckBox" name="kcfg_BlurDecorations">
          <property name="text">
-          <string>Blur window decorations as well</string>
+          <string>Apply effects to window decorations as well</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_OnlyBlurContentWindow">
+         <property name="text">
+          <string>Only blur content window</string>
          </property>
         </widget>
        </item>

@@ -28,6 +28,9 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
     BlurConfig::instance("kwinrc");
     addConfig(BlurConfig::self(), widget());
 
+    ui.kcfg_OnlyBlurContentWindow->setEnabled(ui.kcfg_BlurDecorations->isChecked());
+    connect(ui.kcfg_BlurDecorations, &QCheckBox::toggled, ui.kcfg_OnlyBlurContentWindow, &QWidget::setEnabled);
+
     QFile about(":/effects/glass/kcm/about.html");
     if (about.open(QIODevice::ReadOnly)) {
         const auto html = about.readAll()

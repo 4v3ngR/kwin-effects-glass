@@ -34,6 +34,7 @@ struct ForceBlurSettings
     QStringList windowClasses;
     WindowClassMatchingMode windowClassMatchingMode;
     bool blurDecorations;
+    bool onlyBlurContentWindow;
     bool blurMenus;
     bool blurDocks;
 };

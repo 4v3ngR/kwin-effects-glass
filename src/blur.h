@@ -111,6 +111,7 @@ public Q_SLOTS:
 
 private:
     void initBlurStrengthValues();
+    BlurRegion contentRegion(EffectWindow *w) const;
     BlurRegion blurRegion(EffectWindow *w) const;
     BlurRegion decorationBlurRegion(const EffectWindow *w) const;
     bool decorationSupportsBlurBehind(const EffectWindow *w) const;

@@ -55,6 +55,7 @@ void BlurSettings::read()
     forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());
     forceBlur.windowClassMatchingMode = BlurConfig::blurMatching() ? WindowClassMatchingMode::Whitelist : WindowClassMatchingMode::Blacklist;
     forceBlur.blurDecorations = BlurConfig::blurDecorations();
+    forceBlur.onlyBlurContentWindow = BlurConfig::onlyBlurContentWindow();
     forceBlur.blurMenus = BlurConfig::blurMenus();
     forceBlur.blurDocks = BlurConfig::blurDocks();
 

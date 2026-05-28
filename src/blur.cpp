@@ -559,13 +559,12 @@ BlurRegion BlurEffect::decorationBlurRegion(const EffectWindow *w) const
     return decorationRegion.intersected(BlurRegion(w->decoration()->blurRegion()));
 }
 
-BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
+BlurRegion BlurEffect::contentRegion(EffectWindow *w) const
 {
     BlurRegion region;
 
     if (auto it = m_windows.find(w); it != m_windows.end()) {
         const std::optional<BlurRegion> &content = it->second.content;
-        const std::optional<BlurRegion> &frame = it->second.frame;
         if (content.has_value()) {
             if (content->isEmpty()) {
                 // An empty region means that the blur effect should be enabled
@@ -578,11 +577,20 @@ BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
             } else {
                 region = content->translated(w->contentsRect().topLeft().toPoint()) & w->contentsRect().toRect();
             }
-            if (frame.has_value()) {
-                region += frame.value();
-            }
-        } else if (frame.has_value()) {
-            region = frame.value();
+        }
+    }
+
+    return region;
+}
+
+BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
+{
+    BlurRegion region = contentRegion(w);
+
+    if (auto it = m_windows.find(w); it != m_windows.end()) {
+        const std::optional<BlurRegion> &frame = it->second.frame;
+        if (frame.has_value()) {
+            region += frame.value();
         }
     }
 
@@ -769,28 +777,37 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         return;
     }
 
-    // Compute the effective blur shape. Note that if the window is transformed, so will be the blur shape.
-    BlurRegion blurShape = blurRegion(w).translated(w->pos().toPoint());
-    if (data.xScale() != 1 || data.yScale() != 1) {
-        QPoint pt = blurShape.boundingRect().topLeft();
-        BlurRegion scaledShape;
+    auto transformShape = [&](BlurRegion shape) {
+        shape.translate(w->pos().toPoint());
+        if (data.xScale() != 1 || data.yScale() != 1) {
+            QPoint pt = shape.boundingRect().topLeft();
+            BlurRegion scaledShape;
 #ifdef GLASS_X11
-        for (const QRect &r : blurShape) {
+            for (const QRect &r : shape) {
 #else
-        for (const Rect &r : blurShape.rects()) {
+            for (const Rect &r : shape.rects()) {
 #endif
-            const QPointF topLeft(pt.x() + (r.x() - pt.x()) * data.xScale() + data.xTranslation(),
-                                  pt.y() + (r.y() - pt.y()) * data.yScale() + data.yTranslation());
-            const QPoint bottomRight(std::floor(topLeft.x() + r.width() * data.xScale()) - 1,
-                                     std::floor(topLeft.y() + r.height() * data.yScale()) - 1);
-            scaledShape += QRect(QPoint(std::floor(topLeft.x()), std::floor(topLeft.y())), bottomRight);
+                const QPointF topLeft(pt.x() + (r.x() - pt.x()) * data.xScale() + data.xTranslation(),
+                                      pt.y() + (r.y() - pt.y()) * data.yScale() + data.yTranslation());
+                const QPoint bottomRight(std::floor(topLeft.x() + r.width() * data.xScale()) - 1,
+                                         std::floor(topLeft.y() + r.height() * data.yScale()) - 1);
+                scaledShape += QRect(QPoint(std::floor(topLeft.x()), std::floor(topLeft.y())), bottomRight);
+            }
+            return scaledShape;
         }
-        blurShape = scaledShape;
-    } else if (data.xTranslation() || data.yTranslation()) {
-        blurShape.translate(std::round(data.xTranslation()), std::round(data.yTranslation()));
-    }
+        if (data.xTranslation() || data.yTranslation()) {
+            shape.translate(std::round(data.xTranslation()), std::round(data.yTranslation()));
+        }
+        return shape;
+    };
 
-    const QRect backgroundRect = blurShape.boundingRect();
+    const BlurRegion effectShape = transformShape(blurRegion(w));
+    const BlurRegion contentShape = transformShape(contentRegion(w));
+    const bool splitContentBlur = m_settings.forceBlur.blurDecorations &&
+        m_settings.forceBlur.onlyBlurContentWindow &&
+        !contentShape.isEmpty();
+    const BlurRegion frameOnlyShape = splitContentBlur ? (effectShape - contentShape) : BlurRegion();
+    const QRect backgroundRect = effectShape.boundingRect();
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
 #ifdef GLASS_X11
     const QRect deviceBackgroundRect = scaledBackgroundRect;
@@ -799,46 +816,55 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 #endif
     const auto opacity = data.opacity();
 
-    // Get the effective shape that will be actually blurred. It's possible that all of it will be clipped.
+    // Get the effective shape that will be painted on screen. It's possible that all of it will be clipped.
+    auto buildEffectiveShape = [&](const BlurRegion &shape) {
 #ifdef GLASS_X11
-    QList<QRectF> effectiveShape;
-    effectiveShape.reserve(blurShape.rectCount());
-    if (deviceRegion != infiniteRegion()) {
-        for (const QRect &clipRect : deviceRegion) {
-            const QRectF deviceClipRect = snapToPixelGridF(scaledRect(clipRect, viewport.scale()))
-                                              .translated(-deviceBackgroundRect.topLeft());
-            for (const QRect &shapeRect : blurShape) {
-                const QRectF deviceShapeRect = snapToPixelGridF(scaledRect(shapeRect.translated(-backgroundRect.topLeft()), viewport.scale()));
-                if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
-                    effectiveShape.append(intersected);
+        QList<QRectF> effectiveShape;
+        effectiveShape.reserve(shape.rectCount());
+        if (deviceRegion != infiniteRegion()) {
+            for (const QRect &clipRect : deviceRegion) {
+                const QRectF deviceClipRect = snapToPixelGridF(scaledRect(clipRect, viewport.scale()))
+                                                  .translated(-deviceBackgroundRect.topLeft());
+                for (const QRect &shapeRect : shape) {
+                    const QRectF deviceShapeRect = snapToPixelGridF(scaledRect(shapeRect.translated(-backgroundRect.topLeft()), viewport.scale()));
+                    if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
+                        effectiveShape.append(intersected);
+                    }
                 }
             }
+        } else {
+            for (const QRect &rect : shape) {
+                effectiveShape.append(snapToPixelGridF(scaledRect(rect.translated(-backgroundRect.topLeft()), viewport.scale())));
+            }
         }
-    } else {
-        for (const QRect &rect : blurShape) {
-            effectiveShape.append(snapToPixelGridF(scaledRect(rect.translated(-backgroundRect.topLeft()), viewport.scale())));
-        }
-    }
+        return effectiveShape;
 #else
-    QList<RectF> effectiveShape;
-    effectiveShape.reserve(blurShape.rects().size());
-    if (deviceRegion != Region::infinite()) {
-        for (const Rect &clipRect : deviceRegion.rects()) {
-            const RectF deviceClipRect = clipRect.translated(-deviceBackgroundRect.topLeft());
-            for (const Rect &shapeRect : blurShape.rects()) {
-                const RectF deviceShapeRect = shapeRect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded();
-                if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
-                    effectiveShape.append(intersected);
+        QList<RectF> effectiveShape;
+        effectiveShape.reserve(shape.rects().size());
+        if (deviceRegion != Region::infinite()) {
+            for (const Rect &clipRect : deviceRegion.rects()) {
+                const RectF deviceClipRect = clipRect.translated(-deviceBackgroundRect.topLeft());
+                for (const Rect &shapeRect : shape.rects()) {
+                    const RectF deviceShapeRect = shapeRect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded();
+                    if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
+                        effectiveShape.append(intersected);
+                    }
                 }
             }
+        } else {
+            for (const Rect &rect : shape.rects()) {
+                effectiveShape.append(rect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded());
+            }
         }
-    } else {
-        for (const Rect &rect : blurShape.rects()) {
-            effectiveShape.append(rect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded());
-        }
-    }
+        return effectiveShape;
 #endif
-    if (effectiveShape.isEmpty()) {
+    };
+
+    const auto effectiveEffectShape = buildEffectiveShape(effectShape);
+    const auto effectiveContentShape = splitContentBlur ? buildEffectiveShape(contentShape) : effectiveEffectShape;
+    const auto effectiveFrameShape = splitContentBlur ? buildEffectiveShape(frameOnlyShape) : decltype(effectiveEffectShape){};
+
+    if (effectiveEffectShape.isEmpty()) {
         return;
     }
 
@@ -901,7 +927,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     vbo->reset();
     vbo->setAttribLayout(std::span(GLVertexBuffer::GLVertex2DLayout), sizeof(GLVertex2D));
 
-    const int vertexCount = effectiveShape.size() * 6;
+    const int contentVertexCount = effectiveContentShape.size() * 6;
+    const int frameVertexCount = effectiveFrameShape.size() * 6;
+    const int vertexCount = splitContentBlur ? (contentVertexCount + frameVertexCount) : contentVertexCount;
     if (auto result = vbo->map<GLVertex2D>(6 + vertexCount)) {
         auto map = *result;
 
@@ -950,45 +978,49 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             };
         }
 
-        // The geometry that will be painted on screen, in device pixels.
-        for (const auto &rect : effectiveShape) {
-            const float x0 = rect.left();
-            const float y0 = rect.top();
-            const float x1 = rect.right();
-            const float y1 = rect.bottom();
+        auto appendScreenGeometry = [&](const auto &shapeRects) {
+            for (const auto &rect : shapeRects) {
+                const float x0 = rect.left();
+                const float y0 = rect.top();
+                const float x1 = rect.right();
+                const float y1 = rect.bottom();
 
-            const float u0 = x0 / scaledBackgroundRect.width();
-            const float v0 = 1.0f - y0 / scaledBackgroundRect.height();
-            const float u1 = x1 / scaledBackgroundRect.width();
-            const float v1 = 1.0f - y1 / scaledBackgroundRect.height();
+                const float u0 = x0 / scaledBackgroundRect.width();
+                const float v0 = 1.0f - y0 / scaledBackgroundRect.height();
+                const float u1 = x1 / scaledBackgroundRect.width();
+                const float v1 = 1.0f - y1 / scaledBackgroundRect.height();
 
-            // first triangle
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x0, y0),
-                .texcoord = QVector2D(u0, v0),
-            };
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x1, y1),
-                .texcoord = QVector2D(u1, v1),
-            };
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x0, y1),
-                .texcoord = QVector2D(u0, v1),
-            };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x0, y0),
+                    .texcoord = QVector2D(u0, v0),
+                };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x1, y1),
+                    .texcoord = QVector2D(u1, v1),
+                };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x0, y1),
+                    .texcoord = QVector2D(u0, v1),
+                };
 
-            // second triangle
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x0, y0),
-                .texcoord = QVector2D(u0, v0),
-            };
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x1, y0),
-                .texcoord = QVector2D(u1, v0),
-            };
-            map[vboIndex++] = GLVertex2D{
-                .position = QVector2D(x1, y1),
-                .texcoord = QVector2D(u1, v1),
-            };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x0, y0),
+                    .texcoord = QVector2D(u0, v0),
+                };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x1, y0),
+                    .texcoord = QVector2D(u1, v0),
+                };
+                map[vboIndex++] = GLVertex2D{
+                    .position = QVector2D(x1, y1),
+                    .texcoord = QVector2D(u1, v1),
+                };
+            }
+        };
+
+        appendScreenGeometry(effectiveContentShape);
+        if (splitContentBlur) {
+            appendScreenGeometry(effectiveFrameShape);
         }
 
         vbo->unmap();
@@ -1109,10 +1141,11 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
     GLFramebuffer::popFramebuffer();
-    const auto &read = renderInfo.framebuffers[1];
+    const auto &blurredRead = renderInfo.framebuffers[1];
+    const auto &originalRead = renderInfo.framebuffers[0];
 
-    const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
-                              0.5 / read->colorAttachment()->height());
+    const QVector2D halfpixel(0.5 / blurredRead->colorAttachment()->width(),
+                              0.5 / blurredRead->colorAttachment()->height());
 
     const QRectF transformedRect = QRectF{
         w->frameGeometry().x() + data.xTranslation(),
@@ -1155,12 +1188,16 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     }
 
 
-    read->colorAttachment()->bind();
-
     glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    vbo->draw(GL_TRIANGLES, 6, vertexCount);
+    blurredRead->colorAttachment()->bind();
+    vbo->draw(GL_TRIANGLES, 6, contentVertexCount);
+
+    if (splitContentBlur && frameVertexCount > 0) {
+        originalRead->colorAttachment()->bind();
+        vbo->draw(GL_TRIANGLES, 6 + contentVertexCount, frameVertexCount);
+    }
 
     glDisable(GL_BLEND);
 
@@ -1187,8 +1224,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));
 
             noiseTexture->bind();
-
-            vbo->draw(GL_TRIANGLES, 6, vertexCount);
+            vbo->draw(GL_TRIANGLES, 6, contentVertexCount);
 
             ShaderManager::instance()->popShader();
         }
