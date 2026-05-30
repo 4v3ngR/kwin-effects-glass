@@ -300,10 +300,16 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 {
     m_settings.read();
 
-    m_iterationCount = blurStrengthValues[m_settings.general.blurStrength].iteration;
-    m_offset = blurStrengthValues[m_settings.general.blurStrength].offset;
-    m_expandSize = blurOffsets[m_iterationCount - 1].expandSize;
-    m_noiseStrength = m_settings.general.noiseStrength;
+    m_contentBlurSettings = pipelineSettingsForStrength(
+        m_settings.general.blurStrength,
+        m_settings.general.noiseStrength
+    );
+    m_decorationBlurSettings = pipelineSettingsForStrength(
+        m_settings.general.decorationBlurStrength,
+        m_settings.general.decorationNoiseStrength
+    );
+    m_maxIterationCount = std::max(m_contentBlurSettings.iterationCount, m_decorationBlurSettings.iterationCount);
+    m_expandSize = std::max(m_contentBlurSettings.expandSize, m_decorationBlurSettings.expandSize);
     m_colorMatrix = colorTransformMatrix(
         m_settings.general.saturation,
         m_settings.general.contrast,
@@ -320,6 +326,18 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 
     // Update all windows for the blur to take effect
     effects->addRepaintFull();
+}
+
+BlurEffect::BlurPipelineSettings BlurEffect::pipelineSettingsForStrength(int blurStrength, int noiseStrength) const
+{
+    const BlurValuesStruct &values = blurStrengthValues[blurStrength];
+
+    return BlurPipelineSettings{
+        .iterationCount = static_cast<size_t>(values.iteration),
+        .offset = values.offset,
+        .expandSize = blurOffsets[values.iteration - 1].expandSize,
+        .noiseStrength = noiseStrength,
+    };
 }
 
 void BlurEffect::updateBlurRegion(EffectWindow *w)
@@ -726,14 +744,14 @@ void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewpo
     effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
 }
 
-GLTexture *BlurEffect::ensureNoiseTexture()
+GLTexture *BlurEffect::ensureNoiseTexture(int noiseStrength)
 {
-    if (m_noiseStrength == 0) {
+    if (noiseStrength == 0) {
         return nullptr;
     }
 
     const qreal scale = std::max(1.0, QGuiApplication::primaryScreen()->logicalDotsPerInch() / 96.0);
-    if (!m_noisePass.noiseTexture || m_noisePass.noiseTextureScale != scale || m_noisePass.noiseTextureStength != m_noiseStrength) {
+    if (!m_noisePass.noiseTexture || m_noisePass.noiseTextureScale != scale || m_noisePass.noiseTextureStength != noiseStrength) {
         // Init randomness based on time
         std::srand((uint)QTime::currentTime().msec());
 
@@ -743,7 +761,7 @@ GLTexture *BlurEffect::ensureNoiseTexture()
             uint8_t *noiseImageLine = (uint8_t *)noiseImage.scanLine(y);
 
             for (int x = 0; x < noiseImage.width(); x++) {
-                noiseImageLine[x] = std::rand() % m_noiseStrength;
+                noiseImageLine[x] = std::rand() % noiseStrength;
             }
         }
 
@@ -756,7 +774,7 @@ GLTexture *BlurEffect::ensureNoiseTexture()
         m_noisePass.noiseTexture->setFilter(GL_NEAREST);
         m_noisePass.noiseTexture->setWrapMode(GL_REPEAT);
         m_noisePass.noiseTextureScale = scale;
-        m_noisePass.noiseTextureStength = m_noiseStrength;
+        m_noisePass.noiseTextureStength = noiseStrength;
     }
 
     return m_noisePass.noiseTexture.get();
@@ -801,10 +819,17 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     const BlurRegion effectShape = transformShape(blurRegion(w));
     const BlurRegion contentShape = transformShape(contentRegion(w));
-    const bool splitContentBlur = m_settings.forceBlur.blurDecorations &&
-        m_settings.forceBlur.onlyBlurContentWindow &&
-        !contentShape.isEmpty();
-    const BlurRegion frameOnlyShape = splitContentBlur ? (effectShape - contentShape) : BlurRegion();
+    const BlurRegion frameShape = effectShape - contentShape;
+    const bool sameBlurSettings =
+        m_contentBlurSettings.iterationCount == m_decorationBlurSettings.iterationCount &&
+        qFuzzyCompare(m_contentBlurSettings.offset, m_decorationBlurSettings.offset) &&
+        m_contentBlurSettings.expandSize == m_decorationBlurSettings.expandSize &&
+        m_contentBlurSettings.noiseStrength == m_decorationBlurSettings.noiseStrength;
+    const BlurPipelineSettings &combinedBlurSettings =
+        (contentShape.isEmpty() && !frameShape.isEmpty()) ? m_decorationBlurSettings : m_contentBlurSettings;
+    const bool splitBlurSettings = !frameShape.isEmpty() &&
+        !contentShape.isEmpty() &&
+        !sameBlurSettings;
     const QRect backgroundRect = effectShape.boundingRect();
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
 #ifdef GLASS_X11
@@ -859,8 +884,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     };
 
     const auto effectiveEffectShape = buildEffectiveShape(effectShape);
-    const auto effectiveContentShape = splitContentBlur ? buildEffectiveShape(contentShape) : effectiveEffectShape;
-    const auto effectiveFrameShape = splitContentBlur ? buildEffectiveShape(frameOnlyShape) : decltype(effectiveEffectShape){};
+    const auto effectiveContentShape = splitBlurSettings ? buildEffectiveShape(contentShape) : effectiveEffectShape;
+    const auto effectiveFrameShape = splitBlurSettings ? buildEffectiveShape(frameShape) : decltype(effectiveEffectShape){};
 
     if (effectiveEffectShape.isEmpty()) {
         return;
@@ -873,12 +898,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         textureFormat = renderTarget.texture()->internalFormat();
     }
 
-    if (renderInfo.framebuffers.size() != (m_iterationCount + 1) || renderInfo.textures[0]->size() != backgroundRect.size() || renderInfo.textures[0]->internalFormat() != textureFormat) {
+    if (renderInfo.framebuffers.size() != (m_maxIterationCount + 1) || renderInfo.textures[0]->size() != backgroundRect.size() || renderInfo.textures[0]->internalFormat() != textureFormat) {
         renderInfo.framebuffers.clear();
         renderInfo.textures.clear();
 
         glClearColor(0, 0, 0, 0);
-        for (size_t i = 0; i <= m_iterationCount; ++i) {
+        for (size_t i = 0; i <= m_maxIterationCount; ++i) {
             auto texture = GLTexture::allocate(textureFormat, backgroundRect.size() / (1 << i));
             if (!texture) {
                 qCWarning(KWIN_BLUR) << "Failed to allocate an offscreen texture";
@@ -927,7 +952,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     const int contentVertexCount = effectiveContentShape.size() * 6;
     const int frameVertexCount = effectiveFrameShape.size() * 6;
-    const int vertexCount = splitContentBlur ? (contentVertexCount + frameVertexCount) : contentVertexCount;
+    const int vertexCount = splitBlurSettings ? (contentVertexCount + frameVertexCount) : contentVertexCount;
     if (auto result = vbo->map<GLVertex2D>(6 + vertexCount)) {
         auto map = *result;
 
@@ -1017,7 +1042,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         };
 
         appendScreenGeometry(effectiveContentShape);
-        if (splitContentBlur) {
+        if (splitBlurSettings) {
             appendScreenGeometry(effectiveFrameShape);
         }
 
@@ -1029,17 +1054,16 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     vbo->bindArrays();
 
-    // The downsample pass of the dual Kawase algorithm: the background will be scaled down 50% every iteration.
-    {
+    auto runBlurPass = [&](const BlurPipelineSettings &settings) -> GLTexture * {
         ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
 
         QMatrix4x4 projectionMatrix;
         projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
         m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, float(m_offset));
+        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, settings.offset);
 
-        for (size_t i = 1; i < renderInfo.framebuffers.size(); ++i) {
+        for (size_t i = 1; i <= settings.iterationCount; ++i) {
             const auto &read = renderInfo.framebuffers[i - 1];
             const auto &draw = renderInfo.framebuffers[i];
 
@@ -1054,19 +1078,13 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
 
         ShaderManager::instance()->popShader();
-    }
 
-    // The upsample pass of the dual Kawase algorithm: the background will be scaled up 200% every iteration.
-    {
         ShaderManager::instance()->pushShader(m_upsamplePass.shader.get());
 
-        QMatrix4x4 projectionMatrix;
-        projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
-
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset));
+        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, settings.offset);
 
-        for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
+        for (size_t i = settings.iterationCount; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
             const auto &read = renderInfo.framebuffers[i];
 
@@ -1080,7 +1098,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
 
         ShaderManager::instance()->popShader();
-    }
+        GLFramebuffer::popFramebuffer();
+
+        return renderInfo.framebuffers[1]->colorAttachment();
+    };
 
     const QMatrix4x4 &colorMatrix = m_colorMatrix;
     const float modulation = opacity * opacity;
@@ -1138,12 +1159,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
-    GLFramebuffer::popFramebuffer();
-    const auto &blurredRead = renderInfo.framebuffers[1];
-    const auto &originalRead = renderInfo.framebuffers[0];
-
-    const QVector2D halfpixel(0.5 / blurredRead->colorAttachment()->width(),
-                              0.5 / blurredRead->colorAttachment()->height());
+    const QVector2D halfpixel(0.5 / renderInfo.framebuffers[1]->colorAttachment()->width(),
+                              0.5 / renderInfo.framebuffers[1]->colorAttachment()->height());
 
     const QRectF transformedRect = QRectF{
         w->frameGeometry().x() + data.xTranslation(),
@@ -1158,7 +1175,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(m_offset));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, combinedBlurSettings.offset);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation, QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
@@ -1189,19 +1206,46 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    blurredRead->colorAttachment()->bind();
-    vbo->draw(GL_TRIANGLES, 6, contentVertexCount);
+    auto drawBlurredRegion = [&](GLTexture *blurredTexture, int vertexOffset, int currentVertexCount, float blurOffset) {
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, blurOffset);
+        blurredTexture->bind();
+        vbo->draw(GL_TRIANGLES, vertexOffset, currentVertexCount);
+    };
 
-    if (splitContentBlur && frameVertexCount > 0) {
-        originalRead->colorAttachment()->bind();
-        vbo->draw(GL_TRIANGLES, 6 + contentVertexCount, frameVertexCount);
+    auto drawNoiseRegion = [&](int noiseStrength, int vertexOffset, int currentVertexCount) {
+        if (noiseStrength <= 0 || currentVertexCount == 0) {
+            return;
+        }
+
+        if (GLTexture *noiseTexture = ensureNoiseTexture(noiseStrength)) {
+            ShaderManager::instance()->pushShader(m_noisePass.shader.get());
+
+            QMatrix4x4 noiseProjectionMatrix = viewport.projectionMatrix();
+            noiseProjectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
+
+            m_noisePass.shader->setUniform(m_noisePass.mvpMatrixLocation, noiseProjectionMatrix);
+            m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));
+
+            noiseTexture->bind();
+            vbo->draw(GL_TRIANGLES, vertexOffset, currentVertexCount);
+
+            ShaderManager::instance()->popShader();
+        }
+    };
+
+    GLTexture *contentBlurredTexture = runBlurPass(splitBlurSettings ? m_contentBlurSettings : combinedBlurSettings);
+    drawBlurredRegion(contentBlurredTexture, 6, contentVertexCount, splitBlurSettings ? m_contentBlurSettings.offset : combinedBlurSettings.offset);
+
+    if (splitBlurSettings && frameVertexCount > 0) {
+        GLTexture *frameBlurredTexture = runBlurPass(m_decorationBlurSettings);
+        drawBlurredRegion(frameBlurredTexture, 6 + contentVertexCount, frameVertexCount, m_decorationBlurSettings.offset);
     }
 
     glDisable(GL_BLEND);
 
     ShaderManager::instance()->popShader();
 
-    if (m_noiseStrength > 0) {
+    if (combinedBlurSettings.noiseStrength > 0 || (splitBlurSettings && m_decorationBlurSettings.noiseStrength > 0)) {
         // Apply an additive noise onto the blurred image. The noise is useful to mask banding
         // artifacts, which often happens due to the smooth color transitions in the blurred image.
 
@@ -1212,19 +1256,11 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             glBlendFunc(GL_ONE, GL_ONE);
         }
 
-        if (GLTexture *noiseTexture = ensureNoiseTexture()) {
-            ShaderManager::instance()->pushShader(m_noisePass.shader.get());
-
-            QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
-            projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
-
-            m_noisePass.shader->setUniform(m_noisePass.mvpMatrixLocation, projectionMatrix);
-            m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));
-
-            noiseTexture->bind();
-            vbo->draw(GL_TRIANGLES, 6, contentVertexCount);
-
-            ShaderManager::instance()->popShader();
+        drawNoiseRegion(splitBlurSettings ? m_contentBlurSettings.noiseStrength : combinedBlurSettings.noiseStrength,
+                        6,
+                        contentVertexCount);
+        if (splitBlurSettings) {
+            drawNoiseRegion(m_decorationBlurSettings.noiseStrength, 6 + contentVertexCount, frameVertexCount);
         }
 
         glDisable(GL_BLEND);

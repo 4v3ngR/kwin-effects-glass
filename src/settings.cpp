@@ -42,6 +42,8 @@ void BlurSettings::read()
 
     general.blurStrength = BlurConfig::blurStrength() - 1;
     general.noiseStrength = BlurConfig::noiseStrength();
+    general.decorationBlurStrength = BlurConfig::decorationBlurStrength() - 1;
+    general.decorationNoiseStrength = BlurConfig::decorationNoiseStrength();
     general.brightness = BlurConfig::brightness();
     general.saturation = BlurConfig::saturation();
     general.contrast = BlurConfig::contrast();
@@ -55,7 +57,6 @@ void BlurSettings::read()
     forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());
     forceBlur.windowClassMatchingMode = BlurConfig::blurMatching() ? WindowClassMatchingMode::Whitelist : WindowClassMatchingMode::Blacklist;
     forceBlur.blurDecorations = BlurConfig::blurDecorations();
-    forceBlur.onlyBlurContentWindow = BlurConfig::onlyBlurContentWindow();
     forceBlur.blurMenus = BlurConfig::blurMenus();
     forceBlur.blurDocks = BlurConfig::blurDocks();
 

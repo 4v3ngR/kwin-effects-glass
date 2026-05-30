@@ -110,6 +110,14 @@ public Q_SLOTS:
     void setupDecorationConnections(EffectWindow *w);
 
 private:
+    struct BlurPipelineSettings
+    {
+        size_t iterationCount;
+        float offset;
+        int expandSize;
+        int noiseStrength;
+    };
+
     void initBlurStrengthValues();
     BlurRegion contentRegion(EffectWindow *w) const;
     BlurRegion blurRegion(EffectWindow *w) const;
@@ -118,8 +126,9 @@ private:
     bool shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const;
     void updateBlurRegion(EffectWindow *w);
     void blur(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data);
-    GLTexture *ensureNoiseTexture();
+    GLTexture *ensureNoiseTexture(int noiseStrength);
     QMatrix4x4 colorMatrix(const float &brightness, const float &saturation, const float &contrast) const;
+    BlurPipelineSettings pipelineSettingsForStrength(int blurStrength, int noiseStrength) const;
 
 private:
     struct
@@ -184,10 +193,10 @@ private:
     BlurOutput *m_currentOutput = nullptr;
 
     QMatrix4x4 m_colorMatrix;
-    size_t m_iterationCount; // number of times the texture will be downsized to half size
-    int m_offset;
     int m_expandSize;
-    int m_noiseStrength;
+    size_t m_maxIterationCount = 1; // number of times the texture will be downsized to half size
+    BlurPipelineSettings m_contentBlurSettings{};
+    BlurPipelineSettings m_decorationBlurSettings{};
     QStringList m_windowClasses;
     bool m_whitelist;
 

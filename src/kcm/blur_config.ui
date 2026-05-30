@@ -17,138 +17,221 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="widget">
-      <attribute name="title">
+     <attribute name="title">
        <string>General</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel" name="labelConstantBlurDescription">
-         <property name="text">
-          <string>Blur strength:</string>
+        <widget class="QGroupBox" name="groupBoxContentBlur">
+         <property name="title">
+          <string>Content blur</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayoutContentBlur">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutContentBlur" stretch="0,0,0,0">
+            <item>
+             <widget class="QLabel" name="labelContentBlur">
+              <property name="text">
+               <string>Blur</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelConstantBlurLight">
+              <property name="text">
+               <string>Light</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="kcfg_BlurStrength">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>15</number>
+              </property>
+              <property name="singleStep">
+               <number>1</number>
+              </property>
+              <property name="pageStep">
+               <number>1</number>
+              </property>
+              <property name="value">
+               <number>10</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TickPosition::TicksBelow</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelConstantBlurStrong">
+              <property name="text">
+               <string>Strong</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutContentNoise">
+            <item>
+             <widget class="QLabel" name="labelContentNoise">
+              <property name="text">
+               <string>Noise</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelConstantNoiseLight">
+              <property name="text">
+               <string>Light</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="kcfg_NoiseStrength">
+              <property name="maximum">
+               <number>14</number>
+              </property>
+              <property name="pageStep">
+               <number>5</number>
+              </property>
+              <property name="value">
+               <number>5</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TickPosition::TicksBelow</enum>
+              </property>
+              <property name="tickInterval">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelConstantNoiseStrong">
+              <property name="text">
+               <string>Strong</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelConstantBlurLight">
-           <property name="text">
-            <string>Light</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_BlurStrength">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>15</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelConstantBlurStrong">
-           <property name="text">
-            <string>Strong</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelConstantNoiseDescription">
-         <property name="text">
-          <string>Noise strength:</string>
+        <widget class="QGroupBox" name="groupBoxDecorationBlur">
+         <property name="title">
+          <string>Decorations blur</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayoutDecorationBlur">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutDecorationBlur" stretch="0,0,0,0">
+            <item>
+             <widget class="QLabel" name="labelDecorationBlur">
+              <property name="text">
+               <string>Blur</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelDecorationBlurLight">
+              <property name="text">
+               <string>Light</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="kcfg_DecorationBlurStrength">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>15</number>
+              </property>
+              <property name="singleStep">
+               <number>1</number>
+              </property>
+              <property name="pageStep">
+               <number>1</number>
+              </property>
+              <property name="value">
+               <number>10</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TickPosition::TicksBelow</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelDecorationBlurStrong">
+              <property name="text">
+               <string>Strong</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutDecorationNoise">
+            <item>
+             <widget class="QLabel" name="labelDecorationNoise">
+              <property name="text">
+               <string>Noise</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelDecorationNoiseLight">
+              <property name="text">
+               <string>Light</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="kcfg_DecorationNoiseStrength">
+              <property name="maximum">
+               <number>14</number>
+              </property>
+              <property name="pageStep">
+               <number>5</number>
+              </property>
+              <property name="value">
+               <number>5</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TickPosition::TicksBelow</enum>
+              </property>
+              <property name="tickInterval">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelDecorationNoiseStrong">
+              <property name="text">
+               <string>Strong</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelConstantNoiseLight">
-           <property name="text">
-            <string>Light</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_NoiseStrength">
-           <property name="maximum">
-            <number>14</number>
-           </property>
-           <property name="pageStep">
-            <number>5</number>
-           </property>
-           <property name="value">
-            <number>5</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-           <property name="tickInterval">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelConstantNoiseStrong">
-           <property name="text">
-            <string>Strong</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -441,13 +524,6 @@
         <widget class="QCheckBox" name="kcfg_BlurDecorations">
          <property name="text">
           <string>Apply effects to window decorations as well</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_OnlyBlurContentWindow">
-         <property name="text">
-          <string>Only blur content window</string>
          </property>
         </widget>
        </item>

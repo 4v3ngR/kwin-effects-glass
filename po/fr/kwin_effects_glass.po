@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kwin-effects-glass\n"
 "Report-Msgid-Bugs-To: https://github.com/4v3ngR/kwin-effects-glass\n"
-"POT-Creation-Date: 2026-05-15 19:45+0200\n"
+"POT-Creation-Date: 2026-05-31 09:00+0800\n"
 "PO-Revision-Date: 2026-05-15 20:01+0200\n"
 "Last-Translator: Matthieu Carteron <rubisetcie@gmail.com>\n"
 "Language-Team:\n"
@@ -38,61 +38,80 @@ msgstr ""
 msgid "General"
 msgstr "Général"
 
-#. i18n: ectx: property (text), widget (QLabel, labelConstantBlurDescription)
+#. i18n: ectx: property (title), widget (QGroupBox, groupBoxContentBlur)
 #: src/kcm/blur_config.ui:27
 #, kde-format
-msgid "Blur strength:"
-msgstr "Intensité du flou :"
+msgid "Content blur"
+msgstr "Flou du contenu"
+
+#. i18n: ectx: property (text), widget (QLabel, labelContentBlur)
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationBlur)
+#: src/kcm/blur_config.ui:35 src/kcm/blur_config.ui:141
+#, kde-format
+msgid "Blur"
+msgstr "Flou"
 
 #. i18n: ectx: property (text), widget (QLabel, labelConstantBlurLight)
 #. i18n: ectx: property (text), widget (QLabel, labelConstantNoiseLight)
-#: src/kcm/blur_config.ui:52 src/kcm/blur_config.ui:118
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationBlurLight)
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationNoiseLight)
+#: src/kcm/blur_config.ui:42 src/kcm/blur_config.ui:92 src/kcm/blur_config.ui:148 src/kcm/blur_config.ui:198
 #, kde-format
 msgid "Light"
 msgstr "Légère"
 
 #. i18n: ectx: property (text), widget (QLabel, labelConstantBlurStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelConstantNoiseStrong)
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationBlurStrong)
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationNoiseStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionStrengthStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionRGBFringingStrong)
-#: src/kcm/blur_config.ui:84 src/kcm/blur_config.ui:147
-#: src/kcm/blur_config.ui:537 src/kcm/blur_config.ui:735
+#: src/kcm/blur_config.ui:74 src/kcm/blur_config.ui:121
+#: src/kcm/blur_config.ui:180 src/kcm/blur_config.ui:227
+#: src/kcm/blur_config.ui:611 src/kcm/blur_config.ui:809
 #, kde-format
 msgid "Strong"
 msgstr "Forte"
 
-#. i18n: ectx: property (text), widget (QLabel, labelConstantNoiseDescription)
-#: src/kcm/blur_config.ui:93
+#. i18n: ectx: property (text), widget (QLabel, labelContentNoise)
+#. i18n: ectx: property (text), widget (QLabel, labelDecorationNoise)
+#: src/kcm/blur_config.ui:85 src/kcm/blur_config.ui:191
 #, kde-format
-msgid "Noise strength:"
-msgstr "Intensité du bruit :"
+msgid "Noise"
+msgstr "Bruit"
+
+#. i18n: ectx: property (title), widget (QGroupBox, groupBoxDecorationBlur)
+#: src/kcm/blur_config.ui:133
+#, kde-format
+msgid "Decorations blur"
+msgstr "Flou des décorations"
 
 #. i18n: ectx: property (text), widget (QLabel, label)
-#: src/kcm/blur_config.ui:184
+#: src/kcm/blur_config.ui:264
 #, kde-format
 msgid "Brightness"
 msgstr "Luminosité"
 
 #. i18n: ectx: property (text), widget (QLabel, label)
-#: src/kcm/blur_config.ui:205
+#: src/kcm/blur_config.ui:285
 #, kde-format
 msgid "Saturation"
 msgstr "Saturation"
 
 #. i18n: ectx: property (text), widget (QLabel, label)
-#: src/kcm/blur_config.ui:226
+#: src/kcm/blur_config.ui:306
 #, kde-format
 msgid "Contrast"
 msgstr "Contraste"
 
 #. i18n: ectx: property (text), widget (QLabel, labelTintColor)
-#: src/kcm/blur_config.ui:247
+#: src/kcm/blur_config.ui:327
 #, kde-format
 msgid "Tint color"
 msgstr "Teinte"
 
 #. i18n: ectx: property (toolTip), widget (QLineEdit, kcfg_TintColor)
-#: src/kcm/blur_config.ui:260
+#: src/kcm/blur_config.ui:340
 #, kde-format
 msgid ""
 "Enter a color in #AARRGGBB format. The A (alpha) channel sets tint strength."
@@ -101,13 +120,13 @@ msgstr ""
 "teinte."
 
 #. i18n: ectx: property (text), widget (QLabel, labelGlowColor)
-#: src/kcm/blur_config.ui:271
+#: src/kcm/blur_config.ui:351
 #, kde-format
 msgid "Glow color"
 msgstr "Couleur d'éclat"
 
 #. i18n: ectx: property (toolTip), widget (QLineEdit, kcfg_GlowColor)
-#: src/kcm/blur_config.ui:284
+#: src/kcm/blur_config.ui:364
 #, kde-format
 msgid ""
 "Enter a color in #AARRGGBB format. The A (alpha) channel sets glow strength."
@@ -116,116 +135,116 @@ msgstr ""
 "l'éclat."
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_EdgeLighting)
-#: src/kcm/blur_config.ui:300
+#: src/kcm/blur_config.ui:380
 #, kde-format
 msgid "Make the window edges brighter"
 msgstr "Rendre les bords de fenêtre plus clairs"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_ExcludeDocks)
-#: src/kcm/blur_config.ui:320
+#: src/kcm/blur_config.ui:400
 #, kde-format
 msgid "Don't apply tint to docks"
 msgstr "Ne pas teindre les docks"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_EdgeLightingDock)
-#: src/kcm/blur_config.ui:352
+#: src/kcm/blur_config.ui:432
 #, kde-format
 msgid "Don't apply brighter to dock"
 msgstr "Ne pas éclairer les docks"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_EdgeLightingTooltip)
-#: src/kcm/blur_config.ui:362
+#: src/kcm/blur_config.ui:442
 #, kde-format
 msgid "Don't apply brighter to tooltip"
 msgstr "Ne pas éclairer les info-bulles"
 
 #. i18n: ectx: attribute (title), widget (QWidget, widget)
-#: src/kcm/blur_config.ui:389
+#: src/kcm/blur_config.ui:469
 #, kde-format
 msgid "Force blur"
 msgstr "Forcer le flou"
 
 #. i18n: ectx: property (text), widget (QLabel, windowClassesBriefDescription)
-#: src/kcm/blur_config.ui:405
+#: src/kcm/blur_config.ui:485
 #, kde-format
 msgid "Classes of windows to force blur:"
 msgstr "Forcer pour les classes de fenêtre :"
 
 #. i18n: ectx: property (text), widget (QRadioButton, kcfg_BlurMatching)
-#: src/kcm/blur_config.ui:427
+#: src/kcm/blur_config.ui:507
 #, kde-format
 msgid "Blur only matching"
 msgstr "Correspondantes uniquement"
 
 #. i18n: ectx: property (text), widget (QRadioButton, kcfg_BlurNonMatching)
-#: src/kcm/blur_config.ui:434
+#: src/kcm/blur_config.ui:514
 #, kde-format
 msgid "Blur all except matching"
 msgstr "Non-correspondantes uniquement"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_BlurDecorations)
-#: src/kcm/blur_config.ui:443
+#: src/kcm/blur_config.ui:526
 #, kde-format
-msgid "Blur window decorations as well"
-msgstr "Flouter les décorations"
+msgid "Apply effects to window decorations as well"
+msgstr "Appliquer aussi les effets aux décorations"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_BlurMenus)
-#: src/kcm/blur_config.ui:451
+#: src/kcm/blur_config.ui:535
 #, kde-format
 msgid "Blur menus"
 msgstr "Flouter les menus"
 
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_BlurDocks)
-#: src/kcm/blur_config.ui:458
+#: src/kcm/blur_config.ui:542
 #, kde-format
 msgid "Blur docks"
 msgstr "Flouter les docks"
 
 #. i18n: ectx: attribute (title), widget (QWidget, widget)
-#: src/kcm/blur_config.ui:467
+#: src/kcm/blur_config.ui:551
 #, kde-format
 msgid "Refraction"
 msgstr "Réfraction"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionNote)
-#: src/kcm/blur_config.ui:473
+#: src/kcm/blur_config.ui:557
 #, kde-format
 msgid "Refraction does not work when using static blur."
 msgstr "La réfraction ne marche pas avec le flou statique."
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionStrength)
-#: src/kcm/blur_config.ui:480
+#: src/kcm/blur_config.ui:564
 #, kde-format
 msgid "Refraction Strength:"
 msgstr "Intensité de réfraction :"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionStrengthOff)
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionRGBFringingOff)
-#: src/kcm/blur_config.ui:505 src/kcm/blur_config.ui:703
+#: src/kcm/blur_config.ui:589 src/kcm/blur_config.ui:787
 #, kde-format
 msgid "Off"
 msgstr "Non"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionEdgeSize)
-#: src/kcm/blur_config.ui:546
+#: src/kcm/blur_config.ui:620
 #, kde-format
 msgid "Refraction Edge Size:"
 msgstr "Taille de réfraction :"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionEdgeSizeSmall)
-#: src/kcm/blur_config.ui:571
+#: src/kcm/blur_config.ui:645
 #, kde-format
 msgid "Small"
 msgstr "Fine"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionEdgeSizeWide)
-#: src/kcm/blur_config.ui:603
+#: src/kcm/blur_config.ui:677
 #, kde-format
 msgid "Wide"
 msgstr "Large"
 
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionNormalPow)
-#: src/kcm/blur_config.ui:612
+#: src/kcm/blur_config.ui:686
 #, kde-format
 msgid "Refraction Falloff:"
 msgstr "Atténuation de réfraction :"

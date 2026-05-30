@@ -18,6 +18,8 @@ struct GeneralSettings
 {
     int blurStrength;
     int noiseStrength;
+    int decorationBlurStrength;
+    int decorationNoiseStrength;
     float brightness;
     float saturation;
     float contrast;
@@ -34,7 +36,6 @@ struct ForceBlurSettings
     QStringList windowClasses;
     WindowClassMatchingMode windowClassMatchingMode;
     bool blurDecorations;
-    bool onlyBlurContentWindow;
     bool blurMenus;
     bool blurDocks;
 };

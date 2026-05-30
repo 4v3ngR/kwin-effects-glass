@@ -8,14 +8,19 @@ Enabled (default):
 Disabled:
 ![image](https://github.com/taj-ny/kwin-effects-glass/assets/79316397/b4f35a24-e288-4c51-9707-494942abdaa0)
 
+### Content blur
+These sliders control the blur and noise applied to the window content area.
+
+### Decorations blur
+These sliders control the blur and noise applied to window decorations when decoration effects are enabled.
+
+If the content and decoration blur/noise values match, the effect uses a single blur pass to avoid visible seams between the content and decoration regions.
+
 # Force blur
 ### Apply effects to window decorations as well
 Whether to apply the glass effect to window decorations, including borders. Enable this if your window decoration doesn't support blur, or you want rounded top corners.
 
 This option will override the blur region specified by the decoration.
-
-### Only blur content window
-When enabled together with decoration effects, the window frame keeps the refraction-only glass look while the content area uses blur and refraction.
 
 # Static blur
 When enabled, the blur texture will be cached and reused. The blurred areas of the window will be marked as opaque, resulting in KWin not painting anything behind them.
