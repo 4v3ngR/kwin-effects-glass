@@ -8,6 +8,9 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
+uniform int physicallyBasedRefraction;
+
+#include "snells-glass.glsl"
 
 float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
 {
@@ -49,39 +52,42 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
 
     if (refractionStrength > 0) {
-        // Initial 2D normal
-        const float h = 1.0;
-        vec4 r = clamp(cornerRadius * 2.0, min(64.0, minHalfSize), min(128.0, minHalfSize));
-        vec2 gradient = vec2(
-                roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
-                roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
-        );
+        if (physicallyBasedRefraction == 0) {
+            const float h = 1.0;
+            vec4 r = clamp(cornerRadius * 2.0, min(64.0, minHalfSize), min(128.0, minHalfSize));
+            vec2 gradient = vec2(
+                    roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
+                    roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
+            );
 
-        vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
+            vec2 normal = length(gradient) > 0.0 ? -normalize(gradient) : vec2(0.0, 1.0);
 
-        float finalStrength = min(0.4 * concaveFactor * refractionStrength, 1.0);
+            float finalStrength = min(0.4 * concaveFactor * refractionStrength, 1.0);
 
-        vec2 refractOffsetG = -normal.xy * finalStrength;
-        vec2 refractOffsetR = -normal.xy * finalStrength;
-        vec2 refractOffsetB = -normal.xy * finalStrength;
+            vec2 refractOffsetG = -normal.xy * finalStrength;
+            vec2 refractOffsetR = -normal.xy * finalStrength;
+            vec2 refractOffsetB = -normal.xy * finalStrength;
 
-        // Different refraction offsets for each color channel
-        float fringingFactor = refractionRGBFringing * 0.3;
-        if (fringingFactor > 0.0) {
-            // Red bends most
-            refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
-            // Blue bends least
-            refractOffsetB = -normal.xy * (finalStrength * (1.0 - fringingFactor));
+            // Different refraction offsets for each color channel
+            float fringingFactor = refractionRGBFringing * 0.3;
+            if (fringingFactor > 0.0) {
+                // Red bends most
+                refractOffsetR = -normal.xy * (finalStrength * (1.0 + fringingFactor));
+                // Blue bends least
+                refractOffsetB = -normal.xy * (finalStrength * (1.0 - fringingFactor));
+            }
+
+            vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
+            vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
+            vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
+
+            sum.r = TEXTURE(texUnit, coordR).r;
+            sum.g = TEXTURE(texUnit, coordG).g;
+            sum.b = TEXTURE(texUnit, coordB).b;
+            sum.a = TEXTURE(texUnit, coordG).a;
+        } else {
+            sum = snellsRefraction(position, halfBlurSize, cornerRadius, dist);
         }
-
-        vec2 coordR = clamp(uv - refractOffsetR, 0.0, 1.0);
-        vec2 coordG = clamp(uv - refractOffsetG, 0.0, 1.0);
-        vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
-
-        sum.r = TEXTURE(texUnit, coordR).r;
-        sum.g = TEXTURE(texUnit, coordG).g;
-        sum.b = TEXTURE(texUnit, coordB).b;
-        sum.a = TEXTURE(texUnit, coordG).a;
     }
 
     if (concaveFactor < 1.0) {

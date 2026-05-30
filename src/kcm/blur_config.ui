@@ -558,6 +558,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="kcfg_PhysicallyBasedRefraction">
+         <property name="text">
+          <string>Physically based refraction</string>
+         </property>
+         <property name="toolTip">
+          <string>Use a Snell's-law (IOR-based) refraction model instead. The Refraction Strength slider is reinterpreted as the index-of-refraction delta in this mode.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="labelRefractionStrength">
          <property name="text">
           <string>Refraction Strength:</string>
