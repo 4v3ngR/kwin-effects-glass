@@ -147,6 +147,8 @@ private:
         int refractionStrengthLocation;
         int refractionNormalPowLocation;
         int refractionRGBFringingLocation;
+        int refractionOffsetStrengthLocation;
+        int physicallyBasedRefractionLocation;
 
         int tintColorLocation;
         int tintStrengthLocation;
