@@ -8,9 +8,8 @@ uniform float edgeSizePixels;
 uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
+uniform float refractionOffsetStrength;
 uniform int physicallyBasedRefraction;
-
-#include "snells-glass.glsl"
 
 float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
 {
@@ -20,6 +19,8 @@ float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
     vec2 q = abs(p) - b + r;
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
+
+#include "snells-glass.glsl"
 
 vec4 roundedRectangle(vec2 fragCoord, vec3 color, vec4 cornerRadius)
 {
@@ -52,9 +53,9 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     float concaveFactor = 1.0 - sqrt(1.0 - pow(smoothstep(0.0, 1.0, edgeFactor), refractionNormalPow));
 
     if (refractionStrength > 0) {
+        vec4 r = clamp(cornerRadius * 2.0, min(64.0, minHalfSize), min(128.0, minHalfSize));
         if (physicallyBasedRefraction == 0) {
             const float h = 1.0;
-            vec4 r = clamp(cornerRadius * 2.0, min(64.0, minHalfSize), min(128.0, minHalfSize));
             vec2 gradient = vec2(
                     roundedRectangleDist(position + vec2(h, 0), halfBlurSize, r) - roundedRectangleDist(position - vec2(h, 0), halfBlurSize, r),
                     roundedRectangleDist(position + vec2(0, h), halfBlurSize, r) - roundedRectangleDist(position - vec2(0, h), halfBlurSize, r)
@@ -86,7 +87,7 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
             sum.b = TEXTURE(texUnit, coordB).b;
             sum.a = TEXTURE(texUnit, coordG).a;
         } else {
-            sum = snellsRefraction(position, halfBlurSize, cornerRadius, dist);
+            sum = snellsRefraction(position, halfBlurSize, r, minHalfSize, dist);
         }
     }
 

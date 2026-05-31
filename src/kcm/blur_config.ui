@@ -558,16 +558,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="kcfg_PhysicallyBasedRefraction">
-         <property name="text">
-          <string>Physically based refraction</string>
-         </property>
-         <property name="toolTip">
-          <string>Use a Snell's-law (IOR-based) refraction model instead. The Refraction Strength slider is reinterpreted as the index-of-refraction delta in this mode.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="labelRefractionStrength">
          <property name="text">
           <string>Refraction Strength:</string>
@@ -832,6 +822,97 @@
         </layout>
        </item>
        <item>
+        <widget class="QCheckBox" name="kcfg_PhysicallyBasedRefraction">
+         <property name="text">
+          <string>Physically based refraction</string>
+         </property>
+         <property name="toolTip">
+          <string>Use a Snell's-law (IOR-based) refraction model instead. The Refraction Strength slider is reinterpreted as the index-of-refraction delta in this mode.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRefractionOffsetStrength">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Refraction Offset Strength:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayoutRefractionOffsetStrength">
+         <item>
+          <spacer name="horizontalSpacerRefractionOffsetStrength">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelRefractionOffsetStrengthOff">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Off</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="kcfg_RefractionOffsetStrength">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>20</number>
+           </property>
+           <property name="singleStep">
+            <number>1</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>8</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TickPosition::TicksBelow</enum>
+           </property>
+           <property name="toolTip">
+            <string>Pulls the IOR-based refraction outward based on position within the window (Snell's-law mode only).</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelRefractionOffsetStrengthStrong">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Strong</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>
@@ -1030,6 +1111,31 @@
    <signal>toggled(bool)</signal>
    <receiver>kcfg_EdgeLightingTooltip</receiver>
    <slot>setChecked(bool)</slot>
+  </connection>
+
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>kcfg_RefractionOffsetStrength</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionOffsetStrength</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionOffsetStrengthOff</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionOffsetStrengthStrong</receiver>
+   <slot>setEnabled(bool)</slot>
   </connection>
  </connections>
 </ui>
