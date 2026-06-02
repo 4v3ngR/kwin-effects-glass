@@ -32,7 +32,8 @@ vec4 snellsRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadius, float
     float sdfBlend = clamp(-dist / bandWidth, 0.0, 1.0);
     float sdfProfile = 6.0 * sdfBlend * (1.0 - sdfBlend);
 
-    float eps = bandWidth * 0.75;
+    float minR = min(min(cornerRadius.x, cornerRadius.y), min(cornerRadius.z, cornerRadius.w));
+    float eps = min(bandWidth * 0.75, minR * 0.6);
     float dxp = roundedRectangleDist(position + vec2(eps, 0.0), halfBlurSize, cornerRadius);
     float dxn = roundedRectangleDist(position - vec2(eps, 0.0), halfBlurSize, cornerRadius);
     float dyp = roundedRectangleDist(position + vec2(0.0, eps), halfBlurSize, cornerRadius);
