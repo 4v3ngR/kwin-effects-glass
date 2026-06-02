@@ -330,6 +330,13 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     effects->addRepaintFull();
 }
 
+void BlurEffect::repaintDynamicCorners()
+{
+    if (m_settings.roundedCorners.dynamicCorners) {
+        effects->addRepaintFull();
+    }
+}
+
 BlurEffect::BlurPipelineSettings BlurEffect::pipelineSettingsForStrength(int blurStrength, int noiseStrength) const
 {
     const BlurValuesStruct &values = blurStrengthValues[blurStrength];
@@ -453,6 +460,7 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
     windowFrameGeometryChangedConnections[w] = connect(w, &EffectWindow::windowFrameGeometryChanged, this, [this,w]() {
         if (w) {
             updateBlurRegion(w);
+            repaintDynamicCorners();
         }
     });
 
@@ -467,6 +475,7 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
     });
 
     updateBlurRegion(w);
+    repaintDynamicCorners();
 }
 
 void BlurEffect::slotWindowDeleted(EffectWindow *w)
@@ -487,6 +496,7 @@ void BlurEffect::slotWindowDeleted(EffectWindow *w)
         disconnect(*it);
         windowFrameGeometryChangedConnections.erase(it);
     }
+    repaintDynamicCorners();
 }
 
 void BlurEffect::slotOutputRemoved(KWin::BlurOutput *output)
@@ -613,6 +623,18 @@ BlurRegion BlurEffect::blurRegion(EffectWindow *w) const
     }
 
     return region;
+}
+
+QRectF BlurEffect::dynamicCornerRect(EffectWindow *w) const
+{
+    if (w->isDock()) {
+        const BlurRegion region = blurRegion(w);
+        if (!region.isEmpty()) {
+            return QRectF(region.boundingRect()).translated(w->pos());
+        }
+    }
+
+    return w->frameGeometry();
 }
 
 void BlurEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime)
@@ -1293,7 +1315,7 @@ bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
         return false;
     }
 
-    const QRectF rect = w->frameGeometry();
+    const QRectF rect = dynamicCornerRect(w);
     const double margin = 1.0; // Tolerance in pixels
 
     QPointF cornerPos;
@@ -1318,7 +1340,7 @@ bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
             !other->isOnCurrentActivity()
         ) continue;
 
-        const QRectF otherRect = other->frameGeometry();
+        const QRectF otherRect = dynamicCornerRect(other);
 
         bool onLeft   = isRight  && std::abs(cornerPos.x() - otherRect.left())   < margin;
         bool onRight  = isLeft   && std::abs(cornerPos.x() - otherRect.right())  < margin;

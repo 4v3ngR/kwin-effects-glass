@@ -121,10 +121,12 @@ private:
     void initBlurStrengthValues();
     BlurRegion contentRegion(EffectWindow *w) const;
     BlurRegion blurRegion(EffectWindow *w) const;
+    QRectF dynamicCornerRect(EffectWindow *w) const;
     BlurRegion decorationBlurRegion(const EffectWindow *w) const;
     bool decorationSupportsBlurBehind(const EffectWindow *w) const;
     bool shouldBlur(const EffectWindow *w, int mask, const WindowPaintData &data) const;
     void updateBlurRegion(EffectWindow *w);
+    void repaintDynamicCorners();
     void blur(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data);
     GLTexture *ensureNoiseTexture(int noiseStrength);
     QMatrix4x4 colorMatrix(const float &brightness, const float &saturation, const float &contrast) const;
