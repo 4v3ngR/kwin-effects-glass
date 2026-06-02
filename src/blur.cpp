@@ -1109,6 +1109,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();
+    const bool roundWindowCorners = !w->isFullScreen() &&
+        (m_settings.roundedCorners.roundMaximized || w->window()->maximizeMode() != MaximizeFull);
 
     float topCornerRadius = 0.0;
     float bottomCornerRadius = 0.0;
@@ -1121,13 +1123,16 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
         topCornerRadius = m_settings.roundedCorners.menuRadius;
         bottomCornerRadius = m_settings.roundedCorners.menuRadius;
-    } else if (!w->isFullScreen() || m_settings.roundedCorners.roundMaximized) {
+    } else if (roundWindowCorners) {
         topCornerRadius = m_settings.roundedCorners.windowTopRadius;
         bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
     }
 
     bool isOverRounded = false;
-    if (topCornerRadius > 0 || bottomCornerRadius > 0) {
+    if (!roundWindowCorners) {
+        cornerRadius = BorderRadius(0.0, 0.0, 0.0, 0.0);
+        w->window()->setBorderRadius(cornerRadius);
+    } else if (topCornerRadius > 0 || bottomCornerRadius > 0) {
         const QRectF frame = w->frameGeometry();
         const float winWidth = frame.width();
         const float winHeight = frame.height();
