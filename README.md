@@ -8,6 +8,13 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 ![Did someone say liquid?](/docs/liquid_enough.png)
 ![Latest shader effect](/docs/latest.png)
 
+### Different blur for different parts.
+
+- Now docks, decorations, and content can have different blur and noise strengths.
+- Docks, decorations, and tooltips can be excluded from tinting
+
+![Dolphin](/docs/dolphin.png)
+
 ### A dock comparison between this and Apple's liquid glass
 ![macOS](/docs/dock-macos.png)
 ![kde](/docs/dock-kde.png)
