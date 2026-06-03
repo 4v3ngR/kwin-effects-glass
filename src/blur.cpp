@@ -1250,6 +1250,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         if (w->isDock() && m_settings.general.excludeDocks) {
             return 0.0f;
         }
+        if (w->isTooltip() && m_settings.general.excludeTooltips) {
+            return 0.0f;
+        }
         if (decorationRegion && m_settings.general.excludeDecorations) {
             return 0.0f;
         }

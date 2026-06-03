@@ -519,6 +519,13 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeTooltips">
+                 <property name="text">
+                  <string>Don't apply tint to tooltips</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>

@@ -32,6 +32,7 @@ struct GeneralSettings
     bool edgeLightingTooltip;
     bool excludeDocks;
     bool excludeDecorations;
+    bool excludeTooltips;
 };
 
 struct ForceBlurSettings

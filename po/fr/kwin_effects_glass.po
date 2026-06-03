@@ -166,6 +166,12 @@ msgstr "Ne pas teindre les docks"
 msgid "Don't apply tint to decorations"
 msgstr ""
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_ExcludeTooltips)
+#: src/kcm/blur_config.ui:420
+#, kde-format
+msgid "Don't apply tint to tooltips"
+msgstr ""
+
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_EdgeLightingDock)
 #: src/kcm/blur_config.ui:432
 #, kde-format
