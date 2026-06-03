@@ -160,6 +160,12 @@ msgstr "Rendre les bords de fenêtre plus clairs"
 msgid "Don't apply tint to docks"
 msgstr "Ne pas teindre les docks"
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_ExcludeDecorations)
+#: src/kcm/blur_config.ui:410
+#, kde-format
+msgid "Don't apply tint to decorations"
+msgstr ""
+
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_EdgeLightingDock)
 #: src/kcm/blur_config.ui:432
 #, kde-format

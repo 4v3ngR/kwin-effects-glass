@@ -868,6 +868,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const bool splitBlurSettings = !frameShape.isEmpty() &&
         !contentShape.isEmpty() &&
         !sameBlurSettings;
+    const bool splitTintSettings = m_settings.general.excludeDecorations &&
+        !frameShape.isEmpty() &&
+        !contentShape.isEmpty();
+    const bool splitRenderRegions = splitBlurSettings || splitTintSettings;
     const QRect backgroundRect = effectShape.boundingRect();
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
 #ifdef GLASS_X11
@@ -922,8 +926,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     };
 
     const auto effectiveEffectShape = buildEffectiveShape(effectShape);
-    const auto effectiveContentShape = splitBlurSettings ? buildEffectiveShape(contentShape) : effectiveEffectShape;
-    const auto effectiveFrameShape = splitBlurSettings ? buildEffectiveShape(frameShape) : decltype(effectiveEffectShape){};
+    const auto effectiveContentShape = splitRenderRegions ? buildEffectiveShape(contentShape) : effectiveEffectShape;
+    const auto effectiveFrameShape = splitRenderRegions ? buildEffectiveShape(frameShape) : decltype(effectiveEffectShape){};
 
     if (effectiveEffectShape.isEmpty()) {
         return;
@@ -990,7 +994,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     const int contentVertexCount = effectiveContentShape.size() * 6;
     const int frameVertexCount = effectiveFrameShape.size() * 6;
-    const int vertexCount = splitBlurSettings ? (contentVertexCount + frameVertexCount) : contentVertexCount;
+    const int vertexCount = splitRenderRegions ? (contentVertexCount + frameVertexCount) : contentVertexCount;
     if (auto result = vbo->map<GLVertex2D>(6 + vertexCount)) {
         auto map = *result;
 
@@ -1241,9 +1245,16 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     QColor tint(m_settings.general.tintColor);
     QVector3D tintVec(tint.redF(), tint.greenF(), tint.blueF());
-    float tintStrength = w->isDock() && m_settings.general.excludeDocks ? 0.0f : static_cast<float>(tint.alphaF());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintColorLocation, tintVec);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintStrengthLocation, tintStrength);
+    auto tintStrengthForRegion = [&](bool decorationRegion) {
+        if (w->isDock() && m_settings.general.excludeDocks) {
+            return 0.0f;
+        }
+        if (decorationRegion && m_settings.general.excludeDecorations) {
+            return 0.0f;
+        }
+        return static_cast<float>(tint.alphaF());
+    };
 
     QColor glow(m_settings.general.glowColor);
     QVector3D glowVec(glow.redF(), glow.greenF(), glow.blueF());
@@ -1288,18 +1299,23 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     };
 
     GLTexture *contentBlurredTexture = runBlurPass(splitBlurSettings ? contentBlurSettings : combinedBlurSettings);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintStrengthLocation, tintStrengthForRegion(contentShape.isEmpty() && !frameShape.isEmpty()));
     drawBlurredRegion(contentBlurredTexture, 6, contentVertexCount, splitBlurSettings ? contentBlurSettings.offset : combinedBlurSettings.offset);
 
-    if (splitBlurSettings && frameVertexCount > 0) {
-        GLTexture *frameBlurredTexture = runBlurPass(m_decorationBlurSettings);
-        drawBlurredRegion(frameBlurredTexture, 6 + contentVertexCount, frameVertexCount, m_decorationBlurSettings.offset);
+    if (splitRenderRegions && frameVertexCount > 0) {
+        GLTexture *frameBlurredTexture = splitBlurSettings ? runBlurPass(m_decorationBlurSettings) : contentBlurredTexture;
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintStrengthLocation, tintStrengthForRegion(true));
+        drawBlurredRegion(frameBlurredTexture,
+                          6 + contentVertexCount,
+                          frameVertexCount,
+                          splitBlurSettings ? m_decorationBlurSettings.offset : combinedBlurSettings.offset);
     }
 
     glDisable(GL_BLEND);
 
     ShaderManager::instance()->popShader();
 
-    if (combinedBlurSettings.noiseStrength > 0 || (splitBlurSettings && m_decorationBlurSettings.noiseStrength > 0)) {
+    if (combinedBlurSettings.noiseStrength > 0 || (splitRenderRegions && m_decorationBlurSettings.noiseStrength > 0)) {
         // Apply an additive noise onto the blurred image. The noise is useful to mask banding
         // artifacts, which often happens due to the smooth color transitions in the blurred image.
 
@@ -1313,8 +1329,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         drawNoiseRegion(splitBlurSettings ? contentBlurSettings.noiseStrength : combinedBlurSettings.noiseStrength,
                         6,
                         contentVertexCount);
-        if (splitBlurSettings) {
-            drawNoiseRegion(m_decorationBlurSettings.noiseStrength, 6 + contentVertexCount, frameVertexCount);
+        if (splitRenderRegions) {
+            drawNoiseRegion(splitBlurSettings ? m_decorationBlurSettings.noiseStrength : combinedBlurSettings.noiseStrength,
+                            6 + contentVertexCount,
+                            frameVertexCount);
         }
 
         glDisable(GL_BLEND);
