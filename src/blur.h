@@ -126,7 +126,7 @@ private:
     void initBlurStrengthValues();
     BlurRegion contentRegion(EffectWindow *w, const BorderRadius *fallbackCornerRadius = nullptr) const;
     BlurRegion blurRegion(EffectWindow *w, const BorderRadius *fallbackCornerRadius = nullptr) const;
-    BlurRegion roundedContentRegion(const QRect &rect, const BorderRadius &cornerRadius) const;
+    BlurRegion roundedContentRegion(const QRect &rect, const BorderRadius &cornerRadius, qreal leftSideWidth, qreal rightSideWidth) const;
     BorderRadius effectiveWindowCornerRadius(EffectWindow *w, const BorderRadius &declaredCornerRadius, bool *isOverRounded = nullptr, bool applyDynamicCorners = true) const;
     QRectF dynamicCornerRect(EffectWindow *w) const;
     BlurRegion decorationBlurRegion(const EffectWindow *w) const;
