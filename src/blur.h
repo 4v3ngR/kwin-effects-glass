@@ -201,6 +201,7 @@ private:
     size_t m_maxIterationCount = 1; // number of times the texture will be downsized to half size
     BlurPipelineSettings m_contentBlurSettings{};
     BlurPipelineSettings m_decorationBlurSettings{};
+    BlurPipelineSettings m_dockBlurSettings{};
     QStringList m_windowClasses;
     bool m_whitelist;
 

@@ -46,7 +46,8 @@ msgstr "Flou du contenu"
 
 #. i18n: ectx: property (text), widget (QLabel, labelContentBlur)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationBlur)
-#: src/kcm/blur_config.ui:35 src/kcm/blur_config.ui:141
+#. i18n: ectx: property (text), widget (QLabel, labelDockBlur)
+#: src/kcm/blur_config.ui:35 src/kcm/blur_config.ui:141 src/kcm/blur_config.ui:247
 #, kde-format
 msgid "Blur"
 msgstr "Flou"
@@ -55,7 +56,10 @@ msgstr "Flou"
 #. i18n: ectx: property (text), widget (QLabel, labelConstantNoiseLight)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationBlurLight)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationNoiseLight)
+#. i18n: ectx: property (text), widget (QLabel, labelDockBlurLight)
+#. i18n: ectx: property (text), widget (QLabel, labelDockNoiseLight)
 #: src/kcm/blur_config.ui:42 src/kcm/blur_config.ui:92 src/kcm/blur_config.ui:148 src/kcm/blur_config.ui:198
+#: src/kcm/blur_config.ui:254 src/kcm/blur_config.ui:304
 #, kde-format
 msgid "Light"
 msgstr "Légère"
@@ -64,10 +68,13 @@ msgstr "Légère"
 #. i18n: ectx: property (text), widget (QLabel, labelConstantNoiseStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationBlurStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationNoiseStrong)
+#. i18n: ectx: property (text), widget (QLabel, labelDockBlurStrong)
+#. i18n: ectx: property (text), widget (QLabel, labelDockNoiseStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionStrengthStrong)
 #. i18n: ectx: property (text), widget (QLabel, labelRefractionRGBFringingStrong)
 #: src/kcm/blur_config.ui:74 src/kcm/blur_config.ui:121
 #: src/kcm/blur_config.ui:180 src/kcm/blur_config.ui:227
+#: src/kcm/blur_config.ui:286 src/kcm/blur_config.ui:333
 #: src/kcm/blur_config.ui:611 src/kcm/blur_config.ui:809
 #, kde-format
 msgid "Strong"
@@ -75,7 +82,8 @@ msgstr "Forte"
 
 #. i18n: ectx: property (text), widget (QLabel, labelContentNoise)
 #. i18n: ectx: property (text), widget (QLabel, labelDecorationNoise)
-#: src/kcm/blur_config.ui:85 src/kcm/blur_config.ui:191
+#. i18n: ectx: property (text), widget (QLabel, labelDockNoise)
+#: src/kcm/blur_config.ui:85 src/kcm/blur_config.ui:191 src/kcm/blur_config.ui:297
 #, kde-format
 msgid "Noise"
 msgstr "Bruit"
@@ -85,6 +93,12 @@ msgstr "Bruit"
 #, kde-format
 msgid "Decorations blur"
 msgstr "Flou des décorations"
+
+#. i18n: ectx: property (title), widget (QGroupBox, groupBoxDockBlur)
+#: src/kcm/blur_config.ui:239
+#, kde-format
+msgid "Docks blur"
+msgstr "Flou des docks"
 
 #. i18n: ectx: property (text), widget (QLabel, label)
 #: src/kcm/blur_config.ui:264
@@ -314,6 +328,24 @@ msgstr "Arrondir les fenêtre maximisées"
 #, kde-format
 msgid "Dynamic corner radius"
 msgstr "Rayon des coins dynamique"
+
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_DynamicCornersExcludeDocks)
+#: src/kcm/blur_config.ui:1171
+#, kde-format
+msgid "Exclude docks"
+msgstr "Exclure les docks"
+
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_DynamicCornersExcludeTooltips)
+#: src/kcm/blur_config.ui:1198
+#, kde-format
+msgid "Exclude tooltips"
+msgstr "Exclure les info-bulles"
+
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_DynamicCornersExcludeMenus)
+#: src/kcm/blur_config.ui:1225
+#, kde-format
+msgid "Exclude menus"
+msgstr "Exclure les menus"
 
 #. i18n: ectx: attribute (title), widget (QWidget, widget)
 #: src/kcm/blur_config.ui:884

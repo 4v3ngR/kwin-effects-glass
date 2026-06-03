@@ -14,6 +14,9 @@ These sliders control the blur and noise applied to the window content area.
 ### Decorations blur
 These sliders control the blur and noise applied to window decorations when decoration effects are enabled.
 
+### Docks blur
+These sliders control the blur and noise applied to docks and panels.
+
 If the content and decoration blur/noise values match, the effect uses a single blur pass to avoid visible seams between the content and decoration regions.
 
 # Force blur
@@ -21,6 +24,12 @@ If the content and decoration blur/noise values match, the effect uses a single 
 Whether to apply the glass effect to window decorations, including borders. Enable this if your window decoration doesn't support blur, or you want rounded top corners.
 
 This option will override the blur region specified by the decoration.
+
+# Rounded corners
+### Dynamic corner radius
+When enabled, corners that touch the edge of another window are flattened.
+
+The exclude options keep the configured corner radius for docks, tooltips, or menus instead of dynamically flattening those window types.
 
 # Static blur
 When enabled, the blur texture will be cached and reused. The blurred areas of the window will be marked as opaque, resulting in KWin not painting anything behind them.

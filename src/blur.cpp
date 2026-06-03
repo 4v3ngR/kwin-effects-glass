@@ -40,6 +40,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QWindow>
+#include <algorithm>
 #include <cmath> // for ceil()
 #include <cstdlib>
 
@@ -310,8 +311,20 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         m_settings.general.decorationBlurStrength,
         m_settings.general.decorationNoiseStrength
     );
-    m_maxIterationCount = std::max(m_contentBlurSettings.iterationCount, m_decorationBlurSettings.iterationCount);
-    m_expandSize = std::max(m_contentBlurSettings.expandSize, m_decorationBlurSettings.expandSize);
+    m_dockBlurSettings = pipelineSettingsForStrength(
+        m_settings.general.dockBlurStrength,
+        m_settings.general.dockNoiseStrength
+    );
+    m_maxIterationCount = std::max({
+        m_contentBlurSettings.iterationCount,
+        m_decorationBlurSettings.iterationCount,
+        m_dockBlurSettings.iterationCount,
+    });
+    m_expandSize = std::max({
+        m_contentBlurSettings.expandSize,
+        m_decorationBlurSettings.expandSize,
+        m_dockBlurSettings.expandSize,
+    });
     m_colorMatrix = colorTransformMatrix(
         m_settings.general.saturation,
         m_settings.general.contrast,
@@ -844,13 +857,14 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const BlurRegion effectShape = transformShape(blurRegion(w));
     const BlurRegion contentShape = transformShape(contentRegion(w));
     const BlurRegion frameShape = effectShape - contentShape;
+    const BlurPipelineSettings &contentBlurSettings = w->isDock() ? m_dockBlurSettings : m_contentBlurSettings;
     const bool sameBlurSettings =
-        m_contentBlurSettings.iterationCount == m_decorationBlurSettings.iterationCount &&
-        qFuzzyCompare(m_contentBlurSettings.offset, m_decorationBlurSettings.offset) &&
-        m_contentBlurSettings.expandSize == m_decorationBlurSettings.expandSize &&
-        m_contentBlurSettings.noiseStrength == m_decorationBlurSettings.noiseStrength;
+        contentBlurSettings.iterationCount == m_decorationBlurSettings.iterationCount &&
+        qFuzzyCompare(contentBlurSettings.offset, m_decorationBlurSettings.offset) &&
+        contentBlurSettings.expandSize == m_decorationBlurSettings.expandSize &&
+        contentBlurSettings.noiseStrength == m_decorationBlurSettings.noiseStrength;
     const BlurPipelineSettings &combinedBlurSettings =
-        (contentShape.isEmpty() && !frameShape.isEmpty()) ? m_decorationBlurSettings : m_contentBlurSettings;
+        (contentShape.isEmpty() && !frameShape.isEmpty()) ? m_decorationBlurSettings : contentBlurSettings;
     const bool splitBlurSettings = !frameShape.isEmpty() &&
         !contentShape.isEmpty() &&
         !sameBlurSettings;
@@ -1264,8 +1278,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
     };
 
-    GLTexture *contentBlurredTexture = runBlurPass(splitBlurSettings ? m_contentBlurSettings : combinedBlurSettings);
-    drawBlurredRegion(contentBlurredTexture, 6, contentVertexCount, splitBlurSettings ? m_contentBlurSettings.offset : combinedBlurSettings.offset);
+    GLTexture *contentBlurredTexture = runBlurPass(splitBlurSettings ? contentBlurSettings : combinedBlurSettings);
+    drawBlurredRegion(contentBlurredTexture, 6, contentVertexCount, splitBlurSettings ? contentBlurSettings.offset : combinedBlurSettings.offset);
 
     if (splitBlurSettings && frameVertexCount > 0) {
         GLTexture *frameBlurredTexture = runBlurPass(m_decorationBlurSettings);
@@ -1287,7 +1301,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             glBlendFunc(GL_ONE, GL_ONE);
         }
 
-        drawNoiseRegion(splitBlurSettings ? m_contentBlurSettings.noiseStrength : combinedBlurSettings.noiseStrength,
+        drawNoiseRegion(splitBlurSettings ? contentBlurSettings.noiseStrength : combinedBlurSettings.noiseStrength,
                         6,
                         contentVertexCount);
         if (splitBlurSettings) {
@@ -1312,6 +1326,19 @@ bool BlurEffect::blocksDirectScanout() const
 
 bool BlurEffect::shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) {
     if (!w || !m_settings.roundedCorners.dynamicCorners) {
+        return false;
+    }
+    if (m_settings.roundedCorners.dynamicCornersExcludeDocks && w->isDock()) {
+        return false;
+    }
+    if (m_settings.roundedCorners.dynamicCornersExcludeTooltips && w->isTooltip()) {
+        return false;
+    }
+    if (
+        m_settings.roundedCorners.dynamicCornersExcludeMenus &&
+        !w->isTooltip() &&
+        (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow())
+    ) {
         return false;
     }
 

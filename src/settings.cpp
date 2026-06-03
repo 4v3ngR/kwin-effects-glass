@@ -44,6 +44,8 @@ void BlurSettings::read()
     general.noiseStrength = BlurConfig::noiseStrength();
     general.decorationBlurStrength = BlurConfig::decorationBlurStrength() - 1;
     general.decorationNoiseStrength = BlurConfig::decorationNoiseStrength();
+    general.dockBlurStrength = BlurConfig::dockBlurStrength() - 1;
+    general.dockNoiseStrength = BlurConfig::dockNoiseStrength();
     general.brightness = BlurConfig::brightness();
     general.saturation = BlurConfig::saturation();
     general.contrast = BlurConfig::contrast();
@@ -66,6 +68,9 @@ void BlurSettings::read()
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
     roundedCorners.dynamicCorners = BlurConfig::dynamicCorners();
+    roundedCorners.dynamicCornersExcludeDocks = BlurConfig::dynamicCornersExcludeDocks();
+    roundedCorners.dynamicCornersExcludeTooltips = BlurConfig::dynamicCornersExcludeTooltips();
+    roundedCorners.dynamicCornersExcludeMenus = BlurConfig::dynamicCornersExcludeMenus();
 
     refraction.edgeSizePixels = BlurConfig::refractionEdgeSize() * 10;
     refraction.refractionStrength = BlurConfig::refractionStrength() / 20.0;

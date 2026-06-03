@@ -20,6 +20,8 @@ struct GeneralSettings
     int noiseStrength;
     int decorationBlurStrength;
     int decorationNoiseStrength;
+    int dockBlurStrength;
+    int dockNoiseStrength;
     float brightness;
     float saturation;
     float contrast;
@@ -48,6 +50,9 @@ struct RoundedCornersSettings
     float dockRadius;
     bool roundMaximized;
     bool dynamicCorners;
+    bool dynamicCornersExcludeDocks;
+    bool dynamicCornersExcludeTooltips;
+    bool dynamicCornersExcludeMenus;
 };
 
 struct RefractionSettings

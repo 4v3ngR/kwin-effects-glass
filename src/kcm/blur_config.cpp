@@ -14,6 +14,7 @@
 #include "kwineffects_interface.h"
 
 #include <QFileDialog>
+#include <QCheckBox>
 #include <QPushButton>
 
 namespace KWin
@@ -27,6 +28,13 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
     ui.setupUi(widget());
     BlurConfig::instance("kwinrc");
     addConfig(BlurConfig::self(), widget());
+
+    ui.kcfg_DynamicCornersExcludeDocks->setEnabled(ui.kcfg_DynamicCorners->isChecked());
+    ui.kcfg_DynamicCornersExcludeTooltips->setEnabled(ui.kcfg_DynamicCorners->isChecked());
+    ui.kcfg_DynamicCornersExcludeMenus->setEnabled(ui.kcfg_DynamicCorners->isChecked());
+    connect(ui.kcfg_DynamicCorners, &QCheckBox::toggled, ui.kcfg_DynamicCornersExcludeDocks, &QWidget::setEnabled);
+    connect(ui.kcfg_DynamicCorners, &QCheckBox::toggled, ui.kcfg_DynamicCornersExcludeTooltips, &QWidget::setEnabled);
+    connect(ui.kcfg_DynamicCorners, &QCheckBox::toggled, ui.kcfg_DynamicCornersExcludeMenus, &QWidget::setEnabled);
 
     QFile about(":/effects/glass/kcm/about.html");
     if (about.open(QIODevice::ReadOnly)) {
