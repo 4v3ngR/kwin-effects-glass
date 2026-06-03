@@ -103,7 +103,7 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     bool blocksDirectScanout() const override;
-    bool shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner);
+    bool shouldFlattenCorner(KWin::EffectWindow *w, Qt::Corner corner) const;
 
 public Q_SLOTS:
     void slotWindowAdded(KWin::EffectWindow *w);
@@ -124,8 +124,10 @@ private:
     };
 
     void initBlurStrengthValues();
-    BlurRegion contentRegion(EffectWindow *w) const;
-    BlurRegion blurRegion(EffectWindow *w) const;
+    BlurRegion contentRegion(EffectWindow *w, const BorderRadius *fallbackCornerRadius = nullptr) const;
+    BlurRegion blurRegion(EffectWindow *w, const BorderRadius *fallbackCornerRadius = nullptr) const;
+    BlurRegion roundedContentRegion(const QRect &rect, const BorderRadius &cornerRadius) const;
+    BorderRadius effectiveWindowCornerRadius(EffectWindow *w, const BorderRadius &declaredCornerRadius, bool *isOverRounded = nullptr, bool applyDynamicCorners = true) const;
     QRectF dynamicCornerRect(EffectWindow *w) const;
     BlurRegion decorationBlurRegion(const EffectWindow *w) const;
     bool decorationSupportsBlurBehind(const EffectWindow *w) const;
