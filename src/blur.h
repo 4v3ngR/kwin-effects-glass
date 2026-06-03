@@ -205,6 +205,8 @@ private:
 
     QMatrix4x4 m_colorMatrix;
     int m_expandSize;
+    float m_blurRadius = 1.0f;
+    float m_upsampleOffset = 1.0f;
     size_t m_maxIterationCount = 1; // number of times the texture will be downsized to half size
     BlurPipelineSettings m_contentBlurSettings{};
     BlurPipelineSettings m_decorationBlurSettings{};
