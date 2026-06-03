@@ -1024,16 +1024,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const BlurRegion contentShape = transformShape(contentRegion(w, &cornerRadius));
     const BlurRegion frameShape = effectShape - contentShape;
     const BlurPipelineSettings &contentBlurSettings = w->isDock() ? m_dockBlurSettings : m_contentBlurSettings;
-    const bool sameBlurSettings =
-        contentBlurSettings.iterationCount == m_decorationBlurSettings.iterationCount &&
-        qFuzzyCompare(contentBlurSettings.offset, m_decorationBlurSettings.offset) &&
-        contentBlurSettings.expandSize == m_decorationBlurSettings.expandSize &&
-        contentBlurSettings.noiseStrength == m_decorationBlurSettings.noiseStrength;
     const BlurPipelineSettings &combinedBlurSettings =
         (contentShape.isEmpty() && !frameShape.isEmpty()) ? m_decorationBlurSettings : contentBlurSettings;
     const bool splitBlurSettings = !frameShape.isEmpty() &&
-        !contentShape.isEmpty() &&
-        !sameBlurSettings;
+        !contentShape.isEmpty();
     const bool splitTintSettings = m_settings.general.excludeDecorations &&
         !frameShape.isEmpty() &&
         !contentShape.isEmpty();
