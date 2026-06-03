@@ -753,7 +753,7 @@ BlurRegion BlurEffect::contentRegion(EffectWindow *w, const BorderRadius *fallba
 
     if (auto it = m_windows.find(w); it != m_windows.end()) {
         const std::optional<BlurRegion> &content = it->second.content;
-        if (content.has_value() && !content->isEmpty()) {
+        if (!m_settings.roundedCorners.ignoreContentBlurRegion && content.has_value() && !content->isEmpty()) {
             region = content->translated(w->contentsRect().topLeft().toPoint()) & w->contentsRect().toRect();
         } else {
             // An empty region means that the blur effect should be enabled

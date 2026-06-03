@@ -69,6 +69,7 @@ void BlurSettings::read()
     roundedCorners.menuRadius = BlurConfig::menuCornerRadius();
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
     roundedCorners.useDeclaredCornerRadius = BlurConfig::useDeclaredCornerRadius();
+    roundedCorners.ignoreContentBlurRegion = BlurConfig::ignoreContentBlurRegion();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
     roundedCorners.dynamicCorners = BlurConfig::dynamicCorners();
     roundedCorners.dynamicCornersExcludeDocks = BlurConfig::dynamicCornersExcludeDocks();

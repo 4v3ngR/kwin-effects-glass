@@ -327,6 +327,12 @@ msgstr ""
 msgid "Use declared corner radius"
 msgstr ""
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_IgnoreContentBlurRegion)
+#: src/kcm/blur_config.ui:1069
+#, kde-format
+msgid "Ignore content blur region"
+msgstr ""
+
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_RoundCornersOfMaximizedWindows)
 #: src/kcm/blur_config.ui:859
 #, kde-format

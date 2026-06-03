@@ -1087,6 +1087,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="kcfg_IgnoreContentBlurRegion">
+         <property name="text">
+          <string>Ignore content blur region</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="layoutTopCornerRadius">
          <item>
           <widget class="QLabel" name="labelTopCornerRadius">

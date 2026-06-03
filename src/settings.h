@@ -51,6 +51,7 @@ struct RoundedCornersSettings
     float menuRadius;
     float dockRadius;
     bool useDeclaredCornerRadius;
+    bool ignoreContentBlurRegion;
     bool roundMaximized;
     bool dynamicCorners;
     bool dynamicCornersExcludeDocks;
