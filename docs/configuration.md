@@ -26,6 +26,9 @@ Whether to apply the glass effect to window decorations, including borders. Enab
 This option will override the blur region specified by the decoration.
 
 # Rounded corners
+### Use declared corner radius
+When enabled, Glass uses the corner radius reported by the window instead of overriding it with the settings below.
+
 ### Dynamic corner radius
 When enabled, corners that touch the edge of another window are flattened.
 

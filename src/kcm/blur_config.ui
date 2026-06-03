@@ -1062,9 +1062,16 @@
         </spacer>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <widget class="QCheckBox" name="kcfg_UseDeclaredCornerRadius">
+         <property name="text">
+          <string>Use declared corner radius</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="layoutTopCornerRadius">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="labelTopCornerRadius">
            <property name="text">
             <string>Window top corner radius</string>
            </property>
@@ -1080,9 +1087,9 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="layoutBottomCornerRadius">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="labelBottomCornerRadius">
            <property name="text">
             <string>Window bottom corner radius</string>
            </property>
@@ -1098,9 +1105,9 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="layoutMenuCornerRadius">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="labelMenuCornerRadius">
            <property name="text">
             <string>Menu corner radius</string>
            </property>
@@ -1116,9 +1123,9 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="layoutDockCornerRadius">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="labelDockCornerRadius">
            <property name="text">
             <string>Dock corner radius</string>
            </property>

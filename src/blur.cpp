@@ -1145,55 +1145,64 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();
-    const bool roundWindowCorners = !w->isFullScreen() &&
-        (m_settings.roundedCorners.roundMaximized || w->window()->maximizeMode() != MaximizeFull);
-
-    float topCornerRadius = 0.0;
-    float bottomCornerRadius = 0.0;
-    if (w->isOnScreenDisplay() || w->isTooltip()) {
-        topCornerRadius = m_settings.roundedCorners.windowTopRadius;
-        bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
-    } else if (w->isDock()) {
-        topCornerRadius = m_settings.roundedCorners.dockRadius;
-        bottomCornerRadius = m_settings.roundedCorners.dockRadius;
-    } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
-        topCornerRadius = m_settings.roundedCorners.menuRadius;
-        bottomCornerRadius = m_settings.roundedCorners.menuRadius;
-    } else if (roundWindowCorners) {
-        topCornerRadius = m_settings.roundedCorners.windowTopRadius;
-        bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
+    if (!blurInfo.originalCornerRadius.has_value()) {
+        blurInfo.originalCornerRadius = cornerRadius;
     }
-
     bool isOverRounded = false;
-    if (!roundWindowCorners) {
-        cornerRadius = BorderRadius(0.0, 0.0, 0.0, 0.0);
+
+    if (m_settings.roundedCorners.useDeclaredCornerRadius) {
+        cornerRadius = blurInfo.originalCornerRadius.value();
         w->window()->setBorderRadius(cornerRadius);
-    } else if (topCornerRadius > 0 || bottomCornerRadius > 0) {
-        const QRectF frame = w->frameGeometry();
-        const float winWidth = frame.width();
-        const float winHeight = frame.height();
+    } else {
+        const bool roundWindowCorners = !w->isFullScreen() &&
+            (m_settings.roundedCorners.roundMaximized || w->window()->maximizeMode() != MaximizeFull);
 
-        isOverRounded = (topCornerRadius + bottomCornerRadius) > winHeight ||
-            (topCornerRadius * 2) > winWidth;
-
-        if (isOverRounded) {
-            if (w->isDock()) {
-                topCornerRadius = 0;
-                bottomCornerRadius = 0;
-            } else {
-                float minRadius = std::min(winWidth, winHeight) / 2.0;
-                topCornerRadius = minRadius;
-                bottomCornerRadius = minRadius;
-            }
+        float topCornerRadius = 0.0;
+        float bottomCornerRadius = 0.0;
+        if (w->isOnScreenDisplay() || w->isTooltip()) {
+            topCornerRadius = m_settings.roundedCorners.windowTopRadius;
+            bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
+        } else if (w->isDock()) {
+            topCornerRadius = m_settings.roundedCorners.dockRadius;
+            bottomCornerRadius = m_settings.roundedCorners.dockRadius;
+        } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
+            topCornerRadius = m_settings.roundedCorners.menuRadius;
+            bottomCornerRadius = m_settings.roundedCorners.menuRadius;
+        } else if (roundWindowCorners) {
+            topCornerRadius = m_settings.roundedCorners.windowTopRadius;
+            bottomCornerRadius = m_settings.roundedCorners.windowBottomRadius;
         }
 
-        cornerRadius = BorderRadius(
-            shouldFlattenCorner(w, Qt::TopLeftCorner) ? 0.0f : topCornerRadius, // top left
-            shouldFlattenCorner(w, Qt::TopRightCorner) ? 0.0f : topCornerRadius, // top right
-            shouldFlattenCorner(w, Qt::BottomRightCorner) ? 0.0f : bottomCornerRadius, // bottom right
-            shouldFlattenCorner(w, Qt::BottomLeftCorner) ? 0.0f : bottomCornerRadius // bottom left
-        );
-        w->window()->setBorderRadius(cornerRadius);
+        if (!roundWindowCorners) {
+            cornerRadius = BorderRadius(0.0, 0.0, 0.0, 0.0);
+            w->window()->setBorderRadius(cornerRadius);
+        } else if (topCornerRadius > 0 || bottomCornerRadius > 0) {
+            const QRectF frame = w->frameGeometry();
+            const float winWidth = frame.width();
+            const float winHeight = frame.height();
+
+            isOverRounded = (topCornerRadius + bottomCornerRadius) > winHeight ||
+                (topCornerRadius * 2) > winWidth;
+
+            if (isOverRounded) {
+                if (w->isDock()) {
+                    topCornerRadius = 0;
+                    bottomCornerRadius = 0;
+                } else {
+                    float minRadius = std::min(winWidth, winHeight) / 2.0;
+                    topCornerRadius = minRadius;
+                    bottomCornerRadius = minRadius;
+                }
+            }
+
+            cornerRadius = BorderRadius(
+                shouldFlattenCorner(w, Qt::TopLeftCorner) ? 0.0f : topCornerRadius, // top left
+                shouldFlattenCorner(w, Qt::TopRightCorner) ? 0.0f : topCornerRadius, // top right
+                shouldFlattenCorner(w, Qt::BottomRightCorner) ? 0.0f : bottomCornerRadius, // bottom right
+                shouldFlattenCorner(w, Qt::BottomLeftCorner) ? 0.0f : bottomCornerRadius // bottom left
+            );
+            w->window()->setBorderRadius(cornerRadius);
+        }
     }
 
 

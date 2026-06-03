@@ -317,6 +317,12 @@ msgstr "Rayon du coin du menu"
 msgid "Dock corner radius"
 msgstr "Rayon du coin du dock"
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_UseDeclaredCornerRadius)
+#: src/kcm/blur_config.ui:1062
+#, kde-format
+msgid "Use declared corner radius"
+msgstr "Utiliser le rayon des coins déclaré"
+
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_RoundCornersOfMaximizedWindows)
 #: src/kcm/blur_config.ui:859
 #, kde-format

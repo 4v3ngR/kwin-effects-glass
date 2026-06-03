@@ -309,6 +309,12 @@ msgstr ""
 msgid "Dock corner radius"
 msgstr ""
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_UseDeclaredCornerRadius)
+#: src/kcm/blur_config.ui:1062
+#, kde-format
+msgid "Use declared corner radius"
+msgstr ""
+
 #. i18n: ectx: property (text), widget (QCheckBox, kcfg_RoundCornersOfMaximizedWindows)
 #: src/kcm/blur_config.ui:859
 #, kde-format

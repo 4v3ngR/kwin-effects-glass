@@ -64,6 +64,11 @@ struct BlurEffectData
      * Color transformation matrix (contrast, and saturation).
      */
     std::optional<QMatrix4x4> colorMatrix;
+
+    /**
+     * Corner radius reported by the window before this effect overrides it.
+     */
+    std::optional<BorderRadius> originalCornerRadius;
 };
 
 class BlurEffect : public KWin::Effect

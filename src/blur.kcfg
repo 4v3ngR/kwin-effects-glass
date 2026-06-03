@@ -70,6 +70,9 @@ class3</default>
         <entry name="DockCornerRadius" type="Double">
             <default>0.0</default>
         </entry>
+        <entry name="UseDeclaredCornerRadius" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="RoundCornersOfMaximizedWindows" type="Bool">
             <default>false</default>
         </entry>
