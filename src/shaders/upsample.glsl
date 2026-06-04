@@ -22,7 +22,7 @@ void main(void)
 
     if (saturationCompensation > 1.001) {
         float luma = dot(sum.rgb, vec3(0.2126, 0.7152, 0.0722));
-        float lumaWeight = smoothstep(0.05, 0.35, luma);
+        float lumaWeight = smoothstep(0.04, 0.25, luma);
         float effectiveBoost = mix(1.0, saturationCompensation, lumaWeight);
         sum.rgb = mix(vec3(luma), sum.rgb, effectiveBoost);
     }

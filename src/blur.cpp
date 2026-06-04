@@ -1289,7 +1289,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
         m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, settings.offset * m_upsampleOffset);
 
-        const float upsampleSaturationBoost = 1.10f + 0.10f * (m_blurRadius + m_upsampleOffset) * 0.5f;
+        const float upsampleSaturationBoost = 1.18f + 0.13f * (m_blurRadius + m_upsampleOffset) * 0.5f;
 
         for (size_t i = settings.iterationCount; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
