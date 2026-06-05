@@ -156,6 +156,7 @@ BlurEffect::BlurEffect()
         m_upsamplePass.mvpMatrixLocation = m_upsamplePass.shader->uniformLocation("modelViewProjectionMatrix");
         m_upsamplePass.offsetLocation = m_upsamplePass.shader->uniformLocation("offset");
         m_upsamplePass.halfpixelLocation = m_upsamplePass.shader->uniformLocation("halfpixel");
+        m_upsamplePass.saturationCompensationLocation = m_upsamplePass.shader->uniformLocation("saturationCompensation");
     }
 
     m_noisePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -325,6 +326,8 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         m_decorationBlurSettings.expandSize,
         m_dockBlurSettings.expandSize,
     });
+    m_blurRadius = m_settings.general.blurRadius;
+    m_upsampleOffset = m_settings.general.upsampleOffset;
     m_colorMatrix = colorTransformMatrix(
         m_settings.general.saturation,
         m_settings.general.contrast,
@@ -1263,7 +1266,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
         m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, settings.offset);
+        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, settings.offset * m_blurRadius);
 
         for (size_t i = 1; i <= settings.iterationCount; ++i) {
             const auto &read = renderInfo.framebuffers[i - 1];
@@ -1284,7 +1287,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         ShaderManager::instance()->pushShader(m_upsamplePass.shader.get());
 
         m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, settings.offset);
+        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, settings.offset * m_upsampleOffset);
+
+        const float upsampleSaturationBoost = 1.18f + 0.13f * (m_blurRadius + m_upsampleOffset) * 0.5f;
 
         for (size_t i = settings.iterationCount; i > 1; --i) {
             GLFramebuffer::popFramebuffer();
@@ -1293,6 +1298,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
                                       0.5 / read->colorAttachment()->height());
             m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
+            m_upsamplePass.shader->setUniform(m_upsamplePass.saturationCompensationLocation, i == 2 ? upsampleSaturationBoost : 1.0f);
 
             read->colorAttachment()->bind();
 
@@ -1332,7 +1338,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, combinedBlurSettings.offset);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, combinedBlurSettings.offset * m_upsampleOffset);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation, QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
@@ -1376,7 +1382,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     auto drawBlurredRegion = [&](GLTexture *blurredTexture, int vertexOffset, int currentVertexCount, float blurOffset) {
-        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, blurOffset);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, blurOffset * m_upsampleOffset);
         blurredTexture->bind();
         vbo->draw(GL_TRIANGLES, vertexOffset, currentVertexCount);
     };

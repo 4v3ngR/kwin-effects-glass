@@ -32,6 +32,9 @@
         <entry name="BlurStrength" type="Int">
             <default>15</default>
         </entry>
+        <entry name="BlurFinetune" type="Int">
+            <default>3</default>
+        </entry>
         <entry name="NoiseStrength" type="Int">
             <default>5</default>
         </entry>
