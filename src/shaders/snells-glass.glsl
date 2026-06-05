@@ -1,5 +1,3 @@
-// Snell's-law refraction; included into glass.glsl. ior = 1.0 + refractionStrength.
-
 vec4 processSample(sampler2D tex, vec2 baseUv, vec3 glassNormal, float ior,
                    float dispersion, float bandWidth, vec2 uvScale, vec2 lensShift)
 {
@@ -23,7 +21,7 @@ vec4 processSample(sampler2D tex, vec2 baseUv, vec3 glassNormal, float ior,
     return sampleG;
 }
 
-vec4 snellsRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadius, float minHalfSize, float dist)
+GlassFragment snellsRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadius, float minHalfSize, float dist, float edgeFactor, float concaveFactor)
 {
     float bandWidth = clamp(edgeSizePixels, 0.1, minHalfSize * 0.9);
     float invBandWidth = 1.0 / bandWidth;
@@ -57,5 +55,7 @@ vec4 snellsRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadius, float
     vec2 uvScale = 1.0 / blurSize;
     vec2 lensShift = -surfaceNormal * lensMagnitude * uvScale;
 
-    return processSample(texUnit, uv, glassNormal, ior, refractionRGBFringing, bandWidth, uvScale, lensShift);
+    vec4 color = processSample(texUnit, uv, glassNormal, ior, refractionRGBFringing, bandWidth, uvScale, lensShift);
+
+    return GlassFragment(color, dist, edgeFactor, concaveFactor, glassNormal, ior);
 }
