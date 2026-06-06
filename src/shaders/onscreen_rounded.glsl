@@ -11,8 +11,8 @@ uniform vec2 blurSize;
 
 VARYING_IN vec2 uv;
 VARYING_IN vec2 vertex;
-
 #include "glass.glsl"
+#include "oklab.glsl"
 
 void main(void)
 {
@@ -40,6 +40,10 @@ void main(void)
     float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
     float df = fwidth(f);
     sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
+
+    if (useOklabSaturation == 1) {
+        sum.rgb = oklabSaturate(sum.rgb, saturation);
+    }
 
     FRAG_COLOR = sum * colorMatrix * opacity;
 }

@@ -145,6 +145,8 @@ private:
         std::unique_ptr<GLShader> shader;
         int mvpMatrixLocation;
         int colorMatrixLocation;
+        int useOklabSaturationLocation;
+        int saturationLocation;
         int offsetLocation;
         int halfpixelLocation;
         int boxLocation;
