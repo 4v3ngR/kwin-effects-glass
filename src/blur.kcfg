@@ -35,6 +35,9 @@
         <entry name="BlurFinetune" type="Int">
             <default>3</default>
         </entry>
+        <entry name="BlurSaturationCompensation" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="NoiseStrength" type="Int">
             <default>5</default>
         </entry>

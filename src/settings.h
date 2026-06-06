@@ -27,6 +27,7 @@ struct GeneralSettings
     float contrast;
     float blurRadius;
     float upsampleOffset;
+    bool saturationCompensation;
     QString tintColor;
     QString glowColor;
     bool edgeLighting;
