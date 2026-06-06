@@ -49,7 +49,10 @@ vec3 oklabToLinear(vec3 c)
 
 vec3 oklabSaturate(vec3 srgb, float saturation)
 {
-    vec3 lab = linearToOklab(srgbToLinear(srgb));
+    if (abs(saturation - 1.0) < 0.001) {
+        return srgb;
+    }
+    vec3 lab = linearToOklab(srgbToLinear(clamp(srgb, 0.0, 1.0)));
     lab.gb *= saturation;
     return linearToSrgb(clamp(oklabToLinear(lab), 0.0, 1.0));
 }
