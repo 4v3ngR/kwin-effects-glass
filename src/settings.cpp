@@ -55,6 +55,7 @@ void BlurSettings::read()
     const float finetune = 0.5f + std::clamp(BlurConfig::blurFinetune(), 0, 10) * 0.13f;
     general.blurRadius = finetune;
     general.upsampleOffset = finetune;
+    general.saturationCompensation = BlurConfig::blurSaturationCompensation();
 
     general.tintColor = BlurConfig::tintColor();
     general.glowColor = BlurConfig::glowColor();
