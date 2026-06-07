@@ -9,6 +9,7 @@ uniform float refractionStrength;
 uniform float refractionNormalPow;
 uniform float refractionRGBFringing;
 uniform float refractionOffsetStrength;
+uniform float refractionBevelIntensity;
 uniform int physicallyBasedRefraction;
 
 float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)

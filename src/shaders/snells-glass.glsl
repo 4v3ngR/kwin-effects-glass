@@ -34,11 +34,11 @@ GlassFragment snellsRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadi
     vec2 smoothGrad = vec2(dxp - dxn, dyp - dyn);
     float gradLen = length(smoothGrad);
 
-    float normalHeight = min(concaveFactor * 0.4, 0.25);
+    float normalHeight = min(concaveFactor * 0.4, 0.25) * refractionBevelIntensity;
     vec2 normalXY = gradLen > 0.001 ? (smoothGrad / gradLen) * normalHeight : vec2(0.0);
     vec3 glassNormal = normalize(vec3(normalXY, 1.0));
 
-    float lensMagnitude = concaveFactor * bandWidth;
+    float lensMagnitude = concaveFactor * bandWidth * refractionBevelIntensity;
     vec2 surfaceNormal = gradLen > 0.001 ? smoothGrad / gradLen : vec2(1.0, 0.0);
 
     vec2 normalizedPos = position / blurSize;
