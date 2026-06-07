@@ -470,6 +470,27 @@
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
+            <string>Contrast</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="kcfg_Contrast">
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
             <string>Saturation</string>
            </property>
           </widget>
@@ -487,25 +508,14 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Contrast</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_Contrast">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QCheckBox" name="kcfg_OklabSaturation">
+         <property name="text">
+          <string>Apply saturation perceptually (OKLab)</string>
+         </property>
+         <property name="toolTip">
+          <string>Adjusts saturation evenly across all colors instead of in plain RGB.</string>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout">

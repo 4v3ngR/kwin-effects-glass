@@ -130,6 +130,9 @@ class3</default>
         <entry name="Saturation" type="Double">
             <default>1.0</default>
         </entry>
+        <entry name="OklabSaturation" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="Brightness" type="Double">
             <default>1.0</default>
         </entry>

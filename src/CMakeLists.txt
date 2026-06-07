@@ -6,6 +6,7 @@ add_subdirectory(kcm)
 # Read compat preambles
 file(READ shaders/compat_core.glsl COMPAT_CORE)
 file(READ shaders/compat_legacy.glsl COMPAT_LEGACY)
+file(READ shaders/oklab.glsl OKLAB_SHADER)
 file(READ shaders/snells-glass.glsl SNELLS_GLASS_SHADER)
 file(READ shaders/glass.glsl GLASS_SHADER)
 
@@ -17,8 +18,9 @@ string(REPLACE "#include \"snells-glass.glsl\"" "${SNELLS_GLASS_SHADER}" GLASS_S
 function(generate_shader_variants input_glsl output_base)
     file(READ "${input_glsl}" SHADER_SRC)
 
-    # Expand glass.glsl includes
-    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC}")
+    # Expand helper-shader includes
+    string(REPLACE "#include \"oklab.glsl\"" "${OKLAB_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC}")
+    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER_SRC_EXPANDED "${SHADER_SRC_EXPANDED}")
 
     # Core variant
     file(WRITE "generated/${output_base}_core${ARGN}" "${COMPAT_CORE}\n${SHADER_SRC_EXPANDED}")
