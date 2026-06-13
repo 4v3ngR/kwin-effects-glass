@@ -667,7 +667,7 @@ BorderRadius BlurEffect::effectiveWindowCornerRadius(EffectWindow *w, const Bord
     );
 }
 
-BlurRegion BlurEffect::roundedContentRegion(const QRect &rect, const BorderRadius &cornerRadius, qreal leftSideWidth, qreal rightSideWidth) const
+BlurRegion BlurEffect::roundedContentRegion(const QRect &rect, const BorderRadius &cornerRadius, qreal leftSideWidth, qreal rightSideWidth, qreal topHeight, qreal bottomHeight) const
 {
     const QVector4D radius = cornerRadius.toVector();
     auto contentRadius = [](float windowRadius, qreal sideWidth) {
@@ -678,10 +678,10 @@ BlurRegion BlurEffect::roundedContentRegion(const QRect &rect, const BorderRadiu
     };
 
     const int maxRadius = std::max(0, std::min(rect.width(), rect.height()) / 2);
-    const int topLeft = std::clamp(static_cast<int>(std::round(contentRadius(radius.x(), leftSideWidth))), 0, maxRadius);
-    const int topRight = std::clamp(static_cast<int>(std::round(contentRadius(radius.y(), rightSideWidth))), 0, maxRadius);
-    const int bottomLeft = std::clamp(static_cast<int>(std::round(contentRadius(radius.z(), leftSideWidth))), 0, maxRadius);
-    const int bottomRight = std::clamp(static_cast<int>(std::round(contentRadius(radius.w(), rightSideWidth))), 0, maxRadius);
+    const int topLeft = leftSideWidth || topHeight ? std::clamp(static_cast<int>(std::round(contentRadius(radius.x(), leftSideWidth))), 0, maxRadius) : 0;
+    const int topRight = rightSideWidth || topHeight ? std::clamp(static_cast<int>(std::round(contentRadius(radius.y(), rightSideWidth))), 0, maxRadius) : 0;
+    const int bottomLeft = leftSideWidth || bottomHeight ? std::clamp(static_cast<int>(std::round(contentRadius(radius.z(), leftSideWidth))), 0, maxRadius) : 0;
+    const int bottomRight = rightSideWidth || bottomHeight ? std::clamp(static_cast<int>(std::round(contentRadius(radius.w(), rightSideWidth))), 0, maxRadius) : 0;
 
     if (topLeft == 0 && topRight == 0 && bottomRight == 0 && bottomLeft == 0) {
 #ifdef GLASS_X11
@@ -782,10 +782,14 @@ BlurRegion BlurEffect::contentRegion(EffectWindow *w, const BorderRadius *fallba
             const QRectF contentsRect = w->contentsRect();
             const qreal leftSideWidth = std::max<qreal>(0.0, contentsRect.x());
             const qreal rightSideWidth = std::max<qreal>(0.0, w->frameGeometry().width() - contentsRect.x() - contentsRect.width());
+            const qreal topHeight = std::max<qreal>(0.0, contentsRect.y());
+            const qreal bottomHeight = std::max<qreal>(0.0, w->frameGeometry().height() - contentsRect.y() - contentsRect.height());
             region = roundedContentRegion(w->contentsRect().toRect(),
                                           cornerRadius,
                                           leftSideWidth,
-                                          rightSideWidth);
+                                          rightSideWidth,
+                                          topHeight,
+                                          bottomHeight);
         }
     }
 
