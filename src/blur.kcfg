@@ -154,6 +154,9 @@ class3</default>
         <entry name="RefractionOffsetStrength" type="Double">
             <default>8.0</default>
         </entry>
+        <entry name="RefractionBevelIntensity" type="Int">
+            <default>10</default>
+        </entry>
         <entry name="PhysicallyBasedRefraction" type="Bool">
             <default>false</default>
         </entry>

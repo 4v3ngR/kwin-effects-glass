@@ -1126,6 +1126,87 @@
         </layout>
        </item>
        <item>
+        <widget class="QLabel" name="labelRefractionBevelIntensity">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Bevel Intensity:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayoutRefractionBevelIntensity">
+         <item>
+          <spacer name="horizontalSpacerRefractionBevelIntensity">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelRefractionBevelIntensityFlat">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Flat</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="kcfg_RefractionBevelIntensity">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>5</number>
+           </property>
+           <property name="maximum">
+            <number>15</number>
+           </property>
+           <property name="singleStep">
+            <number>1</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TickPosition::TicksBelow</enum>
+           </property>
+           <property name="toolTip">
+            <string>Scales the silhouette tilt — higher gives a more pronounced rounded-over edge.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelRefractionBevelIntensityRound">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Round</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>
@@ -1443,6 +1524,30 @@
    <sender>kcfg_PhysicallyBasedRefraction</sender>
    <signal>toggled(bool)</signal>
    <receiver>labelRefractionOffsetStrengthStrong</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>kcfg_RefractionBevelIntensity</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionBevelIntensity</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionBevelIntensityFlat</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>kcfg_PhysicallyBasedRefraction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelRefractionBevelIntensityRound</receiver>
    <slot>setEnabled(bool)</slot>
   </connection>
  </connections>
