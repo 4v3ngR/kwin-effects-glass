@@ -98,9 +98,9 @@ vec3 glassOutline(vec2 position, GlassFragment s)
         float edgeProfile = edgeMask - borderInner;
         float thicknessShadow = pow(edgeProfile, 0.9);
         float shadowMask = smoothstep(blurSize.y * 0.7, -blurSize.y * 0.7, position.y) *
-                           smoothstep(blurSize.x * 0.7, -blurSize.x * 0.7, -position.x);
+                           smoothstep(blurSize.x * 0.7, -blurSize.x * 0.7, position.x);
         float highlightMask = smoothstep(-blurSize.y * 0.7, blurSize.y * 0.7, position.y) *
-                              smoothstep(-blurSize.x * 0.7, blurSize.x * 0.7, -position.x);
+                              smoothstep(-blurSize.x * 0.7, blurSize.x * 0.7, position.x);
 
         glow = mix(glow, vec3(1.0), thicknessShadow * shadowMask);
         glow = mix(glow, vec3(1.0), thicknessShadow * highlightMask);
