@@ -82,6 +82,10 @@ if(${KWin_VERSION} VERSION_LESS 6.4)
     message(FATAL_ERROR "Glass does not support your Plasma version (${KWin_VERSION}). See the README for more information.")
 endif()
 
+if(${KWin_VERSION} VERSION_GREATER_EQUAL 6.7)
+    set(GLASS_KWIN_67 ON)
+endif()
+
 find_package(KDecoration3 REQUIRED)
 
 add_subdirectory(src)

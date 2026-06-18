@@ -8,6 +8,9 @@
 #pragma once
 
 #include "effect/effect.h"
+#ifndef GLASS_X11
+#include "core/region.h"
+#endif
 #include "opengl/glutils.h"
 #include "scene/item.h"
 #include "settings.h"
@@ -21,8 +24,10 @@
 namespace KWin
 {
 
+#if !defined(GLASS_X11) && !defined(GLASS_KWIN_67)
 class BlurManagerInterface;
 class ContrastManagerInterface;
+#endif
 class BackgroundEffectItem;
 
 #ifdef GLASS_X11
@@ -54,7 +59,7 @@ struct BlurEffectData
      *  color spaces and even different windows on them
      */
     std::unordered_map<BlurOutput *, BlurRenderData> render;
-#if PLASMA_VERSION >= 0x060404
+#if PLASMA_VERSION >= 0x060404 && !defined(GLASS_X11)
     std::unique_ptr<BackgroundEffectItem> blurItem;
 #endif
 
@@ -83,12 +88,22 @@ public:
     static bool enabledByDefault();
 
     void reconfigure(ReconfigureFlags flags) override;
+#ifdef GLASS_KWIN_67
+    void prePaintScreen(ScreenPrePaintData &data) override;
+
+#ifdef GLASS_X11
+    void prePaintWindow(EffectWindow *w, WindowPrePaintData &data) override;
+#else
+    void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data) override;
+#endif
+#else
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
 
 #ifdef GLASS_X11
     void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
 #else
     void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime) override;
+#endif
 #endif
     void drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data) override;
 
@@ -236,15 +251,19 @@ private:
     QList<BlurValuesStruct> blurStrengthValues;
 
     QMap<EffectWindow *, QMetaObject::Connection> windowBlurChangedConnections;
+#if !defined(GLASS_X11) && !defined(GLASS_KWIN_67)
     QMap<EffectWindow *, QMetaObject::Connection> windowContrastChangedConnections;
+#endif
     QMap<EffectWindow *, QMetaObject::Connection> windowFrameGeometryChangedConnections;
     std::unordered_map<EffectWindow *, BlurEffectData> m_windows;
 
+#if !defined(GLASS_X11) && !defined(GLASS_KWIN_67)
     static BlurManagerInterface *s_blurManager;
     static QTimer *s_blurManagerRemoveTimer;
 
     static ContrastManagerInterface *s_contrastManager;
     static QTimer *s_contrastManagerRemoveTimer;
+#endif
 };
 
 inline bool BlurEffect::provides(Effect::Feature feature)
