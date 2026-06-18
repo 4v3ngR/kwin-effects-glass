@@ -1105,8 +1105,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
     const QRect deviceBackgroundRect = scaledBackgroundRect;
 #else
-    const QRect scaledBackgroundRect = viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect));
-    const QRect deviceBackgroundRect = scaledBackgroundRect;
+    const QRectF scaledLogicalBackgroundRect(backgroundRect.x() * viewport.scale(),
+                                             backgroundRect.y() * viewport.scale(),
+                                             backgroundRect.width() * viewport.scale(),
+                                             backgroundRect.height() * viewport.scale());
+    const QRect scaledBackgroundRect = snapToPixelGrid(scaledLogicalBackgroundRect);
+    const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect));
 #endif
     const auto opacity = data.opacity();
 
@@ -1403,7 +1407,11 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const QRectF nativeBox = snapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
                                  .translated(-scaledBackgroundRect.topLeft());
 #else
-    const QRectF nativeBox = snapToPixelGridF(viewport.mapToDeviceCoordinates(RectF(transformedRect)))
+    const QRectF scaledTransformedRect(transformedRect.x() * viewport.scale(),
+                                       transformedRect.y() * viewport.scale(),
+                                       transformedRect.width() * viewport.scale(),
+                                       transformedRect.height() * viewport.scale());
+    const QRectF nativeBox = snapToPixelGridF(scaledTransformedRect)
                                  .translated(-scaledBackgroundRect.topLeft());
 #endif
     const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
