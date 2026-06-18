@@ -424,10 +424,10 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
             }
             content = region;
         } else if (w->isDock() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
-            const RegionF surfaceInputRegion = surface->input();
-            if (!surfaceInputRegion.isEmpty()) {
+            const RegionF surfaceFallbackRegion = surface->opaque().isEmpty() ? surface->input() : surface->opaque();
+            if (!surfaceFallbackRegion.isEmpty()) {
                 Region region;
-                for (const RectF &rect : surfaceInputRegion.rects()) {
+                for (const RectF &rect : surfaceFallbackRegion.rects()) {
                     region += rect.toAlignedRect();
                 }
                 content = region;
