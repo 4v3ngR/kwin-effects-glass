@@ -980,13 +980,21 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
 
     // Add some apps to the exclusion list
     if (!m_whitelist) {
-      classes << QString("spectacle") << QString("xwaylandvideobridge");
+      classes << QString("xwaylandvideobridge");
     }
 
     const auto matches = classes.contains(windowClass) || classes.contains(resourceName);
 
     if ((m_whitelist && !matches) || (!m_whitelist && matches)) {
         return false;
+    }
+
+    // special condition for spectacle
+    if (windowClass.contains("spectacle")) {
+        const KWin::Layer layer = w->window()->layer();
+        if (layer == KWin::Layer::OverlayLayer || layer == KWin::Layer::ActiveLayer) {
+            return false;
+        }
     }
 
     bool scaled = !qFuzzyCompare(data.xScale(), 1.0) && !qFuzzyCompare(data.yScale(), 1.0);
