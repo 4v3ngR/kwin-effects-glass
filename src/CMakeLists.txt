@@ -57,6 +57,9 @@ if(GLASS_WAYLAND)
         KF6::ConfigGui
         KWin::kwin
     )
+    if(GLASS_KWIN_67)
+        target_compile_definitions(glass PRIVATE GLASS_KWIN_67)
+    endif()
     install(TARGETS glass DESTINATION ${KDE_INSTALL_PLUGINDIR}/kwin/effects/plugins)
 endif()
 if(GLASS_X11)
