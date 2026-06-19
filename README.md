@@ -27,16 +27,17 @@ Glass is a fork of the Plasma 6 blur effect with additional features and bug fix
 - [Glass](https://github.com/4v3ngR/Glass) is a fork of Darkly to complement the improved refraction shader for that liquid refraction goodness.
   
 ### Features
-- Wayland support (X11 support is currently broken)
+- Wayland and X11 support
 - Force blur
 - Rounded corners with anti-aliasing
 - Adjust blur brightness, contrast and saturation
 - Tint, glow, and edge lighting (brighter edges)
-- Refraction (by [@DaddelZeit](https://github.com/DaddelZeit) and [@iGerman00](https://github.com/iGerman00))
+- Snells refractoin (by [@PKMNPlatin](github.com/PKMNPlatin/kwin-effects-snell-glass)
   
 ### Support for previous Plasma releases
-Currently supported versions: **6.6** (Wayland only)
-- big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch for 6.6.0
+Currently supported versions: **6.7** and **6.6**
+big thanks to [@avitretiak](https://github.com/avitretiak) for providing the patch for 6.7.0
+big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch for 6.6.0
 
 ### Support for 6.5.x (and X11 builds)
 - The last version to support plasma 6.5.x (and X11) is 0ae94cf5e709a894a9f1f54544cb17deb7f77d58
@@ -46,6 +47,9 @@ Currently supported versions: **6.6** (Wayland only)
 > If the effect stops working after a system upgrade, you will need to rebuild it or reinstall the package.
 
 ## Packages
+> [!IMPORTANT]
+> If find errors with these instructions (ie missing packages) feel free to raise in issue (or PR) describing your findings.
+
 <details>
   <summary>NixOS (flakes)</summary>
   <br>
@@ -149,7 +153,7 @@ Currently supported versions: **6.6** (Wayland only)
 
   Wayland:
   ```
-  sudo apt install -y git cmake g++ extra-cmake-modules qt6-tools-dev kwin-dev libkf6configwidgets-dev gettext libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev libkf6kcmutils-dev libkdecorations3-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-shm0-dev
+  sudo apt install -y git cmake g++ extra-cmake-modules qt6-tools-dev kwin-dev libkf6configwidgets-dev gettext libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev libkf6kcmutils-dev libkdecorations3-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-shm0-dev vulkan-headers
   ```
   
   X11:
