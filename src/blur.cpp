@@ -119,8 +119,8 @@ BlurEffect::BlurEffect()
     ensureResources();
 
     m_roundedOnscreenPass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                                     QStringLiteral(":/effects/glass/generated/onscreen_rounded.vert"),
-                                                                                     QStringLiteral(":/effects/glass/generated/onscreen_rounded.frag"));
+                                                                                     QStringLiteral(":/effects/glass/generated/onscreen_rounded_core.vert"),
+                                                                                     QStringLiteral(":/effects/glass/generated/onscreen_rounded_core.frag"));
     if (!m_roundedOnscreenPass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader";
         return;
@@ -151,7 +151,7 @@ BlurEffect::BlurEffect()
 
     m_downsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
                                                                                 QStringLiteral(":/effects/glass/generated/vertex.vert"),
-                                                                                QStringLiteral(":/effects/glass/generated/downsample.frag"));
+                                                                                QStringLiteral(":/effects/glass/generated/downsample_core.frag"));
     if (!m_downsamplePass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load downsampling pass shader";
         return;
@@ -163,7 +163,7 @@ BlurEffect::BlurEffect()
 
     m_upsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
                                                                               QStringLiteral(":/effects/glass/generated/vertex.vert"),
-                                                                              QStringLiteral(":/effects/glass/generated/upsample.frag"));
+                                                                              QStringLiteral(":/effects/glass/generated/upsample_core.frag"));
     if (!m_upsamplePass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load upsampling pass shader";
         return;
@@ -175,8 +175,8 @@ BlurEffect::BlurEffect()
     }
 
     m_noisePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                           QStringLiteral(":/effects/glass/generated/vertex.vert"),
-                                                                           QStringLiteral(":/effects/glass/generated/noise.frag"));
+                                                                           QStringLiteral(":/effects/glass/generated/vertex_core.vert"),
+                                                                           QStringLiteral(":/effects/glass/generated/noise_core.frag"));
     if (!m_noisePass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load noise pass shader";
         return;
