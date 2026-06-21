@@ -812,7 +812,11 @@ BlurRegion BlurEffect::contentRegion(EffectWindow *w, const BorderRadius *fallba
         if (!m_settings.roundedCorners.ignoreContentBlurRegion || w->isDock()) {
             if (content.has_value()) {
                 if (content->isEmpty()) {
+#ifdef GLASS_X11
                     region = w->contentsRect().toAlignedRect();
+#else
+                    region = Rect(w->contentsRect().toAlignedRect());
+#endif
                 } else {
                     region = content->translated(
                             w->contentsRect().x(),
@@ -1127,7 +1131,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
                                              backgroundRect.width() * viewport.scale(),
                                              backgroundRect.height() * viewport.scale());
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledLogicalBackgroundRect);
-    const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect));
+    const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinates(Rect(backgroundRect)).rounded();
 #endif
     const auto opacity = data.opacity();
 
