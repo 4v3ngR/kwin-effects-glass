@@ -1127,7 +1127,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
                                              backgroundRect.width() * viewport.scale(),
                                              backgroundRect.height() * viewport.scale());
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledLogicalBackgroundRect);
-    const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinatesAligned(Rect(backgroundRect));
+    const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinates(Rect(backgroundRect)).rounded();
 #endif
     const auto opacity = data.opacity();
 
