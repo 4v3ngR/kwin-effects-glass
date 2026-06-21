@@ -812,7 +812,11 @@ BlurRegion BlurEffect::contentRegion(EffectWindow *w, const BorderRadius *fallba
         if (!m_settings.roundedCorners.ignoreContentBlurRegion || w->isDock()) {
             if (content.has_value()) {
                 if (content->isEmpty()) {
+#ifdef GLASS_X11
                     region = w->contentsRect().toAlignedRect();
+#else
+                    region = Rect(w->contentsRect().toAlignedRect());
+#endif
                 } else {
                     region = content->translated(
                             w->contentsRect().x(),
