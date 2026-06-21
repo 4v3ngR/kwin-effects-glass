@@ -58,6 +58,7 @@ struct RoundedCornersSettings
     bool ignoreContentBlurRegion;
     bool roundMaximized;
     bool dynamicCorners;
+    bool dynamicCornersExcludeWindows;
     bool dynamicCornersExcludeDocks;
     bool dynamicCornersExcludeTooltips;
     bool dynamicCornersExcludeMenus;
