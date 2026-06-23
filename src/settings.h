@@ -37,6 +37,8 @@ struct GeneralSettings
     bool excludeDocks;
     bool excludeDecorations;
     bool excludeTooltips;
+    bool excludeMenus;
+    bool excludeOSD;
 };
 
 struct ForceBlurSettings

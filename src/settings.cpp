@@ -66,6 +66,8 @@ void BlurSettings::read()
     general.excludeDocks = BlurConfig::excludeDocks();
     general.excludeDecorations = BlurConfig::excludeDecorations();
     general.excludeTooltips = BlurConfig::excludeTooltips();
+    general.excludeMenus = BlurConfig::excludeMenus();
+    general.excludeOSD = BlurConfig::excludeOSD();
 
     forceBlur.windowClasses = parseWindowClasses(BlurConfig::windowClasses());
     forceBlur.windowClassMatchingMode = BlurConfig::blurMatching() ? WindowClassMatchingMode::Whitelist : WindowClassMatchingMode::Blacklist;
