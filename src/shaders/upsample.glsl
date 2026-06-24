@@ -3,20 +3,20 @@ uniform float offset;
 uniform vec2 halfpixel;
 uniform float saturationCompensation;
 
-VARYING_IN vec2 uv;
+in vec2 uv;
 
 void main(void)
 {
-    vec4 sum = TEXTURE(texUnit, uv) * 4.0;
+    vec4 sum = texture(texUnit, uv) * 4.0;
 
-    sum += TEXTURE(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
-    sum += TEXTURE(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
-    sum += TEXTURE(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
-    sum += TEXTURE(texUnit, uv + vec2(halfpixel.x, halfpixel.y) * offset) * 2.0;
-    sum += TEXTURE(texUnit, uv + vec2(halfpixel.x * 2.0, 0.0) * offset);
-    sum += TEXTURE(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
-    sum += TEXTURE(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
-    sum += TEXTURE(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
+    sum += texture(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
+    sum += texture(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
+    sum += texture(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
+    sum += texture(texUnit, uv + vec2(halfpixel.x, halfpixel.y) * offset) * 2.0;
+    sum += texture(texUnit, uv + vec2(halfpixel.x * 2.0, 0.0) * offset);
+    sum += texture(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
+    sum += texture(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
+    sum += texture(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
 
     sum /= 16.0;
 
@@ -27,5 +27,5 @@ void main(void)
         sum.rgb = mix(vec3(luma), sum.rgb, effectiveBoost);
     }
 
-    FRAG_COLOR = sum;
+    fragColor = sum;
 }

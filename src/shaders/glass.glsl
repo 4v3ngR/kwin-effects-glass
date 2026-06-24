@@ -76,10 +76,10 @@ GlassFragment glassRefraction(vec2 position, vec2 halfBlurSize, vec4 cornerRadiu
     vec2 coordB = clamp(uv - refractOffsetB, 0.0, 1.0);
 
     vec4 color = vec4(
-        TEXTURE(texUnit, coordR).r,
-        TEXTURE(texUnit, coordG).g,
-        TEXTURE(texUnit, coordB).b,
-        TEXTURE(texUnit, coordG).a
+        texture(texUnit, coordR).r,
+        texture(texUnit, coordG).g,
+        texture(texUnit, coordB).b,
+        texture(texUnit, coordG).a
     );
     return GlassFragment(color, dist, edgeFactor, concaveFactor, vec3(0.0, 0.0, 1.0), 1.0);
 }

@@ -5,15 +5,15 @@ vec4 processSample(sampler2D tex, vec2 baseUv, vec3 glassNormal, float ior, floa
     vec3 refractG = refract(viewRay, glassNormal, 1.0 / ior);
     vec2 dir = length(refractG.xy) > 0.001 ? normalize(refractG.xy) : vec2(0.0);
     vec2 shiftG = dir * magnitude * uvScale + lensShift;
-    vec4 sampleG = TEXTURE(tex, clamp(baseUv + shiftG, 0.0, 1.0));
+    vec4 sampleG = texture(tex, clamp(baseUv + shiftG, 0.0, 1.0));
 
     if (dispersion > 0.001) {
         float fringe = clamp(dispersion, 0.0, 1.0) * 0.3;
         vec2 shiftR = dir * (magnitude * (1.0 + fringe)) * uvScale + lensShift;
         vec2 shiftB = dir * (magnitude * (1.0 - fringe)) * uvScale + lensShift;
 
-        float r = TEXTURE(tex, clamp(baseUv + shiftR, 0.0, 1.0)).r;
-        float b = TEXTURE(tex, clamp(baseUv + shiftB, 0.0, 1.0)).b;
+        float r = texture(tex, clamp(baseUv + shiftR, 0.0, 1.0)).r;
+        float b = texture(tex, clamp(baseUv + shiftB, 0.0, 1.0)).b;
         return vec4(r, sampleG.g, b, sampleG.a);
     }
     return sampleG;
