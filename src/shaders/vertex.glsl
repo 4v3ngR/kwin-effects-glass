@@ -1,9 +1,9 @@
 uniform mat4 modelViewProjectionMatrix;
 
-ATTRIBUTE vec2 position;
-ATTRIBUTE vec2 texcoord;
+in vec2 position;
+in vec2 texcoord;
 
-VARYING_OUT vec2 uv;
+out vec2 uv;
 
 void main(void)
 {

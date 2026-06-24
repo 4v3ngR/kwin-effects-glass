@@ -9,8 +9,8 @@ uniform vec4 cornerRadius;
 uniform float opacity;
 uniform vec2 blurSize;
 
-VARYING_IN vec2 uv;
-VARYING_IN vec2 vertex;
+in vec2 uv;
+in vec2 vertex;
 #include "glass.glsl"
 #include "oklab.glsl"
 
@@ -24,14 +24,14 @@ void main(void)
 
     vec4 sum = vec4(0);
     if (dist <= 0.0) {
-        sum = TEXTURE(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
-        sum += TEXTURE(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
-        sum += TEXTURE(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
-        sum += TEXTURE(texUnit, uv + vec2(halfpixel.x, halfpixel.y) * offset) * 2.0;
-        sum += TEXTURE(texUnit, uv + vec2(halfpixel.x * 2.0, 0.0) * offset);
-        sum += TEXTURE(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
-        sum += TEXTURE(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
-        sum += TEXTURE(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
+        sum = texture(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
+        sum += texture(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
+        sum += texture(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
+        sum += texture(texUnit, uv + vec2(halfpixel.x, halfpixel.y) * offset) * 2.0;
+        sum += texture(texUnit, uv + vec2(halfpixel.x * 2.0, 0.0) * offset);
+        sum += texture(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
+        sum += texture(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
+        sum += texture(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
         sum /= 12.0;
     }
 
@@ -45,5 +45,5 @@ void main(void)
         sum.rgb = oklabSaturate(sum.rgb, saturation);
     }
 
-    FRAG_COLOR = sum * colorMatrix * opacity;
+    fragColor = sum * colorMatrix * opacity;
 }
