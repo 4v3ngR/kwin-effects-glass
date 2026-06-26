@@ -59,6 +59,7 @@ void BlurSettings::read()
     general.saturationCompensation = BlurConfig::blurSaturationCompensation();
 
     general.tintColor = BlurConfig::tintColor();
+    general.autoTintAlpha = BlurConfig::autoTintAlpha();
     general.glowColor = BlurConfig::glowColor();
     general.edgeLighting = BlurConfig::edgeLighting();
     general.edgeLightingDock = BlurConfig::edgeLightingDock();

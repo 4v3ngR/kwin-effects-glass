@@ -566,120 +566,103 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
-
+        <layout class="QHBoxLayout" name="tintAndEdgeOptionsLayout">
          <item>
-          <layout class="QVBoxLayout" name="mainOptionsLayout">
+          <layout class="QVBoxLayout" name="edgeLightingOptionsLayout">
+           <property name="alignment">
+            <set>Qt::AlignTop</set>
+           </property>
            <item>
-            <layout class="QHBoxLayout" name="topRowLayout">
-             <item>
-              <widget class="QCheckBox" name="kcfg_EdgeLighting">
-               <property name="text">
-                <string>Make the window edges brighter</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacerMiddle">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="tintExclusionsLayout">
-               <item>
-                <widget class="QCheckBox" name="kcfg_ExcludeDocks">
-                 <property name="text">
-                  <string>Don't apply tint to docks</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="kcfg_ExcludeDecorations">
-                 <property name="text">
-                  <string>Don't apply tint to decorations</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="kcfg_ExcludeTooltips">
-                 <property name="text">
-                  <string>Don't apply tint to tooltips</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="kcfg_ExcludeMenus">
-                 <property name="text">
-                  <string>Don't apply tint to menus</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="kcfg_ExcludeOSD">
-                 <property name="text">
-                  <string>Don't apply tint to notifications and OSD</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
+            <widget class="QCheckBox" name="kcfg_EdgeLighting">
+             <property name="text">
+              <string>Make the window edges brighter</string>
+             </property>
+            </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="subOptionsLayout">
-             <item>
-              <spacer name="tabSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Policy::Fixed</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>25</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalSubItems">
-               <item>
-                <widget class="QCheckBox" name="kcfg_EdgeLightingDock">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Don't apply brighter to dock</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="kcfg_EdgeLightingTooltip">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Don't apply brighter to tooltip</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
+            <widget class="QCheckBox" name="kcfg_EdgeLightingDock">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Don't apply brighter to dock</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_EdgeLightingTooltip">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Don't apply brighter to tooltip</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
-
+         <item>
+          <spacer name="horizontalSpacerMiddle">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="tintExclusionsLayout">
+           <item>
+            <widget class="QCheckBox" name="kcfg_AutoTintAlpha">
+             <property name="text">
+              <string>Automatically adjust tint strength</string>
+             </property>
+             <property name="toolTip">
+              <string>Scales tint strength by comparing the average background color with the text color.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_ExcludeDocks">
+             <property name="text">
+              <string>Don't apply tint to docks</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_ExcludeDecorations">
+             <property name="text">
+              <string>Don't apply tint to decorations</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_ExcludeTooltips">
+             <property name="text">
+              <string>Don't apply tint to tooltips</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_ExcludeMenus">
+             <property name="text">
+              <string>Don't apply tint to menus</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_ExcludeOSD">
+             <property name="text">
+              <string>Don't apply tint to notifications and OSD</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
        </item>
        <item>
