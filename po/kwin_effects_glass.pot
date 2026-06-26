@@ -127,6 +127,20 @@ msgid ""
 "Enter a color in #AARRGGBB format. The A (alpha) channel sets tint strength."
 msgstr ""
 
+#. i18n: ectx: property (text), widget (QCheckBox, kcfg_AutoTintAlpha)
+#: src/kcm/blur_config.ui:545
+#, kde-format
+msgid "Automatically adjust tint strength"
+msgstr ""
+
+#. i18n: ectx: property (toolTip), widget (QCheckBox, kcfg_AutoTintAlpha)
+#: src/kcm/blur_config.ui:548
+#, kde-format
+msgid ""
+"Scales tint strength by comparing the average background color with the text "
+"color."
+msgstr ""
+
 #. i18n: ectx: property (text), widget (QLabel, labelGlowColor)
 #: src/kcm/blur_config.ui:351
 #, kde-format

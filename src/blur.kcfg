@@ -32,6 +32,9 @@
         <entry name="TintColor" type="String">
             <default>#00000000</default>
         </entry>
+        <entry name="AutoTintAlpha" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="GlowColor" type="String">
             <default>#00000000</default>
         </entry>
