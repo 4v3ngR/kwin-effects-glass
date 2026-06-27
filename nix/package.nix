@@ -9,7 +9,7 @@
 
 stdenv.mkDerivation rec {
   pname = "kwin-glass";
-  version = "1.6.3";
+  version = "20260627-1";
 
   src = ./..;
 
