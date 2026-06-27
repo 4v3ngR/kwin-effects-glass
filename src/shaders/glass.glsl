@@ -128,14 +128,20 @@ vec3 averageBackgroundColor()
 float adjustedTintStrength(float baseTintStrength)
 {
     float strength = clamp(baseTintStrength, 0.0, 1.0);
-    if (autoTintAlpha == 0 || strength <= 0.0) {
-        return strength;
-    }
 
     const vec3 grayscaleWeights = vec3(0.299, 0.587, 0.114);
     float backgroundGray = dot(averageBackgroundColor(), grayscaleWeights);
     float tintGray = dot(tintColor, grayscaleWeights);
-    return strength * clamp(abs(backgroundGray - tintGray), 0.0, 1.0);
+
+    float diff = abs(backgroundGray - tintGray);
+
+    const float staticOffset = 0.1;
+    float finalScale = smoothstep(staticOffset, 1.0, diff);
+
+    float contrastStrength = strength * finalScale;
+    float useContrast = step(0.5, float(autoTintAlpha)) * step(0.001, strength);
+
+    return mix(strength, contrastStrength, useContrast);
 }
 
 vec4 glass(vec4 sum, vec4 cornerRadius)
