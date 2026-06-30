@@ -7,672 +7,689 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>240</height>
+    <height>650</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
      <widget class="QWidget" name="widget">
-     <attribute name="title">
+      <attribute name="title">
        <string>General</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QGroupBox" name="groupBoxContentBlur">
-         <property name="title">
-          <string>Content blur</string>
+        <widget class="QScrollArea" name="scrollAreaGeneral">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayoutContentBlur">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutContentBlur" stretch="0,0,0,0">
-            <item>
-             <widget class="QLabel" name="labelContentBlur">
-              <property name="text">
-               <string>Blur</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelConstantBlurLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_BlurStrength">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>15</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="pageStep">
-               <number>1</number>
-              </property>
-              <property name="value">
-               <number>10</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelConstantBlurStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutContentNoise">
-            <item>
-             <widget class="QLabel" name="labelContentNoise">
-              <property name="text">
-               <string>Noise</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelConstantNoiseLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_NoiseStrength">
-              <property name="maximum">
-               <number>14</number>
-              </property>
-              <property name="pageStep">
-               <number>5</number>
-              </property>
-              <property name="value">
-               <number>5</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-              <property name="tickInterval">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelConstantNoiseStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBoxDecorationBlur">
-         <property name="title">
-          <string>Decorations blur</string>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayoutDecorationBlur">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutDecorationBlur" stretch="0,0,0,0">
-            <item>
-             <widget class="QLabel" name="labelDecorationBlur">
-              <property name="text">
-               <string>Blur</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDecorationBlurLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_DecorationBlurStrength">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>15</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="pageStep">
-               <number>1</number>
-              </property>
-              <property name="value">
-               <number>10</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDecorationBlurStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutDecorationNoise">
-            <item>
-             <widget class="QLabel" name="labelDecorationNoise">
-              <property name="text">
-               <string>Noise</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDecorationNoiseLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_DecorationNoiseStrength">
-              <property name="maximum">
-               <number>14</number>
-              </property>
-              <property name="pageStep">
-               <number>5</number>
-              </property>
-              <property name="value">
-               <number>5</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-              <property name="tickInterval">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDecorationNoiseStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBoxDockBlur">
-         <property name="title">
-          <string>Docks blur</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayoutDockBlur">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutDockBlur" stretch="0,0,0,0">
-            <item>
-             <widget class="QLabel" name="labelDockBlur">
-              <property name="text">
-               <string>Blur</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDockBlurLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_DockBlurStrength">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>15</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="pageStep">
-               <number>1</number>
-              </property>
-              <property name="value">
-               <number>10</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDockBlurStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayoutDockNoise">
-            <item>
-             <widget class="QLabel" name="labelDockNoise">
-              <property name="text">
-               <string>Noise</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDockNoiseLight">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="kcfg_DockNoiseStrength">
-              <property name="maximum">
-               <number>14</number>
-              </property>
-              <property name="pageStep">
-               <number>5</number>
-              </property>
-              <property name="value">
-               <number>5</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TickPosition::TicksBelow</enum>
-              </property>
-              <property name="tickInterval">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelDockNoiseStrong">
-              <property name="text">
-               <string>Strong</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelBlurFinetuneDescription">
-         <property name="text">
-          <string>Blur finetune:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayoutBlurFinetune">
-         <item>
-          <spacer name="horizontalSpacerBlurFinetune">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelBlurFinetuneSharp">
-           <property name="text">
-            <string>Sharp</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_BlurFinetune">
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>5</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-           <property name="toolTip">
-            <string>Tunes both the downsample radius and the upsample blend together. Lower = tighter / sharper blur, higher = wider / softer blur.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelBlurFinetuneSoft">
-           <property name="text">
-            <string>Soft</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_BlurSaturationCompensation">
-         <property name="text">
-          <string>Preserve color vibrancy in blur</string>
-         </property>
-         <property name="toolTip">
-          <string>Blur slightly desaturates colors — this counters that. Can cause artifacts.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Brightness</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_Brightness">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Contrast</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_Contrast">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Saturation</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_Saturation">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_OklabSaturation">
-         <property name="text">
-          <string>Apply saturation perceptually (OKLab)</string>
-         </property>
-         <property name="toolTip">
-          <string>Adjusts saturation evenly across all colors instead of in plain RGB.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="labelTintColor">
-           <property name="text">
-            <string>Tint color</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="kcfg_TintColor">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets tint strength.</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QLabel" name="labelGlowColor">
-           <property name="text">
-            <string>Glow color</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="kcfg_GlowColor">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets glow strength.</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="tintAndEdgeOptionsLayout">
-         <item>
-          <layout class="QVBoxLayout" name="edgeLightingOptionsLayout">
-           <property name="alignment">
-            <set>Qt::AlignTop</set>
-           </property>
+         <widget class="QWidget" name="scrollContentGeneral">
+          <layout class="QVBoxLayout">
            <item>
-            <widget class="QCheckBox" name="kcfg_EdgeLighting">
+            <widget class="QGroupBox" name="groupBoxContentBlur">
+             <property name="title">
+              <string>Content blur</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayoutContentBlur">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutContentBlur" stretch="0,0,0,0">
+                <item>
+                 <widget class="QLabel" name="labelContentBlur">
+                  <property name="text">
+                   <string>Blur</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConstantBlurLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_BlurStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>15</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>1</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>1</number>
+                  </property>
+                  <property name="value">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConstantBlurStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutContentNoise">
+                <item>
+                 <widget class="QLabel" name="labelContentNoise">
+                  <property name="text">
+                   <string>Noise</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConstantNoiseLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_NoiseStrength">
+                  <property name="maximum">
+                   <number>14</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>5</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConstantNoiseStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxDecorationBlur">
+             <property name="title">
+              <string>Decorations blur</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayoutDecorationBlur">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutDecorationBlur" stretch="0,0,0,0">
+                <item>
+                 <widget class="QLabel" name="labelDecorationBlur">
+                  <property name="text">
+                   <string>Blur</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDecorationBlurLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_DecorationBlurStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>15</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>1</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>1</number>
+                  </property>
+                  <property name="value">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDecorationBlurStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutDecorationNoise">
+                <item>
+                 <widget class="QLabel" name="labelDecorationNoise">
+                  <property name="text">
+                   <string>Noise</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDecorationNoiseLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_DecorationNoiseStrength">
+                  <property name="maximum">
+                   <number>14</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>5</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDecorationNoiseStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxDockBlur">
+             <property name="title">
+              <string>Docks blur</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayoutDockBlur">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutDockBlur" stretch="0,0,0,0">
+                <item>
+                 <widget class="QLabel" name="labelDockBlur">
+                  <property name="text">
+                   <string>Blur</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockBlurLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_DockBlurStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>15</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>1</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>1</number>
+                  </property>
+                  <property name="value">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockBlurStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutDockNoise">
+                <item>
+                 <widget class="QLabel" name="labelDockNoise">
+                  <property name="text">
+                   <string>Noise</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockNoiseLight">
+                  <property name="text">
+                   <string>Light</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_DockNoiseStrength">
+                  <property name="maximum">
+                   <number>14</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>5</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockNoiseStrong">
+                  <property name="text">
+                   <string>Strong</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelBlurFinetuneDescription">
              <property name="text">
-              <string>Make the window edges brighter</string>
+              <string>Blur finetune:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_EdgeLightingDock">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Don't apply brighter to dock</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayoutBlurFinetune">
+             <item>
+              <spacer name="horizontalSpacerBlurFinetune">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelBlurFinetuneSharp">
+               <property name="text">
+                <string>Sharp</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_BlurFinetune">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>5</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+               <property name="toolTip">
+                <string>Tunes both the downsample radius and the upsample blend together. Lower = tighter / sharper blur, higher = wider / softer blur.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelBlurFinetuneSoft">
+               <property name="text">
+                <string>Soft</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_EdgeLightingTooltip">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
+            <widget class="QCheckBox" name="kcfg_BlurSaturationCompensation">
              <property name="text">
-              <string>Don't apply brighter to tooltip</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="horizontalSpacerMiddle">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="tintExclusionsLayout">
-           <item>
-            <widget class="QCheckBox" name="kcfg_AutoTintAlpha">
-             <property name="text">
-              <string>Automatically adjust tint strength</string>
+              <string>Preserve color vibrancy in blur</string>
              </property>
              <property name="toolTip">
-              <string>Scales tint strength by comparing the average background color with the text color.</string>
+              <string>Blur slightly desaturates colors — this counters that. Can cause artifacts.</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_ExcludeDocks">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <spacer>
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Brightness</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_Brightness">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Contrast</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_Contrast">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Saturation</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_Saturation">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_OklabSaturation">
              <property name="text">
-              <string>Don't apply tint to docks</string>
+              <string>Apply saturation perceptually (OKLab)</string>
+             </property>
+             <property name="toolTip">
+              <string>Adjusts saturation evenly across all colors instead of in plain RGB.</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_ExcludeDecorations">
-             <property name="text">
-              <string>Don't apply tint to decorations</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="labelTintColor">
+               <property name="text">
+                <string>Tint color</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="kcfg_TintColor">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets tint strength.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_ExcludeTooltips">
-             <property name="text">
-              <string>Don't apply tint to tooltips</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="labelGlowColor">
+               <property name="text">
+                <string>Glow color</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="kcfg_GlowColor">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets glow strength.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_ExcludeMenus">
-             <property name="text">
-              <string>Don't apply tint to menus</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="tintAndEdgeOptionsLayout">
+             <item>
+              <layout class="QVBoxLayout" name="edgeLightingOptionsLayout">
+               <property name="alignment">
+                <set>Qt::AlignTop</set>
+               </property>
+               <item>
+                <widget class="QCheckBox" name="kcfg_EdgeLighting">
+                 <property name="text">
+                  <string>Make the window edges brighter</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_EdgeLightingDock">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Don't apply brighter to dock</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_EdgeLightingTooltip">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Don't apply brighter to tooltip</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="horizontalSpacerMiddle">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="tintExclusionsLayout">
+               <item>
+                <widget class="QCheckBox" name="kcfg_AutoTintAlpha">
+                 <property name="text">
+                  <string>Automatically adjust tint strength</string>
+                 </property>
+                 <property name="toolTip">
+                  <string>Scales tint strength by comparing the average background color with the text color.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeDocks">
+                 <property name="text">
+                  <string>Don't apply tint to docks</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeDecorations">
+                 <property name="text">
+                  <string>Don't apply tint to decorations</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeTooltips">
+                 <property name="text">
+                  <string>Don't apply tint to tooltips</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeMenus">
+                 <property name="text">
+                  <string>Don't apply tint to menus</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="kcfg_ExcludeOSD">
+                 <property name="text">
+                  <string>Don't apply tint to notifications and OSD</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="kcfg_ExcludeOSD">
-             <property name="text">
-              <string>Don't apply tint to notifications and OSD</string>
+            <widget class="QWidget" name="widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>1</verstretch>
+              </sizepolicy>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QWidget" name="widget" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -683,76 +700,74 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <layout class="QVBoxLayout">
-         <item>
-          <layout class="QHBoxLayout">
+        <widget class="QScrollArea" name="scrollAreaForceblur">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="scrollContentForceblur">
+          <layout class="QVBoxLayout">
            <item>
-            <widget class="QLabel" name="windowClassesBriefDescription">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+            <layout class="QVBoxLayout">
+             <item>
+              <layout class="QHBoxLayout">
+               <item>
+                <widget class="QLabel" name="windowClassesBriefDescription">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Classes of windows to force blur:</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="KContextualHelpButton" name="windowClassesContextualHelp"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPlainTextEdit" name="kcfg_WindowClasses"/>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutMatchingMode">
+             <item>
+              <widget class="QRadioButton" name="kcfg_BlurMatching">
+               <property name="text">
+                <string>Blur only matching</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="kcfg_BlurNonMatching">
+               <property name="text">
+                <string>Blur all except matching</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_BlurDecorations">
              <property name="text">
-              <string>Classes of windows to force blur:</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+              <string>Apply effects to window decorations as well</string>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="KContextualHelpButton" name="windowClassesContextualHelp"/>
-           </item>
           </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPlainTextEdit" name="kcfg_WindowClasses"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutMatchingMode">
-         <item>
-          <widget class="QRadioButton" name="kcfg_BlurMatching">
-           <property name="text">
-            <string>Blur only matching</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="kcfg_BlurNonMatching">
-           <property name="text">
-            <string>Blur all except matching</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_BlurDecorations">
-         <property name="text">
-          <string>Apply effects to window decorations as well</string>
-         </property>
+         </widget>
         </widget>
        </item>
-       <!--
-       <item>
-        <widget class="QCheckBox" name="kcfg_BlurMenus">
-         <property name="text">
-          <string>Blur menus</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_BlurDocks">
-         <property name="text">
-          <string>Blur docks</string>
-         </property>
-        </widget>
-       </item>
-       -->
       </layout>
      </widget>
      <widget class="QWidget" name="widget">
@@ -761,460 +776,474 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel" name="labelRefractionNote">
-         <property name="text">
-          <string>Refraction does not work when using static blur.</string>
+        <widget class="QScrollArea" name="scrollAreaRefraction">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="scrollContentRefraction">
+          <layout class="QVBoxLayout">
+           <item>
+            <widget class="QLabel" name="labelRefractionNote">
+             <property name="text">
+              <string>Refraction does not work when using static blur.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionStrength">
+             <property name="text">
+              <string>Refraction Strength:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionStrengthOff">
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionStrength">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionStrengthStrong">
+               <property name="text">
+                <string>Strong</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionEdgeSize">
+             <property name="text">
+              <string>Refraction Edge Size:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionEdgeSizeSmall">
+               <property name="text">
+                <string>Small</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionEdgeSize">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionEdgeSizeWide">
+               <property name="text">
+                <string>Wide</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionNormalPow">
+             <property name="text">
+              <string>Refraction Falloff:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionNormalPowLinear">
+               <property name="text">
+                <string>Linear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionNormalPow">
+               <property name="minimum">
+                <number>2</number>
+               </property>
+               <property name="maximum">
+                <number>22</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionNormalPowRound">
+               <property name="text">
+                <string>Round</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionRGBFringing">
+             <property name="text">
+              <string>RGB Fringing Strength:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionRGBFringingOff">
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionRGBFringing">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionRGBFringingStrong">
+               <property name="text">
+                <string>Strong</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_PhysicallyBasedRefraction">
+             <property name="text">
+              <string>Physically based refraction</string>
+             </property>
+             <property name="toolTip">
+              <string>Use a Snell's-law (IOR-based) refraction model instead. The Refraction Strength slider is reinterpreted as the index-of-refraction delta in this mode.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionOffsetStrength">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Refraction Offset Strength:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayoutRefractionOffsetStrength">
+             <item>
+              <spacer name="horizontalSpacerRefractionOffsetStrength">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionOffsetStrengthOff">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionOffsetStrength">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>8</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+               <property name="toolTip">
+                <string>Pulls the IOR-based refraction outward based on position within the window (Snell's-law mode only).</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionOffsetStrengthStrong">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Strong</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelRefractionBevelIntensity">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Bevel Intensity:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayoutRefractionBevelIntensity">
+             <item>
+              <spacer name="horizontalSpacerRefractionBevelIntensity">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionBevelIntensityFlat">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Flat</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_RefractionBevelIntensity">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>15</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+               <property name="toolTip">
+                <string>Scales the silhouette tilt — higher gives a more pronounced rounded-over edge.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelRefractionBevelIntensityRound">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Round</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionStrength">
-         <property name="text">
-          <string>Refraction Strength:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionStrengthOff">
-           <property name="text">
-            <string>Off</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionStrength">
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>20</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionStrengthStrong">
-           <property name="text">
-            <string>Strong</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionEdgeSize">
-         <property name="text">
-          <string>Refraction Edge Size:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionEdgeSizeSmall">
-           <property name="text">
-            <string>Small</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionEdgeSize">
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>20</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionEdgeSizeWide">
-           <property name="text">
-            <string>Wide</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionNormalPow">
-         <property name="text">
-          <string>Refraction Falloff:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionNormalPowLinear">
-           <property name="text">
-            <string>Linear</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionNormalPow">
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>22</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionNormalPowRound">
-           <property name="text">
-            <string>Round</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionRGBFringing">
-         <property name="text">
-          <string>RGB Fringing Strength:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionRGBFringingOff">
-           <property name="text">
-            <string>Off</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionRGBFringing">
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>20</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionRGBFringingStrong">
-           <property name="text">
-            <string>Strong</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_PhysicallyBasedRefraction">
-         <property name="text">
-          <string>Physically based refraction</string>
-         </property>
-         <property name="toolTip">
-          <string>Use a Snell's-law (IOR-based) refraction model instead. The Refraction Strength slider is reinterpreted as the index-of-refraction delta in this mode.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionOffsetStrength">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Refraction Offset Strength:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayoutRefractionOffsetStrength">
-         <item>
-          <spacer name="horizontalSpacerRefractionOffsetStrength">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionOffsetStrengthOff">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Off</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionOffsetStrength">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>20</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>8</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-           <property name="toolTip">
-            <string>Pulls the IOR-based refraction outward based on position within the window (Snell's-law mode only).</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionOffsetStrengthStrong">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Strong</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRefractionBevelIntensity">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Bevel Intensity:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayoutRefractionBevelIntensity">
-         <item>
-          <spacer name="horizontalSpacerRefractionBevelIntensity">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionBevelIntensityFlat">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Flat</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="kcfg_RefractionBevelIntensity">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="minimum">
-            <number>5</number>
-           </property>
-           <property name="maximum">
-            <number>15</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TickPosition::TicksBelow</enum>
-           </property>
-           <property name="toolTip">
-            <string>Scales the silhouette tilt — higher gives a more pronounced rounded-over edge.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelRefractionBevelIntensityRound">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Round</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -1224,244 +1253,258 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>The corner radius only applies to the blur region.</string>
-         </property>
-         <property name="wordWrap">
+        <widget class="QScrollArea" name="scrollAreaRoundedcorners">
+         <property name="widgetResizable">
           <bool>true</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_UseDeclaredCornerRadius">
-         <property name="text">
-          <string>Use declared corner radius</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_IgnoreContentBlurRegion">
-         <property name="text">
-          <string>Ignore content blur region</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutTopCornerRadius">
-         <item>
-          <widget class="QLabel" name="labelTopCornerRadius">
-           <property name="text">
-            <string>Window top corner radius</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_TopCornerRadius">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutBottomCornerRadius">
-         <item>
-          <widget class="QLabel" name="labelBottomCornerRadius">
-           <property name="text">
-            <string>Window bottom corner radius</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_BottomCornerRadius">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutMenuCornerRadius">
-         <item>
-          <widget class="QLabel" name="labelMenuCornerRadius">
-           <property name="text">
-            <string>Menu corner radius</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_MenuCornerRadius">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutDockCornerRadius">
-         <item>
-          <widget class="QLabel" name="labelDockCornerRadius">
-           <property name="text">
-            <string>Dock corner radius</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_RoundCornersOfMaximizedWindows">
-         <property name="text">
-          <string>Round maximized windows</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_DynamicCorners">
-         <property name="text">
-          <string>Dynamic corner radius</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeWindows">
-         <item>
-          <spacer name="spacerDynamicCornersExcludeWindows">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeWindows">
-           <property name="text">
-            <string>Exclude windows</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeDocks">
-         <item>
-          <spacer name="spacerDynamicCornersExcludeDocks">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeDocks">
-           <property name="text">
-            <string>Exclude docks</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeTooltips">
-         <item>
-          <spacer name="spacerDynamicCornersExcludeTooltips">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeTooltips">
-           <property name="text">
-            <string>Exclude tooltips</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeMenus">
-         <item>
-          <spacer name="spacerDynamicCornersExcludeMenus">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeMenus">
-           <property name="text">
-            <string>Exclude menus</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QWidget" name="widget" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
+         <widget class="QWidget" name="scrollContentRoundedcorners">
+          <layout class="QVBoxLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>The corner radius only applies to the blur region.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer>
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_UseDeclaredCornerRadius">
+             <property name="text">
+              <string>Use declared corner radius</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_IgnoreContentBlurRegion">
+             <property name="text">
+              <string>Ignore content blur region</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutTopCornerRadius">
+             <item>
+              <widget class="QLabel" name="labelTopCornerRadius">
+               <property name="text">
+                <string>Window top corner radius</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_TopCornerRadius">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutBottomCornerRadius">
+             <item>
+              <widget class="QLabel" name="labelBottomCornerRadius">
+               <property name="text">
+                <string>Window bottom corner radius</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_BottomCornerRadius">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutMenuCornerRadius">
+             <item>
+              <widget class="QLabel" name="labelMenuCornerRadius">
+               <property name="text">
+                <string>Menu corner radius</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_MenuCornerRadius">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutDockCornerRadius">
+             <item>
+              <widget class="QLabel" name="labelDockCornerRadius">
+               <property name="text">
+                <string>Dock corner radius</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_RoundCornersOfMaximizedWindows">
+             <property name="text">
+              <string>Round maximized windows</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_DynamicCorners">
+             <property name="text">
+              <string>Dynamic corner radius</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeWindows">
+             <item>
+              <spacer name="spacerDynamicCornersExcludeWindows">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeWindows">
+               <property name="text">
+                <string>Exclude windows</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeDocks">
+             <item>
+              <spacer name="spacerDynamicCornersExcludeDocks">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeDocks">
+               <property name="text">
+                <string>Exclude docks</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeTooltips">
+             <item>
+              <spacer name="spacerDynamicCornersExcludeTooltips">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeTooltips">
+               <property name="text">
+                <string>Exclude tooltips</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="layoutDynamicCornersExcludeMenus">
+             <item>
+              <spacer name="spacerDynamicCornersExcludeMenus">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="kcfg_DynamicCornersExcludeMenus">
+               <property name="text">
+                <string>Exclude menus</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QWidget" name="widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>1</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -1472,16 +1515,30 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTextBrowser" name="aboutText">
-         <property name="readOnly">
+        <widget class="QScrollArea" name="scrollAreaAbout">
+         <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <property name="openExternalLinks">
-          <bool>true</bool>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
          </property>
-         <property name="text" stdset="0">
-          <string>Failed to load about.html</string>
-         </property>
+         <widget class="QWidget" name="scrollContentAbout">
+          <layout class="QVBoxLayout">
+           <item>
+            <widget class="QTextBrowser" name="aboutText">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="openExternalLinks">
+              <bool>true</bool>
+             </property>
+             <property name="text" stdset="0">
+              <string>Failed to load about.html</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -1489,6 +1546,12 @@
     </widget>
    </item>
   </layout>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1525,7 +1588,7 @@
    <receiver>kcfg_EdgeLightingTooltip</receiver>
    <slot>setChecked(bool)</slot>
   </connection>
-
+  
   <connection>
    <sender>kcfg_PhysicallyBasedRefraction</sender>
    <signal>toggled(bool)</signal>
