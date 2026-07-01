@@ -181,7 +181,6 @@ private:
         int tintColorLocation;
         int tintStrengthLocation;
         int autoTintAlphaLocation;
-        int autoTintTexUnitLocation;
 
         int glowColorLocation;
         int glowStrengthLocation;

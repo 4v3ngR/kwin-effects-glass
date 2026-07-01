@@ -1,7 +1,6 @@
 #include "sdf.glsl"
 
 uniform sampler2D texUnit;
-uniform sampler2D autoTintTexUnit;
 uniform mat4 colorMatrix;
 uniform float offset;
 uniform vec2 halfpixel;

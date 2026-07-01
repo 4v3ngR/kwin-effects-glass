@@ -110,38 +110,20 @@ vec3 glassOutline(vec2 position, GlassFragment s)
     return glow;
 }
 
-vec3 averageBackgroundColor()
-{
-    vec3 sum = vec3(0.0);
-    const int sampleCount = 3;
-
-    for (int y = 0; y < sampleCount; ++y) {
-        for (int x = 0; x < sampleCount; ++x) {
-            vec2 coord = (vec2(float(x), float(y)) + vec2(0.5)) / float(sampleCount);
-            sum += texture(autoTintTexUnit, coord).rgb;
-        }
-    }
-
-    return sum / float(sampleCount * sampleCount);
-}
-
-float adjustedTintStrength(float baseTintStrength)
+float adjustedTintStrength(float baseTintStrength, vec3 backgroundColor)
 {
     float strength = clamp(baseTintStrength, 0.0, 1.0);
 
     const vec3 grayscaleWeights = vec3(0.299, 0.587, 0.114);
-    float backgroundGray = dot(averageBackgroundColor(), grayscaleWeights);
+    float backgroundGray = dot(backgroundColor, grayscaleWeights);
     float tintGray = dot(tintColor, grayscaleWeights);
 
-    float diff = abs(backgroundGray - tintGray);
+    float finalScale = clamp(abs(backgroundGray - tintGray), 0.0, 1.0);
 
-    const float staticOffset = 0.1;
-    float finalScale = smoothstep(staticOffset, 1.0, diff);
+    float localStrength = strength * finalScale;
+    float useLocal = step(0.5, float(autoTintAlpha)) * step(0.001, strength);
 
-    float contrastStrength = strength * finalScale;
-    float useContrast = step(0.5, float(autoTintAlpha)) * step(0.001, strength);
-
-    return mix(strength, contrastStrength, useContrast);
+    return mix(strength, localStrength, useLocal);
 }
 
 vec4 glass(vec4 sum, vec4 cornerRadius)
@@ -171,6 +153,6 @@ vec4 glass(vec4 sum, vec4 cornerRadius)
     }
 
     vec3 rgb = s.concaveFactor < 1.0 ? glassOutline(position, s) : s.color.rgb;
-    vec3 tinted = mix(rgb, tintColor, adjustedTintStrength(tintStrength));
+    vec3 tinted = mix(rgb, tintColor, adjustedTintStrength(tintStrength, rgb));
     return roundedRectangle(uv * blurSize, tinted, cornerRadius);
 }

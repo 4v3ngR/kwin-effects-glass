@@ -61,8 +61,6 @@
 
 Q_LOGGING_CATEGORY(KWIN_BLUR, "kwin_effect_blur", QtWarningMsg)
 
-static constexpr size_t s_autoTintMinIterationCount = 4; // Downsample size / 16.
-
 static void ensureResources()
 {
     // Must initialize resources manually because the effect is a static lib.
@@ -148,7 +146,6 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.tintColorLocation = m_roundedOnscreenPass.shader->uniformLocation("tintColor");
         m_roundedOnscreenPass.tintStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("tintStrength");
         m_roundedOnscreenPass.autoTintAlphaLocation = m_roundedOnscreenPass.shader->uniformLocation("autoTintAlpha");
-        m_roundedOnscreenPass.autoTintTexUnitLocation = m_roundedOnscreenPass.shader->uniformLocation("autoTintTexUnit");
         m_roundedOnscreenPass.glowColorLocation = m_roundedOnscreenPass.shader->uniformLocation("glowColor");
         m_roundedOnscreenPass.glowStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("glowStrength");
         m_roundedOnscreenPass.edgeLightingLocation = m_roundedOnscreenPass.shader->uniformLocation("edgeLighting");
@@ -352,7 +349,6 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         m_contentBlurSettings.iterationCount,
         m_decorationBlurSettings.iterationCount,
         m_dockBlurSettings.iterationCount,
-        s_autoTintMinIterationCount,
     });
     m_expandSize = std::max({
         m_contentBlurSettings.expandSize,
@@ -1356,17 +1352,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     vbo->bindArrays();
 
-    struct BlurPassTextures
-    {
-        GLTexture *blurredTexture = nullptr;
-        GLTexture *averageTexture = nullptr;
-    };
-
-    auto runBlurPass = [&](const BlurPipelineSettings &settings, bool useAutoTint) -> BlurPassTextures {
-        const size_t autoTintIterationCount = useAutoTint
-            ? std::max(settings.iterationCount, s_autoTintMinIterationCount)
-            : settings.iterationCount;
-
+    auto runBlurPass = [&](const BlurPipelineSettings &settings) -> GLTexture * {
         ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
 
         QMatrix4x4 projectionMatrix;
@@ -1375,7 +1361,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
         m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, settings.offset * m_blurRadius);
 
-        for (size_t i = 1; i <= autoTintIterationCount; ++i) {
+        for (size_t i = 1; i <= settings.iterationCount; ++i) {
             const auto &read = renderInfo.framebuffers[i - 1];
             const auto &draw = renderInfo.framebuffers[i];
 
@@ -1391,10 +1377,6 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
 
         ShaderManager::instance()->popShader();
-
-        for (size_t i = autoTintIterationCount; i > settings.iterationCount; --i) {
-            GLFramebuffer::popFramebuffer();
-        }
 
         ShaderManager::instance()->pushShader(m_upsamplePass.shader.get());
 
@@ -1423,10 +1405,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         ShaderManager::instance()->popShader();
         GLFramebuffer::popFramebuffer();
 
-        return {
-            .blurredTexture = renderInfo.framebuffers[1]->colorAttachment(),
-            .averageTexture = renderInfo.framebuffers[autoTintIterationCount]->colorAttachment(),
-        };
+        return renderInfo.framebuffers[1]->colorAttachment();
     };
 
     const QMatrix4x4 &colorMatrix = m_colorMatrix;
@@ -1485,7 +1464,6 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     QVector3D tintVec(tint.redF(), tint.greenF(), tint.blueF());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintColorLocation, tintVec);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.autoTintAlphaLocation, m_settings.general.autoTintAlpha ? 1 : 0);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.autoTintTexUnitLocation, 1);
     auto tintStrengthForRegion = [&](bool decorationRegion) {
         if (w->isDock() && m_settings.general.excludeDocks) {
             return 0.0f;
@@ -1522,10 +1500,8 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto drawBlurredRegion = [&](GLTexture *blurredTexture, GLTexture *averageTexture, int vertexOffset, int currentVertexCount, float blurOffset) {
+    auto drawBlurredRegion = [&](GLTexture *blurredTexture, int vertexOffset, int currentVertexCount, float blurOffset) {
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, blurOffset * m_upsampleOffset);
-        glActiveTexture(GL_TEXTURE1);
-        averageTexture->bind();
         glActiveTexture(GL_TEXTURE0);
         blurredTexture->bind();
         vbo->draw(GL_TRIANGLES, vertexOffset, currentVertexCount);
@@ -1555,23 +1531,18 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     const float contentTintStrength = tintStrengthForRegion(contentShape.isEmpty() && !frameShape.isEmpty());
     const float frameTintStrength = tintStrengthForRegion(true);
-    const bool useContentAutoTint = m_settings.general.autoTintAlpha &&
-        ((contentVertexCount > 0 && contentTintStrength > 0.0f) ||
-         (splitRenderRegions && frameVertexCount > 0 && frameTintStrength > 0.0f));
 
-    const BlurPassTextures contentTextures = runBlurPass(splitBlurSettings ? contentBlurSettings : combinedBlurSettings, useContentAutoTint);
+    GLTexture *contentBlurredTexture = runBlurPass(splitBlurSettings ? contentBlurSettings : combinedBlurSettings);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintStrengthLocation, contentTintStrength);
-    drawBlurredRegion(contentTextures.blurredTexture,
-                      contentTextures.averageTexture,
+    drawBlurredRegion(contentBlurredTexture,
                       6,
                       contentVertexCount,
                       splitBlurSettings ? contentBlurSettings.offset : combinedBlurSettings.offset);
 
     if (splitRenderRegions && frameVertexCount > 0) {
-        const BlurPassTextures frameTextures = splitBlurSettings ? runBlurPass(m_decorationBlurSettings, false) : contentTextures;
+        GLTexture *frameBlurredTexture = splitBlurSettings ? runBlurPass(m_decorationBlurSettings) : contentBlurredTexture;
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintStrengthLocation, frameTintStrength);
-        drawBlurredRegion(frameTextures.blurredTexture,
-                          contentTextures.averageTexture,
+        drawBlurredRegion(frameBlurredTexture,
                           6 + contentVertexCount,
                           frameVertexCount,
                           splitBlurSettings ? m_decorationBlurSettings.offset : combinedBlurSettings.offset);
