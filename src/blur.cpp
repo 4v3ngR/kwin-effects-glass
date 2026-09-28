@@ -118,6 +118,10 @@ BlurEffect::BlurEffect()
     BlurConfig::instance(effects->config());
     ensureResources();
 
+    // Build this before shader loading so later reconfigure calls cannot index
+    // an empty table if a shader fails and the constructor returns early.
+    initBlurStrengthValues();
+
     m_roundedOnscreenPass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
                                                                                      QStringLiteral(":/effects/glass/generated/onscreen_rounded.vert"),
                                                                                      QStringLiteral(":/effects/glass/generated/onscreen_rounded.frag"));
@@ -143,6 +147,9 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.refractionOffsetStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionOffsetStrength");
         m_roundedOnscreenPass.refractionBevelIntensityLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionBevelIntensity");
         m_roundedOnscreenPass.physicallyBasedRefractionLocation = m_roundedOnscreenPass.shader->uniformLocation("physicallyBasedRefraction");
+        m_roundedOnscreenPass.bodyRefractionLocation = m_roundedOnscreenPass.shader->uniformLocation("bodyRefraction");
+        m_roundedOnscreenPass.bodyRefractionReachLocation = m_roundedOnscreenPass.shader->uniformLocation("bodyRefractionReach");
+        m_roundedOnscreenPass.bodyRefractionStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("bodyRefractionStrength");
         m_roundedOnscreenPass.tintColorLocation = m_roundedOnscreenPass.shader->uniformLocation("tintColor");
         m_roundedOnscreenPass.tintGrayLocation = m_roundedOnscreenPass.shader->uniformLocation("tintGray");
         m_roundedOnscreenPass.tintStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("tintStrength");
@@ -197,7 +204,6 @@ BlurEffect::BlurEffect()
         m_noisePass.noiseTextureSizeLocation = m_noisePass.shader->uniformLocation("noiseTextureSize");
     }
 
-    initBlurStrengthValues();
     reconfigure(ReconfigureAll);
 
 #if KWIN_BUILD_X11
@@ -341,6 +347,9 @@ void BlurEffect::initBlurStrengthValues()
 
 void BlurEffect::reconfigure(ReconfigureFlags flags)
 {
+    if (const auto config = BlurConfig::self()->config()) {
+        config->reparseConfiguration();
+    }
     m_settings.read();
 
     m_contentBlurSettings = pipelineSettingsForStrength(
@@ -385,6 +394,13 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_whitelist = (m_settings.forceBlur.windowClassMatchingMode == WindowClassMatchingMode::Whitelist);
     m_windowClasses = m_settings.forceBlur.windowClasses;
 
+    if (m_valid) {
+        const auto stackingOrder = effects->stackingOrder();
+        for (EffectWindow *window : stackingOrder) {
+            updateBlurRegion(window);
+        }
+    }
+
     // Update all windows for the blur to take effect
     effects->addRepaintFull();
 }
@@ -398,6 +414,16 @@ void BlurEffect::repaintDynamicCorners()
 
 BlurEffect::BlurPipelineSettings BlurEffect::pipelineSettingsForStrength(int blurStrength, int noiseStrength) const
 {
+    if (blurStrengthValues.isEmpty() || blurOffsets.isEmpty() ||
+        blurStrength < 0 || blurStrength >= blurStrengthValues.size()) {
+        return BlurPipelineSettings{
+            .iterationCount = 1,
+            .offset = 1.0f,
+            .expandSize = 10,
+            .noiseStrength = noiseStrength,
+        };
+    }
+
     const BlurValuesStruct &values = blurStrengthValues[blurStrength];
 
     return BlurPipelineSettings{
@@ -484,7 +510,31 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
 #ifdef GLASS_X11
         frame = BlurRegion(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
 #else
-        frame = Region(Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect()));
+        BlurRegion glass(Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect()));
+        if (SurfaceInterface *surface = w->surface()) {
+#ifdef GLASS_KWIN_67
+            const RegionF opaque = surface->opaque();
+            if (!opaque.isEmpty()) {
+                const QPoint clientOffset = w->contentsRect().topLeft().toPoint();
+                Region opaqueInFrame;
+                for (const RectF &rect : opaque.rects()) {
+                    opaqueInFrame += rect.toAlignedRect().translated(clientOffset);
+                }
+                glass -= opaqueInFrame;
+            }
+#else
+            const Region opaque = surface->opaque();
+            if (!opaque.isEmpty()) {
+                const QPoint clientOffset = w->contentsRect().topLeft().toPoint();
+                Region opaqueInFrame;
+                for (const Rect &rect : opaque.rects()) {
+                    opaqueInFrame += rect.translated(clientOffset);
+                }
+                glass -= opaqueInFrame;
+            }
+#endif
+        }
+        frame = glass;
 #endif
     }
 
@@ -946,15 +996,7 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
     m_paintedDeviceArea += data.paint;
 }
 #else
-#ifdef GLASS_KWIN_67
-void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data)
-{
-    effects->prePaintWindow(view, w, data);
-    if (!blurRegion(w).isEmpty()) {
-        data.setTranslucent();
-    }
-}
-#else
+#ifndef GLASS_KWIN_67
 void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
 {
     effects->prePaintWindow(view, w, data, presentTime);
@@ -1212,7 +1254,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
         glClearColor(0, 0, 0, 0);
         for (size_t i = 0; i <= m_maxIterationCount; ++i) {
-            auto texture = GLTexture::allocate(textureFormat, backgroundRect.size() / (1 << i));
+            auto texture = GLTexture::allocate(textureFormat, (backgroundRect.size() / (1 << i)).expandedTo(QSize(1, 1)));
             if (!texture) {
                 qCWarning(KWIN_BLUR) << "Failed to allocate an offscreen texture";
                 return;
@@ -1484,6 +1526,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionOffsetStrengthLocation, m_settings.refraction.refractionOffsetStrength);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionBevelIntensityLocation, m_settings.refraction.refractionBevelIntensity);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.physicallyBasedRefractionLocation, m_settings.refraction.physicallyBased ? 1 : 0);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.bodyRefractionLocation, m_settings.refraction.bodyRefraction ? 1 : 0);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.bodyRefractionReachLocation, m_settings.refraction.bodyRefractionReach);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.bodyRefractionStrengthLocation, m_settings.refraction.bodyRefractionStrength);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rimGlowLocation, m_settings.general.rimGlow ? 1 : 0);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.glowOffsetLocation, m_settings.general.glowOffset);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rimGlowColorMixLocation, m_settings.general.rimGlowColorMix ? 1 : 0);

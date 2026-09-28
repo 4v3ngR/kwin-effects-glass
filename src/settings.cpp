@@ -108,6 +108,9 @@ void BlurSettings::read()
     refraction.refractionOffsetStrength = BlurConfig::refractionOffsetStrength() / 2.0;
     refraction.refractionBevelIntensity = BlurConfig::refractionBevelIntensity() / 10.0;
     refraction.physicallyBased = BlurConfig::physicallyBasedRefraction();
+    refraction.bodyRefraction = BlurConfig::bodyRefraction();
+    refraction.bodyRefractionReach = std::clamp(BlurConfig::bodyRefractionReach(), 0, 80);
+    refraction.bodyRefractionStrength = std::clamp(BlurConfig::bodyRefractionStrength(), 0, 100) / 100.0f;
     refraction.excludeWindows = BlurConfig::refractionExcludeWindows();
     refraction.excludeDocks = BlurConfig::refractionExcludeDocks();
     refraction.excludeMenus = BlurConfig::refractionExcludeMenus();

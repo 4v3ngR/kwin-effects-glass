@@ -86,6 +86,9 @@ struct RefractionSettings
     float refractionOffsetStrength;
     float refractionBevelIntensity;
     bool physicallyBased;
+    bool bodyRefraction;
+    float bodyRefractionReach;
+    float bodyRefractionStrength;
     bool excludeWindows;
     bool excludeDocks;
     bool excludeMenus;

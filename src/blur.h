@@ -93,8 +93,6 @@ public:
 
 #ifdef GLASS_X11
     void prePaintWindow(EffectWindow *w, WindowPrePaintData &data) override;
-#else
-    void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data) override;
 #endif
 #else
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
@@ -177,6 +175,9 @@ private:
         int refractionOffsetStrengthLocation;
         int refractionBevelIntensityLocation;
         int physicallyBasedRefractionLocation;
+        int bodyRefractionLocation;
+        int bodyRefractionReachLocation;
+        int bodyRefractionStrengthLocation;
 
         int tintColorLocation;
         int tintGrayLocation;

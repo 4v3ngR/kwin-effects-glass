@@ -200,6 +200,15 @@
         <entry name="PhysicallyBasedRefraction" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="BodyRefraction" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="BodyRefractionReach" type="Int">
+            <default>40</default>
+        </entry>
+        <entry name="BodyRefractionStrength" type="Int">
+            <default>25</default>
+        </entry>
         <entry name="RefractionExcludeWindows" type="Bool">
             <default>false</default>
         </entry>

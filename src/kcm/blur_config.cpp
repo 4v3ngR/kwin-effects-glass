@@ -53,6 +53,24 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
     connect(ui.kcfg_UseDeclaredCornerRadius, &QCheckBox::toggled, this, updateRoundedCornerControls);
     connect(ui.kcfg_DynamicCorners, &QCheckBox::toggled, this, updateRoundedCornerControls);
 
+    auto updateBodyRefractionControls = [this]() {
+        const bool physicallyBased = ui.kcfg_PhysicallyBasedRefraction->isChecked();
+        const bool bodyRefraction = physicallyBased && ui.kcfg_BodyRefraction->isChecked();
+
+        ui.kcfg_BodyRefraction->setEnabled(physicallyBased);
+        ui.labelBodyRefractionReach->setEnabled(bodyRefraction);
+        ui.kcfg_BodyRefractionReach->setEnabled(bodyRefraction);
+        ui.labelBodyRefractionReachSmall->setEnabled(bodyRefraction);
+        ui.labelBodyRefractionReachWide->setEnabled(bodyRefraction);
+        ui.labelBodyRefractionStrength->setEnabled(bodyRefraction);
+        ui.kcfg_BodyRefractionStrength->setEnabled(bodyRefraction);
+        ui.labelBodyRefractionStrengthSubtle->setEnabled(bodyRefraction);
+        ui.labelBodyRefractionStrengthStrong->setEnabled(bodyRefraction);
+    };
+    updateBodyRefractionControls();
+    connect(ui.kcfg_PhysicallyBasedRefraction, &QCheckBox::toggled, this, updateBodyRefractionControls);
+    connect(ui.kcfg_BodyRefraction, &QCheckBox::toggled, this, updateBodyRefractionControls);
+
     QFile about(":/effects/glass/kcm/about.html");
     if (about.open(QIODevice::ReadOnly)) {
         const auto html = about.readAll()
