@@ -261,3 +261,4 @@ Intel GPUs use software cursor by default due to [this bug](https://gitlab.freed
 
 # Credits
 - [a-parhom/LightlyShaders](https://github.com/a-parhom/LightlyShaders) - CMakeLists.txt files
+- [SuceV587/NextKde](https://github.com/SuceV587/NextKde) - Shader and refraction optimizations
