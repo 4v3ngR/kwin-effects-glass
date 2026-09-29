@@ -74,6 +74,9 @@
         <entry name="BlurFinetune" type="Int">
             <default>3</default>
         </entry>
+        <entry name="DockBlurFinetune" type="Int">
+            <default>3</default>
+        </entry>
         <entry name="BlurSaturationCompensation" type="Bool">
             <default>true</default>
         </entry>

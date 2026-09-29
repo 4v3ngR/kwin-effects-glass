@@ -247,6 +247,75 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="labelBlurFinetuneDescription">
+             <property name="text">
+              <string>Content and decorations blur finetune:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayoutBlurFinetune">
+             <item>
+              <spacer name="horizontalSpacerBlurFinetune">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Policy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelBlurFinetuneSharp">
+               <property name="text">
+                <string>Sharp</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kcfg_BlurFinetune">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>5</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+               <property name="toolTip">
+                <string>Tunes the content and decoration blur radius and upsample blend. Lower = tighter / sharper blur, higher = wider / softer blur.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelBlurFinetuneSoft">
+               <property name="text">
+                <string>Soft</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QGroupBox" name="groupBoxDockBlur">
              <property name="title">
               <string>Docks blur</string>
@@ -349,77 +418,61 @@
                 </item>
                </layout>
               </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayoutDockBlurFinetune">
+                <item>
+                 <widget class="QLabel" name="labelDockBlurFinetune">
+                  <property name="text">
+                   <string>Finetune</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockBlurFinetuneSharp">
+                  <property name="text">
+                   <string>Sharp</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="kcfg_DockBlurFinetune">
+                  <property name="minimum">
+                   <number>0</number>
+                  </property>
+                  <property name="maximum">
+                   <number>10</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>1</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>1</number>
+                  </property>
+                  <property name="value">
+                   <number>3</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="toolTip">
+                   <string>Tunes the dock blur radius and upsample blend. Lower = tighter / sharper blur, higher = wider / softer blur.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelDockBlurFinetuneSoft">
+                  <property name="text">
+                   <string>Soft</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelBlurFinetuneDescription">
-             <property name="text">
-              <string>Blur finetune:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayoutBlurFinetune">
-             <item>
-              <spacer name="horizontalSpacerBlurFinetune">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Policy::Fixed</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelBlurFinetuneSharp">
-               <property name="text">
-                <string>Sharp</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSlider" name="kcfg_BlurFinetune">
-               <property name="minimum">
-                <number>0</number>
-               </property>
-               <property name="maximum">
-                <number>10</number>
-               </property>
-               <property name="singleStep">
-                <number>1</number>
-               </property>
-               <property name="pageStep">
-                <number>1</number>
-               </property>
-               <property name="value">
-                <number>5</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="tickPosition">
-                <enum>QSlider::TickPosition::TicksBelow</enum>
-               </property>
-               <property name="toolTip">
-                <string>Tunes both the downsample radius and the upsample blend together. Lower = tighter / sharper blur, higher = wider / softer blur.</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelBlurFinetuneSoft">
-               <property name="text">
-                <string>Soft</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
            <item>
             <widget class="QCheckBox" name="kcfg_BlurSaturationCompensation">

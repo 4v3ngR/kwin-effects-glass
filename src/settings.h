@@ -28,6 +28,8 @@ struct GeneralSettings
     bool oklabSaturation;
     float blurRadius;
     float upsampleOffset;
+    float dockBlurRadius;
+    float dockUpsampleOffset;
     bool saturationCompensation;
     QString tintColor;
     bool autoTintAlpha;
