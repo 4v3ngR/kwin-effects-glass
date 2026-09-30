@@ -996,7 +996,15 @@ void BlurEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::
     m_paintedDeviceArea += data.paint;
 }
 #else
-#ifndef GLASS_KWIN_67
+#ifdef GLASS_KWIN_67
+void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data)
+{
+    effects->prePaintWindow(view, w, data);
+    if (!blurRegion(w).isEmpty()) {
+        data.setTranslucent();
+    }
+}
+#else
 void BlurEffect::prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds presentTime)
 {
     effects->prePaintWindow(view, w, data, presentTime);

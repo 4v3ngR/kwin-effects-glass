@@ -93,6 +93,8 @@ public:
 
 #ifdef GLASS_X11
     void prePaintWindow(EffectWindow *w, WindowPrePaintData &data) override;
+#else
+    void prePaintWindow(RenderView *view, EffectWindow *w, WindowPrePaintData &data) override;
 #endif
 #else
     void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds presentTime) override;
