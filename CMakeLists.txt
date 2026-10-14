@@ -86,6 +86,10 @@ if(${KWin_VERSION} VERSION_GREATER_EQUAL 6.7)
     set(GLASS_KWIN_67 ON)
 endif()
 
+if(${KWin_VERSION} VERSION_GREATER_EQUAL 6.8)
+    set(GLASS_KWIN_68 ON)
+endif()
+
 find_package(KDecoration3 REQUIRED)
 
 add_subdirectory(src)

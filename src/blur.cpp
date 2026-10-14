@@ -1084,12 +1084,12 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
     return true;
 }
 
-void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data)
+DrawWindowResult BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data)
 {
     blur(renderTarget, viewport, w, mask, deviceRegion, data);
 
     // Draw the window over the blurred area
-    effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
+    return effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
 }
 
 GLTexture *BlurEffect::ensureNoiseTexture(int noiseStrength)
@@ -1192,11 +1192,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const QRect scaledBackgroundRect = snapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
     const QRect deviceBackgroundRect = scaledBackgroundRect;
 #else
-    const QRectF scaledLogicalBackgroundRect(backgroundRect.x() * viewport.scale(),
-                                             backgroundRect.y() * viewport.scale(),
-                                             backgroundRect.width() * viewport.scale(),
-                                             backgroundRect.height() * viewport.scale());
-    const QRect scaledBackgroundRect = snapToPixelGrid(scaledLogicalBackgroundRect);
+    const QRect scaledBackgroundRect = RectF(backgroundRect).scaled(viewport.scale()).rounded();
     const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinates(Rect(backgroundRect)).rounded();
 #endif
     const auto opacity = data.opacity();
@@ -1497,12 +1493,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     const QRectF nativeBox = snapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
                                  .translated(-scaledBackgroundRect.topLeft());
 #else
-    const QRectF scaledTransformedRect(transformedRect.x() * viewport.scale(),
-                                       transformedRect.y() * viewport.scale(),
-                                       transformedRect.width() * viewport.scale(),
-                                       transformedRect.height() * viewport.scale());
-    const QRectF nativeBox = snapToPixelGridF(scaledTransformedRect)
-                                 .translated(-scaledBackgroundRect.topLeft());
+    const RectF nativeBox = RectF(transformedRect)
+                                .scaled(viewport.scale())
+                                .rounded()
+                                .translated(-scaledBackgroundRect.topLeft());
 #endif
     const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
     const bool isRefractionExcluded =
