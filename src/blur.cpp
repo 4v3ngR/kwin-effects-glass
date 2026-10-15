@@ -70,6 +70,20 @@ static void ensureResources()
 namespace KWin
 {
 
+#ifndef GLASS_X11
+// KWin 6.8 removed snapToPixelGrid()/snapToPixelGridF(); these keep the same edge-rounding semantics.
+static QRectF snapRectToPixelGridF(const QRectF &rect)
+{
+    return QRectF(QPointF(std::round(rect.left()), std::round(rect.top())),
+                  QPointF(std::round(rect.right()), std::round(rect.bottom())));
+}
+
+static QRect snapRectToPixelGrid(const QRectF &rect)
+{
+    return snapRectToPixelGridF(rect).toRect();
+}
+#endif
+
 static const QByteArray s_blurAtomName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
 
 #if !defined(GLASS_X11) && !defined(GLASS_KWIN_67)
@@ -1084,12 +1098,20 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
     return true;
 }
 
+#ifdef GLASS_KWIN_68
+bool BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data)
+#else
 void BlurEffect::drawWindow(const RenderTarget &renderTarget, const RenderViewport &viewport, EffectWindow *w, int mask, const BlurRegion &deviceRegion, WindowPaintData &data)
+#endif
 {
     blur(renderTarget, viewport, w, mask, deviceRegion, data);
 
     // Draw the window over the blurred area
+#ifdef GLASS_KWIN_68
+    return effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
+#else
     effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
+#endif
 }
 
 GLTexture *BlurEffect::ensureNoiseTexture(int noiseStrength)
@@ -1196,7 +1218,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
                                              backgroundRect.y() * viewport.scale(),
                                              backgroundRect.width() * viewport.scale(),
                                              backgroundRect.height() * viewport.scale());
-    const QRect scaledBackgroundRect = snapToPixelGrid(scaledLogicalBackgroundRect);
+    const QRect scaledBackgroundRect = snapRectToPixelGrid(scaledLogicalBackgroundRect);
     const QRect deviceBackgroundRect = viewport.mapToDeviceCoordinates(Rect(backgroundRect)).rounded();
 #endif
     const auto opacity = data.opacity();
@@ -1501,7 +1523,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
                                        transformedRect.y() * viewport.scale(),
                                        transformedRect.width() * viewport.scale(),
                                        transformedRect.height() * viewport.scale());
-    const QRectF nativeBox = snapToPixelGridF(scaledTransformedRect)
+    const QRectF nativeBox = snapRectToPixelGridF(scaledTransformedRect)
                                  .translated(-scaledBackgroundRect.topLeft());
 #endif
     const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
