@@ -513,7 +513,14 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         frame = BlurRegion(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
 #else
         BlurRegion glass(Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect()));
-        if (SurfaceInterface *surface = w->surface()) {
+        // The surface opaque region describes buffer opacity before KWin applies
+        // window opacity. Some GTK or Electron windows (e.g. Sublime Text) under XWayland
+        // and Spectacle's Save Image dialog have no recognized content-blur request.
+        // When KWin makes them translucent, subtracting the opaque region would
+        // exclude areas that now need forced blur, so retain the full region.
+        const bool forceTranslucentContent =
+            !content.has_value() && w->opacity() < 1.0;
+        if (SurfaceInterface *surface = w->surface(); surface && !forceTranslucentContent) {
 #ifdef GLASS_KWIN_67
             const RegionF opaque = surface->opaque();
             if (!opaque.isEmpty()) {
@@ -587,6 +594,19 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
             repaintDynamicCorners();
         }
     });
+
+#ifndef GLASS_X11
+    // For windows without a content-blur request, updateBlurRegion() changes whether
+    // it subtracts the surface opaque region when window opacity crosses 1.0.
+    // Recompute on that transition in either direction; changes entirely below 1.0
+    // do not affect the region.
+    connect(w, &EffectWindow::windowOpacityChanged, this,
+            [this](EffectWindow *window, qreal oldOpacity, qreal newOpacity) {
+        if ((oldOpacity < 1.0) != (newOpacity < 1.0)) {
+            updateBlurRegion(window);
+        }
+    });
+#endif
 
     if (auto internal = w->internalWindow()) {
         internal->installEventFilter(this);
