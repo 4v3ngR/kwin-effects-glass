@@ -436,7 +436,7 @@ BlurEffect::BlurPipelineSettings BlurEffect::pipelineSettingsForStrength(int blu
     };
 }
 
-void BlurEffect::updateBlurRegion(EffectWindow *w)
+void BlurEffect::updateBlurRegion(EffectWindow *w, BlurRegionUpdateMode mode)
 {
     std::optional<BlurRegion> content;
     std::optional<BlurRegion> frame;
@@ -493,6 +493,13 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         if (property.isValid()) {
             content = property.value<BlurRegion>();
         }
+    }
+
+    // A recognized content-blur request disables the opacity-dependent forced-blur
+    // fallback, so opacity-only notifications do not require a region update here.
+    // Other callers must still refresh the cached blur state.
+    if (mode == BlurRegionUpdateMode::IfNoContentBlurRequest && content.has_value()) {
+        return;
     }
 
     if (w->decorationHasAlpha() && decorationSupportsBlurBehind(w)) {
@@ -603,7 +610,7 @@ void BlurEffect::slotWindowAdded(EffectWindow *w)
     connect(w, &EffectWindow::windowOpacityChanged, this,
             [this](EffectWindow *window, qreal oldOpacity, qreal newOpacity) {
         if ((oldOpacity < 1.0) != (newOpacity < 1.0)) {
-            updateBlurRegion(window);
+            updateBlurRegion(window, BlurRegionUpdateMode::IfNoContentBlurRequest);
         }
     });
 #endif
