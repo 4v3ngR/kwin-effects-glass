@@ -32,6 +32,7 @@ struct GeneralSettings
     float dockUpsampleOffset;
     bool saturationCompensation;
     QString tintColor;
+    bool useWindowPaletteTint;
     bool autoTintAlpha;
     float autoTintAlphaMin;
     float autoTintAlphaMax;

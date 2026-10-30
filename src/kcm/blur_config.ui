@@ -608,6 +608,16 @@
             </layout>
            </item>
            <item>
+            <widget class="QCheckBox" name="kcfg_UseWindowPaletteTint">
+             <property name="text">
+              <string>Get tint color from the window palette</string>
+             </property>
+             <property name="toolTip">
+              <string>Use the window palette's Window background color as the tint color.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="tintAndEdgeOptionsLayout">
              <item>
               <layout class="QVBoxLayout" name="edgeLightingOptionsLayout">

@@ -53,6 +53,12 @@ BlurEffectConfig::BlurEffectConfig(QObject *parent, const KPluginMetaData &data)
     connect(ui.kcfg_UseDeclaredCornerRadius, &QCheckBox::toggled, this, updateRoundedCornerControls);
     connect(ui.kcfg_DynamicCorners, &QCheckBox::toggled, this, updateRoundedCornerControls);
 
+    auto updateTintColorControl = [this]() {
+        ui.kcfg_TintColor->setEnabled(!ui.kcfg_UseWindowPaletteTint->isChecked());
+    };
+    updateTintColorControl();
+    connect(ui.kcfg_UseWindowPaletteTint, &QCheckBox::toggled, this, updateTintColorControl);
+
     auto updateBodyRefractionControls = [this]() {
         const bool physicallyBased = ui.kcfg_PhysicallyBasedRefraction->isChecked();
         const bool bodyRefraction = physicallyBased && ui.kcfg_BodyRefraction->isChecked();

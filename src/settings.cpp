@@ -63,6 +63,7 @@ void BlurSettings::read()
     general.saturationCompensation = BlurConfig::blurSaturationCompensation();
 
     general.tintColor = BlurConfig::tintColor();
+    general.useWindowPaletteTint = BlurConfig::useWindowPaletteTint();
     general.autoTintAlpha = BlurConfig::autoTintAlpha();
     const float autoTintAlphaMin = std::clamp(BlurConfig::autoTintAlphaMin(), 0, 100) / 100.0f;
     const float autoTintAlphaMax = std::clamp(BlurConfig::autoTintAlphaMax(), 0, 100) / 100.0f;

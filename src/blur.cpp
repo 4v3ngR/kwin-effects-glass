@@ -46,6 +46,7 @@
 
 #include <QGuiApplication>
 #include <QMatrix4x4>
+#include <QPalette>
 #include <QScreen>
 #include <QTime>
 #include <QTimer>
@@ -1572,7 +1573,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rimAdaptToRefractionLocation, m_settings.general.rimAdaptToRefraction ? 1 : 0);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rimAdaptMultiplierLocation, m_settings.general.rimAdaptMultiplier);
 
-    QColor tint(m_settings.general.tintColor);
+    QColor tint = m_settings.general.useWindowPaletteTint
+        ? w->window()->palette().color(QPalette::Window)
+        : QColor(m_settings.general.tintColor);
     QVector3D tintVec(tint.redF(), tint.greenF(), tint.blueF());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintColorLocation, tintVec);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.tintGrayLocation, static_cast<float>(0.299 * tint.redF() + 0.587 * tint.greenF() + 0.114 * tint.blueF()));
@@ -1595,6 +1598,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         }
         if (decorationRegion && m_settings.general.excludeDecorations) {
             return 0.0f;
+        }
+        if (m_settings.general.useWindowPaletteTint && m_settings.general.autoTintAlpha) {
+            return 1.0f;
         }
         return static_cast<float>(tint.alphaF());
     };
