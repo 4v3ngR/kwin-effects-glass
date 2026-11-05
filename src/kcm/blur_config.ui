@@ -1665,6 +1665,86 @@
                </layout>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="rimSpecularTopLeftRow">
+                <item><widget class="QCheckBox" name="kcfg_RimSpecularTopLeft"><property name="text"><string>Top Left</string></property></widget></item>
+                <item><spacer name="rimSpecularTopLeftStretch"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer></item>
+                 <item><widget class="QLineEdit" name="kcfg_RimSpecularTopLeftColor">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight</set>
+                  </property>
+                  <property name="toolTip">
+                   <string>Enter a color in #RRGGBB format.</string>
+                  </property>
+                </widget></item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="rimSpecularTopRightRow">
+                <item><widget class="QCheckBox" name="kcfg_RimSpecularTopRight"><property name="text"><string>Top Right</string></property></widget></item>
+                <item><spacer name="rimSpecularTopRightStretch"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer></item>
+                <item><widget class="QLineEdit" name="kcfg_RimSpecularTopRightColor">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight</set>
+                  </property>
+                  <property name="toolTip">
+                   <string>Enter a color in #RRGGBB format.</string>
+                  </property>
+                </widget></item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="rimSpecularBottomLeftRow">
+                <item><widget class="QCheckBox" name="kcfg_RimSpecularBottomLeft"><property name="text"><string>Bottom Left</string></property></widget></item>
+                <item><spacer name="rimSpecularBottomLeftStretch"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer></item>
+                <item><widget class="QLineEdit" name="kcfg_RimSpecularBottomLeftColor">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight</set>
+                  </property>
+                  <property name="toolTip">
+                   <string>Enter a color in #RRGGBB format.</string>
+                  </property>
+                </widget></item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="rimSpecularBottomRightRow">
+                <item><widget class="QCheckBox" name="kcfg_RimSpecularBottomRight"><property name="text"><string>Bottom Right</string></property></widget></item>
+                <item><spacer name="rimSpecularBottomRightStretch"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer></item>
+                <item><widget class="QLineEdit" name="kcfg_RimSpecularBottomRightColor">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight</set>
+                  </property>
+                  <property name="toolTip">
+                   <string>Enter a color in #RRGGBB format.</string>
+                  </property>
+                </widget></item>
+               </layout>
+              </item>
+              <item>
                <layout class="QHBoxLayout" name="horizontalLayoutRimGlowColor">
                 <item>
                  <widget class="QLabel" name="labelGlowColor">
@@ -1680,6 +1760,9 @@
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight</set>
                   </property>
                   <property name="toolTip">
                    <string>Enter a color in #AARRGGBB format. The A (alpha) channel sets glow strength.</string>

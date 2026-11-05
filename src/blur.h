@@ -206,6 +206,14 @@ private:
         int rimSpecularLocation;
         int rimSpecularScaleLocation;
         int rimWidthLocation;
+        int rimSpecularTopLeftLocation;
+        int rimSpecularTopRightLocation;
+        int rimSpecularBottomLeftLocation;
+        int rimSpecularBottomRightLocation;
+        int rimSpecularTopLeftColorLocation;
+        int rimSpecularTopRightColorLocation;
+        int rimSpecularBottomLeftColorLocation;
+        int rimSpecularBottomRightColorLocation;
         int rimAdaptToRefractionLocation;
         int rimAdaptMultiplierLocation;
     } m_roundedOnscreenPass;

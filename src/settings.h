@@ -43,6 +43,14 @@ struct GeneralSettings
     bool rimSpecular;
     float rimSpecularScale;
     float rimWidth;
+    bool rimSpecularTopLeft;
+    bool rimSpecularTopRight;
+    bool rimSpecularBottomLeft;
+    bool rimSpecularBottomRight;
+    QString rimSpecularTopLeftColor;
+    QString rimSpecularTopRightColor;
+    QString rimSpecularBottomLeftColor;
+    QString rimSpecularBottomRightColor;
     bool rimAdaptToRefraction;
     float rimAdaptMultiplier;
     bool edgeLighting;

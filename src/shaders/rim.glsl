@@ -7,6 +7,14 @@ uniform int rimGlowColorMix;
 uniform int rimSpecular;
 uniform float rimSpecularScale;
 uniform float rimWidth;
+uniform int rimSpecularTopLeft;
+uniform int rimSpecularTopRight;
+uniform int rimSpecularBottomLeft;
+uniform int rimSpecularBottomRight;
+uniform vec3 rimSpecularTopLeftColor;
+uniform vec3 rimSpecularTopRightColor;
+uniform vec3 rimSpecularBottomLeftColor;
+uniform vec3 rimSpecularBottomRightColor;
 uniform int rimAdaptToRefraction;
 uniform float rimAdaptMultiplier;
 
@@ -78,13 +86,21 @@ vec3 glassOutline(vec2 position, GlassFragment s, vec3 untinted)
         float borderInner = smoothstep(-1.0 * specWidth, -3.0 * specWidth, s.dist);
         float edgeProfile = edgeMask - borderInner;
         float thicknessShadow = pow(edgeProfile, 0.9);
-        float shadowMask = smoothstep(blurSize.y * 0.7, -blurSize.y * 0.7, position.y) *
-                           smoothstep(blurSize.x * 0.7, -blurSize.x * 0.7, position.x);
-        float highlightMask = smoothstep(-blurSize.y * 0.7, blurSize.y * 0.7, position.y) *
-                              smoothstep(-blurSize.x * 0.7, blurSize.x * 0.7, position.x);
 
-        outline = mix(outline, specColor, clamp(thicknessShadow * shadowMask, 0.0, 1.0));
-        outline = mix(outline, specColor, clamp(thicknessShadow * highlightMask, 0.0, 1.0));
+        float leftMask = 1.0 - smoothstep(-blurSize.x * 0.7, blurSize.x * 0.7, position.x);
+        float rightMask = smoothstep(-blurSize.x * 0.7, blurSize.x * 0.7, position.x);
+        float bottomMask = 1.0 - smoothstep(-blurSize.y * 0.7, blurSize.y * 0.7, position.y);
+        float topMask = smoothstep(-blurSize.y * 0.7, blurSize.y * 0.7, position.y);
+
+        float tlMask = topMask * leftMask * float(rimSpecularTopLeft);
+        float trMask = topMask * rightMask * float(rimSpecularTopRight);
+        float blMask = bottomMask * leftMask * float(rimSpecularBottomLeft);
+        float brMask = bottomMask * rightMask * float(rimSpecularBottomRight);
+        outline = mix(outline, rimSpecularTopLeftColor, clamp(thicknessShadow * tlMask, 0.0, 1.0));
+        outline = mix(outline, rimSpecularTopRightColor, clamp(thicknessShadow * trMask, 0.0, 1.0));
+        outline = mix(outline, rimSpecularBottomLeftColor, clamp(thicknessShadow * blMask, 0.0, 1.0));
+        outline = mix(outline, rimSpecularBottomRightColor, clamp(thicknessShadow * brMask, 0.0, 1.0));
+
     }
 
     return outline;

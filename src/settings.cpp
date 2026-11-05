@@ -76,6 +76,14 @@ void BlurSettings::read()
     general.rimSpecular = BlurConfig::rimSpecular();
     general.rimSpecularScale = std::clamp(BlurConfig::rimSpecularScale(), 0, 20) / 10.0f;
     general.rimWidth = std::clamp(BlurConfig::rimWidth(), 10, 40) / 10.0f;
+    general.rimSpecularTopLeft = BlurConfig::rimSpecularTopLeft();
+    general.rimSpecularTopRight = BlurConfig::rimSpecularTopRight();
+    general.rimSpecularBottomLeft = BlurConfig::rimSpecularBottomLeft();
+    general.rimSpecularBottomRight = BlurConfig::rimSpecularBottomRight();
+    general.rimSpecularTopLeftColor = BlurConfig::rimSpecularTopLeftColor();
+    general.rimSpecularTopRightColor = BlurConfig::rimSpecularTopRightColor();
+    general.rimSpecularBottomLeftColor = BlurConfig::rimSpecularBottomLeftColor();
+    general.rimSpecularBottomRightColor = BlurConfig::rimSpecularBottomRightColor();
     general.rimAdaptToRefraction = BlurConfig::rimAdaptToRefraction();
     general.rimAdaptMultiplier = std::clamp(BlurConfig::rimAdaptMultiplier(), 0, 20) / 10.0f;
     general.edgeLighting = BlurConfig::edgeLighting();

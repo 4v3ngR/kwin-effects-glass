@@ -65,6 +65,30 @@
         <entry name="RimWidth" type="Int">
             <default>19</default>
         </entry>
+        <entry name="RimSpecularTopLeft" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="RimSpecularTopRight" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="RimSpecularBottomLeft" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="RimSpecularBottomRight" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="RimSpecularTopLeftColor" type="String">
+            <default>#FFFFFF</default>
+        </entry>
+        <entry name="RimSpecularTopRightColor" type="String">
+            <default>#FFFFFF</default>
+        </entry>
+        <entry name="RimSpecularBottomLeftColor" type="String">
+            <default>#FFFFFF</default>
+        </entry>
+        <entry name="RimSpecularBottomRightColor" type="String">
+            <default>#FFFFFF</default>
+        </entry>
         <entry name="RimAdaptToRefraction" type="Bool">
             <default>false</default>
         </entry>
