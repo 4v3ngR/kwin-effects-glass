@@ -404,6 +404,8 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 
     m_whitelist = (m_settings.forceBlur.windowClassMatchingMode == WindowClassMatchingMode::Whitelist);
     m_windowClasses = m_settings.forceBlur.windowClasses;
+    m_decorWhitelist = (m_settings.forceBlur.decorWindowClassMatchingMode == WindowClassMatchingMode::Whitelist);
+    m_decorWindowClasses = m_settings.forceBlur.decorWindowClasses;
 
     if (m_valid) {
         const auto stackingOrder = effects->stackingOrder();
@@ -515,8 +517,13 @@ void BlurEffect::updateBlurRegion(EffectWindow *w, BlurRegionUpdateMode mode)
         frame = decorationBlurRegion(w);
     }
 
+    const auto windowClass = w->window()->resourceClass();
+    const auto resourceName = w->window()->resourceName();
+
+    const auto matches = m_decorWindowClasses.contains(windowClass) || m_decorWindowClasses.contains(resourceName);
+
     if (
-        m_settings.forceBlur.blurDecorations &&
+        (m_decorWhitelist == matches) &&
         !(
             w->isDock() ||
             w->isMenu() ||

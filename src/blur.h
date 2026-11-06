@@ -267,6 +267,8 @@ private:
     BlurPipelineSettings m_dockBlurSettings{};
     QStringList m_windowClasses;
     bool m_whitelist;
+    QStringList m_decorWindowClasses;
+    bool m_decorWhitelist;
 
     struct OffsetStruct
     {
