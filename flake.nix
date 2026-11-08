@@ -20,17 +20,26 @@
           a: s: a // builtins.mapAttrs (k: v: (a.${k} or { }) // { ${s} = v; }) (f s)
         ) { } systems;
     in
-    eachSystem supportedSystem (
+    {
+      overlays = {
+        default = import ./nix/overlay;
+      };
+    }
+    // eachSystem supportedSystem (
       system:
       let
         pkgs = import nixpkgs {
           inherit system;
+          overlays = [
+            self.overlays.default
+          ];
         };
       in
       {
         packages = {
-          default = pkgs.kdePackages.callPackage ./nix/package/kwin-glass.nix { };
-          x11 = pkgs.kdePackages.callPackage ./nix/package/kwin-glass-x11.nix { };
+          inherit (pkgs) kwin-glass kwin-glass-x11;
+          default = self.packages.${system}.kwin-glass;
+          x11 = self.packages.${system}.kwin-glass-x11;
         };
 
         devShells.default = pkgs.mkShell {
