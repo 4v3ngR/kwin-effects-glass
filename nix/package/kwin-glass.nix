@@ -1,13 +1,14 @@
-{ lib
-, stdenv
-, cmake
-, extra-cmake-modules
-, kwin
-, wrapQtAppsHook
-, qttools
+{
+  lib,
+  stdenv,
+  cmake,
+  extra-cmake-modules,
+  kwin,
+  wrapQtAppsHook,
+  qttools,
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "kwin-glass";
   version = "20260627-1";
 
