@@ -12,7 +12,18 @@ stdenv.mkDerivation {
   pname = "kwin-glass";
   version = "20260627-1";
 
-  src = ./../..;
+  src =
+    let
+      fs = lib.fileset;
+    in
+    fs.toSource {
+      root = ../..;
+      fileset = fs.unions [
+        ../../CMakeLists.txt
+        ../../po
+        ../../src
+      ];
+    };
 
   nativeBuildInputs = [
     cmake
