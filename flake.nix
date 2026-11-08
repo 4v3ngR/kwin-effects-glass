@@ -29,8 +29,8 @@
       in
       {
         packages = {
-          default = pkgs.kdePackages.callPackage ./nix/package.nix { };
-          x11 = pkgs.kdePackages.callPackage ./nix/package-x11.nix { };
+          default = pkgs.kdePackages.callPackage ./nix/package/kwin-glass.nix { };
+          x11 = pkgs.kdePackages.callPackage ./nix/package/kwin-glass-x11.nix { };
         };
 
         devShells.default = pkgs.mkShell {

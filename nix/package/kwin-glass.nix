@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   pname = "kwin-glass";
   version = "20260627-1";
 
-  src = ./..;
+  src = ./../..;
 
   nativeBuildInputs = [
     cmake
