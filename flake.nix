@@ -2,24 +2,49 @@
   description = "Fork of the KWin Blur effect for KDE Plasma 6 with additional features (including force blur) and bug fixes";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    utils.url = "github:numtide/flake-utils";
+    # CAUTION: nixpkgs-unstable lacks kdePackages.kwin-x11
+    nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: inputs.utils.lib.eachSystem [
-    "x86_64-linux" "aarch64-linux"
-  ] (system: let
-    pkgs = import nixpkgs {
-      inherit system;
-    };
-  in rec {
-    packages = {
-      default = pkgs.kdePackages.callPackage ./nix/package.nix { };
-      x11 = pkgs.kdePackages.callPackage ./nix/package-x11.nix { };
-    };
+  outputs =
+    { self, nixpkgs, ... }:
+    let
+      supportedSystem = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-    devShells.default = pkgs.mkShell {
-      inputsFrom = [ packages.default ];
-    };
-  });
+      eachSystem =
+        systems: f:
+        builtins.foldl' (
+          a: s: a // builtins.mapAttrs (k: v: (a.${k} or { }) // { ${s} = v; }) (f s)
+        ) { } systems;
+    in
+    {
+      overlays = {
+        default = import ./nix/overlay;
+        development = import ./nix/overlay/development.nix;
+      };
+    }
+    // eachSystem supportedSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            self.overlays.default
+            self.overlays.development
+          ];
+        };
+      in
+      {
+        packages = {
+          inherit (pkgs) kwin-glass kwin-glass-x11;
+          default = self.packages.${system}.kwin-glass;
+          x11 = self.packages.${system}.kwin-glass-x11;
+        };
+
+        devShells.default = pkgs.kwin-glass-dev-shell;
+      }
+    );
 }

@@ -51,6 +51,42 @@ big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch f
 > If find errors with these instructions (ie missing packages) feel free to raise in issue (or PR) describing your findings.
 
 <details>
+
+  <summary>NixOS (stable)</summary>
+  <br>
+
+  In a NixOS system entrypoint, such as Nixpkgs 26.05’s `system.nix`:
+
+  ```nix
+  { system ? builtins.currentSystem }:
+
+  let
+    # For demonstration purposes; prefer a ‘Nix input pinner’ in real world uses
+    # since these URLs are not stable over time
+    inputs = {
+      # .zst will be preferred in the future, .xz deprecated
+      nixpkgs = builtins.fetchTarball "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz";
+      kwin-glass = builtins.fetchTarball "https://github.com/4v3ngR/kwin-effects-glass/archive/refs/heads/main.tar.gz";
+    };
+  in
+  import "${inputs.nixpkgs}/nixos" {
+    inherit system;
+
+    configuration = {
+      nixpkgs.overlays = [
+        (import "${inputs.kwin-glass}/nix/overlay")
+      ];
+
+      environment.systemPackages = [
+        kwin-glass # for KDE Wayland
+        kwin-glass-x11 # for KDE X11 (if supported)
+      ];
+    };
+  }
+  ```
+</details>
+
+<details>
   <summary>NixOS (flakes)</summary>
   <br>
 
