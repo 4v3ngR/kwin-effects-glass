@@ -23,6 +23,7 @@
     {
       overlays = {
         default = import ./nix/overlay;
+        development = import ./nix/overlay/development.nix;
       };
     }
     // eachSystem supportedSystem (
@@ -32,6 +33,7 @@
           inherit system;
           overlays = [
             self.overlays.default
+            self.overlays.development
           ];
         };
       in
@@ -42,9 +44,7 @@
           x11 = self.packages.${system}.kwin-glass-x11;
         };
 
-        devShells.default = pkgs.mkShell {
-          inputsFrom = [ self.packages.${system}.default ];
-        };
+        devShells.default = pkgs.kwin-glass-dev-shell;
       }
     );
 }
