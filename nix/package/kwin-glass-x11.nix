@@ -1,18 +1,20 @@
 {
-  lib,
   stdenv,
   cmake,
   extra-cmake-modules,
   kwin-x11,
   wrapQtAppsHook,
   qttools,
+  kwin-glass,
 }:
 
 stdenv.mkDerivation {
-  pname = "kwin-glass";
-  version = "1.6.3";
+  inherit (kwin-glass)
+    version
+    src
+    ;
 
-  src = ./../..;
+  pname = kwin-glass.pname + "-x11";
 
   nativeBuildInputs = [
     cmake
@@ -25,9 +27,7 @@ stdenv.mkDerivation {
     qttools
   ];
 
-  meta = with lib; {
-    description = "Fork of the KWin Blur effect for KDE Plasma 6 with additional features (including force blur) and bug fixes";
-    license = licenses.gpl3;
-    homepage = "https://github.com/4v3ngR/kwin-effects-glass";
+  meta = kwin-glass.meta // {
+    description = kwin-glass.meta.description + " with X11 support";
   };
 }
