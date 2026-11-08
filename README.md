@@ -73,15 +73,27 @@ big thanks to [@dnmodder](https://github.com/dnmodder) for providing the patch f
     inherit system;
 
     configuration = {
+      import = [
+        ./configuration.nix
+      ];
+
       nixpkgs.overlays = [
         (import "${inputs.kwin-glass}/nix/overlay")
       ];
-
-      environment.systemPackages = [
-        kwin-glass # for KDE Wayland
-        kwin-glass-x11 # for KDE X11 (if supported)
-      ];
     };
+  }
+  ```
+
+  `configuration.nix`
+
+  ```nix
+  { pkgs, ... }:
+
+  {
+    environment.systemPackages = [
+      pkgs.kwin-glass # for KDE Wayland
+      pkgs.kwin-glass-x11 # for KDE X11 (if supported)
+    ];
   }
   ```
 </details>
