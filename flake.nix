@@ -3,23 +3,38 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: inputs.utils.lib.eachSystem [
-    "x86_64-linux" "aarch64-linux"
-  ] (system: let
-    pkgs = import nixpkgs {
-      inherit system;
-    };
-  in rec {
-    packages = {
-      default = pkgs.kdePackages.callPackage ./nix/package.nix { };
-      x11 = pkgs.kdePackages.callPackage ./nix/package-x11.nix { };
-    };
+  outputs =
+    { self, nixpkgs, ... }:
+    let
+      supportedSystem = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-    devShells.default = pkgs.mkShell {
-      inputsFrom = [ packages.default ];
-    };
-  });
+      eachSystem =
+        systems: f:
+        builtins.foldl' (
+          a: s: a // builtins.mapAttrs (k: v: (a.${k} or { }) // { ${s} = v; }) (f s)
+        ) { } systems;
+    in
+    eachSystem supportedSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+        };
+      in
+      rec {
+        packages = {
+          default = pkgs.kdePackages.callPackage ./nix/package.nix { };
+          x11 = pkgs.kdePackages.callPackage ./nix/package-x11.nix { };
+        };
+
+        devShells.default = pkgs.mkShell {
+          inputsFrom = [ packages.default ];
+        };
+      }
+    );
 }
